@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "649493914329",
+    "project_id": "realyai-473914",
+    "storage_bucket": "realyai-473914.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:649493914329:android:15ce2632c1e9d9176a14c8",
+        "android_client_info": {
+          "package_name": "com.realyai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "649493914329-vjl6s02g7iu60b6rlje9lajko2m4m0va.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5QWXO5r4wzCP74NfVE6pklPE-PqelTf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "649493914329-vjl6s02g7iu60b6rlje9lajko2m4m0va.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
