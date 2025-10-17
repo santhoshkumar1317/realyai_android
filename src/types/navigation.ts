@@ -5,7 +5,11 @@ export type RootStackParamList = {
   PropertyDetails: { propertyId: string };
   AddEditProperty: { propertyId?: string };
   AddEditLocation: { locationId?: string };
-  LeadDetails: { leadId: string };
+  LeadDetails: { leadId: string; channel?: 'telegram' | 'whatsapp' };
+  Leads: undefined;
+  TelegramLeads: undefined;
+  WhatsAppLeads: undefined;
+  BotConfiguration: undefined;
   Statistics: undefined;
   EditProfile: undefined;
   Schedules: undefined;

@@ -64,29 +64,20 @@ const getFollowUpStatusColor = (status?: string) => {
 };
 
 const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
-  const isTelegram = !!lead.telegramUserId;
-  const isWhatsApp = !!lead.whatsappUserId;
-
   return (
     <TouchableOpacity
       style={styles.leadCard}
       onPress={() =>
         navigation.navigate('LeadDetails', {
           leadId: lead.id,
-          channel: isTelegram
-            ? 'telegram'
-            : isWhatsApp
-            ? 'whatsapp'
-            : undefined,
+          channel: 'whatsapp',
         })
       }
     >
       <View style={styles.leadHeader}>
         <View style={styles.leadInfo}>
           <Text style={styles.leadName}>{lead.name || 'Unknown Lead'}</Text>
-          <Text style={styles.telegramId}>
-            @{lead.telegramUserId || lead.whatsappUserId}
-          </Text>
+          <Text style={styles.telegramId}>@{lead.whatsappUserId}</Text>
         </View>
         <View style={styles.statusContainer}>
           <Text
@@ -117,13 +108,7 @@ const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
           {lead.phoneNumber && (
             <Text style={styles.detailText}>📞 {lead.phoneNumber}</Text>
           )}
-          <Text style={styles.mediumText}>
-            {isTelegram
-              ? '📱 Telegram'
-              : isWhatsApp
-              ? '💬 WhatsApp'
-              : '📱 Unknown'}
-          </Text>
+          <Text style={styles.mediumText}>💬 WhatsApp</Text>
         </View>
         {lead.budget && (
           <Text style={styles.detailText}>
@@ -206,7 +191,7 @@ const StatCard = ({
   </View>
 );
 
-const LeadsScreen = () => {
+const WhatsAppLeadsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -235,9 +220,9 @@ const LeadsScreen = () => {
           status: statusFilter || undefined,
         };
 
-        const response = await apiService.getLeads(params);
+        const response = await apiService.getWhatsAppLeads(params);
 
-        const leadsWithMockData = response.leads.map(lead => ({
+        const leadsWithMockData = response.whatsappLeads.map(lead => ({
           ...lead,
           lastInteraction: lead.lastInteraction || lead.updatedAt,
         }));
@@ -277,8 +262,8 @@ const LeadsScreen = () => {
 
         setPagination(response.pagination);
       } catch (error) {
-        console.error('Error loading leads:', error);
-        Alert.alert('Error', 'Failed to load leads');
+        console.error('Error loading WhatsApp leads:', error);
+        Alert.alert('Error', 'Failed to load WhatsApp leads');
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -312,13 +297,13 @@ const LeadsScreen = () => {
     <View style={styles.container}>
       {/* Stats Header */}
       <View style={styles.statsHeader}>
-        <Text style={styles.statsHeaderTitle}>Leads Overview</Text>
+        <Text style={styles.statsHeaderTitle}>💬 WhatsApp Leads</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="Total Leads"
             value={stats.totalLeads}
-            subtitle="All channels"
-            color="#4A6FA5" // Blue
+            subtitle="WhatsApp users"
+            color="#25D366" // WhatsApp green
           />
           <StatCard
             title="Qualified Leads"
@@ -333,35 +318,13 @@ const LeadsScreen = () => {
             color="#FF69B4" // Accent pink
           />
         </View>
-
-        {/* Channel Navigation */}
-        <View style={styles.channelNavigation}>
-          <TouchableOpacity
-            style={styles.channelButton}
-            onPress={() => navigation.navigate('TelegramLeads')}
-          >
-            <Text style={styles.channelButtonText}>📱 Telegram Leads</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.channelButton}
-            onPress={() => navigation.navigate('WhatsAppLeads')}
-          >
-            <Text style={styles.channelButtonText}>💬 WhatsApp Leads</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.channelButton}
-            onPress={() => navigation.navigate('BotConfiguration')}
-          >
-            <Text style={styles.channelButtonText}>🤖 Bot Config</Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
       {/* Search */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search leads by name or phone..."
+          placeholder="Search WhatsApp leads by name or phone..."
           placeholderTextColor="#A0C4E4"
           value={searchQuery}
           onChangeText={handleSearch}
@@ -395,7 +358,7 @@ const LeadsScreen = () => {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              {loading ? 'Loading leads...' : 'No leads found'}
+              {loading ? 'Loading WhatsApp leads...' : 'No WhatsApp leads found'}
             </Text>
           </View>
         }
@@ -411,7 +374,7 @@ const LeadsScreen = () => {
 
       {/* Results count */}
       <View style={styles.footer}>
-        <Text style={styles.resultsText}>{pagination.total} leads found</Text>
+        <Text style={styles.resultsText}>{pagination.total} WhatsApp leads found</Text>
       </View>
     </View>
   );
@@ -666,27 +629,6 @@ const styles = StyleSheet.create({
     color: '#A0C4E4',
     fontFamily: 'System',
   },
-  channelNavigation: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  channelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    flex: 1,
-    marginHorizontal: 4,
-    alignItems: 'center',
-  },
-  channelButtonText: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '600',
-    textAlign: 'center',
-    fontFamily: 'System',
-  },
 });
 
-export default LeadsScreen;
+export default WhatsAppLeadsScreen;

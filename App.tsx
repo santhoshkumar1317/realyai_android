@@ -8,12 +8,10 @@
 import React from 'react';
 import {
   StatusBar,
-  useColorScheme,
   StyleSheet,
-  Text,
   View,
   ActivityIndicator,
-  TouchableOpacity,
+  Text,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -21,8 +19,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
-import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import './src/utils/firebase'; // Initialize Firebase
+
+// Screens
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
@@ -38,11 +37,14 @@ import EditProfileScreen from './src/screens/EditProfileScreen';
 import ReelsScreen from './src/screens/ReelsScreen';
 import SchedulesScreen from './src/screens/SchedulesScreen';
 import SubscriptionDetailsScreen from './src/screens/SubscriptionDetailsScreen';
+import TelegramLeadsScreen from './src/screens/TelegramLeadsScreen';
+import WhatsAppLeadsScreen from './src/screens/WhatsAppLeadsScreen';
+import BotConfigurationScreen from './src/screens/BotConfigurationScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Simple icon component - you can replace with actual icon library
+// Simple icon component
 const TabBarIcon = ({
   name,
   color,
@@ -59,26 +61,12 @@ const TabBarIcon = ({
     chat: '💬',
     person: '👤',
     reels: '🎬',
-    notification: '🔔',
+    schedule: '📅',
   };
   return <Text style={{ fontSize: size, color }}>{iconMap[name] || '●'}</Text>;
 };
 
-// Notification icon component for header
-const NotificationIcon = ({ onPress }: { onPress: () => void }) => (
-  <TouchableOpacity onPress={onPress} style={{ marginRight: 15 }}>
-    <TabBarIcon name="notification" color="#fff" size={24} />
-  </TouchableOpacity>
-);
-
-// Dark mode toggle component for header
-const DarkModeToggle = ({ onPress, isDark }: { onPress: () => void; isDark: boolean }) => (
-  <TouchableOpacity onPress={onPress} style={{ marginRight: 15 }}>
-    <Text style={{ fontSize: 20, color: '#fff' }}>{isDark ? '☀️' : '🌙'}</Text>
-  </TouchableOpacity>
-);
-
-// Icon components to avoid unstable nested components
+// Icon components
 const DashboardIcon = ({ color, size }: { color: string; size: number }) => (
   <TabBarIcon name="dashboard" color={color} size={size} />
 );
@@ -95,39 +83,32 @@ const ProfileIcon = ({ color, size }: { color: string; size: number }) => (
   <TabBarIcon name="person" color={color} size={size} />
 );
 const ScheduleIcon = ({ color, size }: { color: string; size: number }) => (
-  <Text style={{ fontSize: size, color }}>📅</Text>
+  <TabBarIcon name="schedule" color={color} size={size} />
 );
 
 const MainTabNavigator = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
-
-  const handleNotificationPress = () => {
-    // TODO: Implement notification functionality
-    console.log('Notification icon pressed');
-  };
-
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#6a0dad',
-        tabBarInactiveTintColor: '#666',
+        headerShown: false, // 👈 Hide header for all tab screens
+        tabBarActiveTintColor: '#FFFFFF', // Active = white
+        tabBarInactiveTintColor: '#A0C4E4', // Inactive = light blue
         tabBarStyle: {
-          backgroundColor: isDarkMode ? '#1a1a1a' : '#fff',
-          borderTopColor: '#e0e0e0',
+          backgroundColor: '#00033cff', // Deep navy background
+          borderTopWidth: 0,
+          height: 70,
+          paddingBottom: 8,
+          paddingTop: 6,
         },
-        headerStyle: {
-          backgroundColor: '#1a0033',
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginBottom: 2,
+          fontFamily: 'System',
         },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
+        tabBarIconStyle: {
+          marginTop: 4,
         },
-        headerRight: () => (
-          <View style={{ flexDirection: 'row' }}>
-            <DarkModeToggle onPress={toggleTheme} isDark={isDarkMode} />
-            <NotificationIcon onPress={handleNotificationPress} />
-          </View>
-        ),
       }}
     >
       <Tab.Screen
@@ -182,14 +163,13 @@ const MainTabNavigator = () => {
   );
 };
 
-// Component to handle authentication state and navigation
 const AppNavigator = () => {
   const { isLoggedIn, onboardingCompleted, isLoading } = useAuth();
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6a0dad" />
+        <ActivityIndicator size="large" color="#5D3FD3" />
       </View>
     );
   }
@@ -203,7 +183,7 @@ const AppNavigator = () => {
 
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false }} // 👈 Hide header for ALL screens
       initialRouteName={initialRouteName}
     >
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
@@ -216,26 +196,29 @@ const AppNavigator = () => {
       <Stack.Screen name="Statistics" component={StatisticsScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Schedules" component={SchedulesScreen} />
-      <Stack.Screen name="SubscriptionDetails" component={SubscriptionDetailsScreen} />
+      <Stack.Screen
+        name="SubscriptionDetails"
+        component={SubscriptionDetailsScreen}
+      />
       <Stack.Screen name="SubscriptionPlans" component={SchedulesScreen} />
+      <Stack.Screen name="TelegramLeads" component={TelegramLeadsScreen} />
+      <Stack.Screen name="WhatsAppLeads" component={WhatsAppLeadsScreen} />
+      <Stack.Screen name="BotConfiguration" component={BotConfigurationScreen} />
     </Stack.Navigator>
   );
 };
 
 function App() {
-  const systemColorScheme = useColorScheme() === 'dark';
-
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
-        <ThemeProvider>
-          <StatusBar barStyle={systemColorScheme ? 'light-content' : 'dark-content'} />
-          <NavigationContainer>
-            <AuthProvider>
-              <AppNavigator />
-            </AuthProvider>
-          </NavigationContainer>
-        </ThemeProvider>
+        {/* Fixed status bar style for light-on-dark */}
+        <StatusBar barStyle="light-content" backgroundColor="#1A1F71" />
+        <NavigationContainer>
+          <AuthProvider>
+            <AppNavigator />
+          </AuthProvider>
+        </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
@@ -249,6 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#1A1F71',
   },
 });
 

@@ -13,14 +13,14 @@ import {
 import { useNavigation, useFocusEffect, NavigationProp } from '@react-navigation/native';
 import { apiService, Property } from '../utils/api';
 
-// Components moved outside to avoid unstable nested components
+// Status color mapping using your theme
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'AVAILABLE': return '#4CAF50';
-    case 'RESERVED': return '#FF9800';
-    case 'SOLD': return '#F44336';
-    case 'UNDER_MAINTENANCE': return '#9E9E9E';
-    default: return '#666';
+    case 'AVAILABLE': return '#10b981'; // Emerald (positive)
+    case 'RESERVED': return '#f59e0b'; // Amber
+    case 'SOLD': return '#ef4444'; // Red
+    case 'UNDER_MAINTENANCE': return '#94a3b8'; // Slate
+    default: return '#64748b';
   }
 };
 
@@ -39,7 +39,7 @@ const PropertyCard = ({ property, navigation }: { property: Property; navigation
       )}
     </View>
     <View style={styles.propertyInfo}>
-      <Text style={styles.propertyTitle}>
+      <Text style={styles.propertyTitle} numberOfLines={2}>
         {property.propertyType || 'Property'} in {property.location ? `${property.location.city}, ${property.location.state}` : 'Unknown Location'}
       </Text>
       <Text style={styles.propertyPrice}>
@@ -108,28 +108,36 @@ const FilterModal = ({
       <TextInput
         style={styles.filterInput}
         placeholder="Property Type"
+        placeholderTextColor="#A0C4E4"
         value={filters.propertyType}
         onChangeText={(text) => setFilters((prev: any) => ({ ...prev, propertyType: text }))}
+        selectionColor="#FFFFFF"
       />
       <TextInput
         style={styles.filterInput}
         placeholder="Min Price"
+        placeholderTextColor="#A0C4E4"
         value={filters.minPrice}
         onChangeText={(text) => setFilters((prev: any) => ({ ...prev, minPrice: text }))}
         keyboardType="numeric"
+        selectionColor="#FFFFFF"
       />
       <TextInput
         style={styles.filterInput}
         placeholder="Max Price"
+        placeholderTextColor="#A0C4E4"
         value={filters.maxPrice}
         onChangeText={(text) => setFilters((prev: any) => ({ ...prev, maxPrice: text }))}
         keyboardType="numeric"
+        selectionColor="#FFFFFF"
       />
       <TextInput
         style={styles.filterInput}
         placeholder="Location"
+        placeholderTextColor="#A0C4E4"
         value={filters.location}
         onChangeText={(text) => setFilters((prev: any) => ({ ...prev, location: text }))}
+        selectionColor="#FFFFFF"
       />
       <View style={styles.filterButtons}>
         <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
@@ -185,15 +193,10 @@ const PropertiesScreen = () => {
         propertyType: filters.propertyType || undefined,
         minPrice: filters.minPrice ? parseFloat(filters.minPrice) : undefined,
         maxPrice: filters.maxPrice ? parseFloat(filters.maxPrice) : undefined,
-        minArea: undefined, // Not implemented in UI yet
-        maxArea: undefined, // Not implemented in UI yet
-        bedrooms: undefined, // Not implemented in UI yet
-        bathrooms: undefined, // Not implemented in UI yet
         location: filters.location || undefined,
       };
 
       const response = await apiService.getProperties(params);
-      console.log('Properties response:', response.properties);
 
       if (append) {
         setProperties(prev => [...prev, ...response.properties]);
@@ -232,15 +235,6 @@ const PropertiesScreen = () => {
     setSearchQuery(text);
   };
 
-  const clearFilters = () => {
-    setFilters({
-      propertyType: '',
-      minPrice: '',
-      maxPrice: '',
-      location: '',
-    });
-  };
-
   return (
     <View style={styles.container}>
       {/* Search and Filter Header */}
@@ -248,9 +242,10 @@ const PropertiesScreen = () => {
         <TextInput
           style={styles.searchInput}
           placeholder="Search properties..."
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#A0C4E4"
           value={searchQuery}
           onChangeText={handleSearch}
+          selectionColor="#FFFFFF"
         />
         <View style={styles.headerButtons}>
           <TouchableOpacity
@@ -285,7 +280,7 @@ const PropertiesScreen = () => {
         onEndReached={loadMore}
         onEndReachedThreshold={0.1}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFFFFF" colors={['#FFFFFF']} />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -301,6 +296,7 @@ const PropertiesScreen = () => {
             </View>
           ) : null
         }
+        contentContainerStyle={{ paddingBottom: 80 }}
       />
 
       {/* Results count */}
@@ -316,57 +312,59 @@ const PropertiesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71', // Deep navy background
   },
   header: {
     flexDirection: 'row',
     padding: 15,
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   searchInput: {
     flex: 1,
-    height: 40,
+    height: 42,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 20,
-    paddingHorizontal: 15,
+    borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 22,
+    paddingHorizontal: 16,
     marginRight: 10,
-    backgroundColor: 'white',
-    color: 'white',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   headerButtons: {
     flexDirection: 'row',
   },
   filterButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 20,
+    backgroundColor: 'rgba(108, 74, 182, 0.4)', // #6C4AB6 semi-transparent
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderRadius: 22,
     justifyContent: 'center',
     marginRight: 8,
   },
   filterButtonText: {
-    fontSize: 16,
-    color: 'white',
+    fontSize: 18,
+    color: '#FFFFFF',
   },
   addButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
+    backgroundColor: '#5D3FD3', // Deep purple
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderRadius: 22,
     justifyContent: 'center',
   },
   addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   filterContainer: {
-    backgroundColor: 'white',
-    padding: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   filterHeader: {
     flexDirection: 'row',
@@ -376,114 +374,124 @@ const styles = StyleSheet.create({
   },
   filterTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   closeButton: {
     padding: 5,
   },
   closeButtonText: {
-    fontSize: 18,
-    color: '#666',
+    fontSize: 20,
+    color: '#FF69B4',
+    fontFamily: 'System',
   },
   filterInput: {
-    height: 40,
+    height: 44,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    backgroundColor: '#f9f9f9',
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   filterButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   clearButton: {
-    backgroundColor: '#f44336',
+    backgroundColor: '#ef4444',
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
+    paddingVertical: 12,
+    borderRadius: 8,
     flex: 1,
-    marginRight: 10,
+    marginRight: 8,
     alignItems: 'center',
   },
   clearButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontFamily: 'System',
   },
   applyButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#10b981',
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
+    paddingVertical: 12,
+    borderRadius: 8,
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 8,
     alignItems: 'center',
   },
   applyButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontFamily: 'System',
   },
   propertyCard: {
-    backgroundColor: 'white',
-    margin: 10,
-    marginBottom: 5,
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    margin: 12,
+    marginBottom: 8,
+    borderRadius: 12,
     flexDirection: 'row',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
     elevation: 3,
   },
   propertyImage: {
     width: 100,
     height: 100,
-    backgroundColor: '#f0f0f0',
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   imagePlaceholder: {
     fontSize: 30,
+    color: '#A0C4E4',
   },
   cardImage: {
     width: 100,
     height: 100,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
   },
   propertyInfo: {
     flex: 1,
-    padding: 15,
+    padding: 14,
   },
   propertyTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   propertyPrice: {
     fontSize: 14,
-    color: '#6a0dad',
-    fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#FF69B4', // Accent pink
+    fontWeight: '700',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   propertyDetails: {
     flexDirection: 'row',
-    marginBottom: 5,
+    marginBottom: 6,
   },
   detailText: {
     fontSize: 12,
-    color: '#666',
-    marginRight: 15,
+    color: '#A0C4E4',
+    marginRight: 14,
+    fontFamily: 'System',
   },
   propertyDescription: {
     fontSize: 12,
-    color: '#666',
+    color: '#A0C4E4',
     marginBottom: 10,
+    fontFamily: 'System',
   },
   propertyFooter: {
     flexDirection: 'row',
@@ -491,17 +499,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-    fontSize: 10,
-    color: 'white',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    fontSize: 11,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    textTransform: 'capitalize',
+    fontFamily: 'System',
   },
   viewCount: {
     fontSize: 12,
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   emptyContainer: {
     flex: 1,
@@ -511,26 +521,33 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
   loadingMore: {
     padding: 20,
     alignItems: 'center',
   },
   loadingMoreText: {
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   footer: {
-    padding: 10,
+    padding: 12,
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   resultsText: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 13,
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
 });
 

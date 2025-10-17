@@ -7,53 +7,38 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-// import { apiService } from '../utils/api';
 
 const StatisticsScreen = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const [selectedPeriod, setSelectedPeriod] = useState<
+    'today' | 'week' | 'month'
+  >('today');
 
   const loadStats = useCallback(async () => {
     try {
       setLoading(true);
-      let statsData;
 
-      // Comment out subscription-related calls for now
-      // switch (selectedPeriod) {
-      //   case 'today':
-      //     statsData = await apiService.getDailyStats();
-      //     break;
-      //   case 'week':
-      //     statsData = await apiService.getWeeklyStats();
-      //     break;
-      //   case 'month':
-      //     statsData = await apiService.getMonthlyStats();
-      //     break;
-      //   default:
-      //     statsData = await apiService.getDailyStats();
-      // }
-
-      // Use mock data for now
-      statsData = {
+      // Mock data (as in your original)
+      const statsData = {
         totalLeads: 25,
         chatMessages: 150,
         newLeads: 5,
         leadsByStatus: {
-          'NOT_QUALIFIED': 10,
-          'MEDIUM': 8,
-          'HIGH': 7
+          NOT_QUALIFIED: 10,
+          MEDIUM: 8,
+          HIGH: 7,
         },
         overall: {
           totalLeads: 150,
           totalProperties: 45,
           conversionRate: 15.5,
           leadsByStatus: {
-            'NOT_QUALIFIED': 80,
-            'MEDIUM': 40,
-            'HIGH': 30
-          }
-        }
+            NOT_QUALIFIED: 80,
+            MEDIUM: 40,
+            HIGH: 30,
+          },
+        },
       };
 
       setStats(statsData);
@@ -77,30 +62,41 @@ const StatisticsScreen = () => {
     );
   }
 
-  const PeriodFilter = ({ selectedPeriod: selectedPeriodProp, setSelectedPeriod: setSelectedPeriodProp }: { selectedPeriod: 'today' | 'week' | 'month'; setSelectedPeriod: (period: 'today' | 'week' | 'month') => void }) => {
+  const PeriodFilter = ({
+    selectedPeriod: selectedPeriodProp,
+    setSelectedPeriod: setSelectedPeriodProp,
+  }: {
+    selectedPeriod: 'today' | 'week' | 'month';
+    setSelectedPeriod: (period: 'today' | 'week' | 'month') => void;
+  }) => {
     const periods = [
       { key: 'today', label: 'Today' },
       { key: 'week', label: 'This Week' },
-      { key: 'month', label: 'This Month' }
+      { key: 'month', label: 'This Month' },
     ];
 
     return (
       <View style={styles.filterContainer}>
         <Text style={styles.filterTitle}>Time Period:</Text>
         <View style={styles.filterButtons}>
-          {periods.map((period) => (
+          {periods.map(period => (
             <TouchableOpacity
               key={period.key}
               style={[
                 styles.filterButton,
-                selectedPeriodProp === period.key && styles.filterButtonActive
+                selectedPeriodProp === period.key && styles.filterButtonActive,
               ]}
-              onPress={() => setSelectedPeriodProp(period.key as 'today' | 'week' | 'month')}
+              onPress={() =>
+                setSelectedPeriodProp(period.key as 'today' | 'week' | 'month')
+              }
             >
-              <Text style={[
-                styles.filterButtonText,
-                selectedPeriodProp === period.key && styles.filterButtonTextActive
-              ]}>
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  selectedPeriodProp === period.key &&
+                    styles.filterButtonTextActive,
+                ]}
+              >
                 {period.label}
               </Text>
             </TouchableOpacity>
@@ -112,10 +108,14 @@ const StatisticsScreen = () => {
 
   const getPeriodTitle = () => {
     switch (selectedPeriod) {
-      case 'today': return 'Today\'s Performance';
-      case 'week': return 'This Week\'s Performance';
-      case 'month': return 'This Month\'s Performance';
-      default: return 'Performance';
+      case 'today':
+        return "Today's Performance";
+      case 'week':
+        return "This Week's Performance";
+      case 'month':
+        return "This Month's Performance";
+      default:
+        return 'Performance';
     }
   };
 
@@ -126,8 +126,10 @@ const StatisticsScreen = () => {
         <Text style={styles.headerSubtitle}>Detailed performance metrics</Text>
       </View>
 
-      {/* Period Filter */}
-      <PeriodFilter selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
+      <PeriodFilter
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={setSelectedPeriod}
+      />
 
       {stats && (
         <View style={styles.content}>
@@ -135,11 +137,15 @@ const StatisticsScreen = () => {
             <Text style={styles.sectionTitle}>{getPeriodTitle()}</Text>
             <View style={styles.statsGrid}>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{stats.totalLeads || stats.leads || 0}</Text>
+                <Text style={styles.statValue}>
+                  {stats.totalLeads || stats.leads || 0}
+                </Text>
                 <Text style={styles.statLabel}>Total Leads</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{stats.chatMessages || stats.totalChats || 0}</Text>
+                <Text style={styles.statValue}>
+                  {stats.chatMessages || stats.totalChats || 0}
+                </Text>
                 <Text style={styles.statLabel}>Chat Messages</Text>
               </View>
               {stats.newLeads !== undefined && (
@@ -151,23 +157,35 @@ const StatisticsScreen = () => {
             </View>
           </View>
 
-          {/* Lead Chat Analysis */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Lead Chat Analysis</Text>
             <View style={styles.chatStats}>
               <View style={styles.chatStatItem}>
-                <Text style={styles.chatStatValue}>{stats.chatMessages || stats.totalChats || 0}</Text>
+                <Text style={styles.chatStatValue}>
+                  {stats.chatMessages || stats.totalChats || 0}
+                </Text>
                 <Text style={styles.chatStatLabel}>Total Messages</Text>
               </View>
               <View style={styles.chatStatItem}>
                 <Text style={styles.chatStatValue}>
-                  {stats.totalLeads ? Math.round((stats.chatMessages || 0) / stats.totalLeads) : 0}
+                  {stats.totalLeads
+                    ? Math.round((stats.chatMessages || 0) / stats.totalLeads)
+                    : 0}
                 </Text>
                 <Text style={styles.chatStatLabel}>Avg per Lead</Text>
               </View>
               <View style={styles.chatStatItem}>
                 <Text style={styles.chatStatValue}>
-                  {stats.leadsByStatus ? (Object.values(stats.leadsByStatus) as number[]).reduce((a, b) => a + b, 0) : (stats.overall?.leadsByStatus ? (Object.values(stats.overall.leadsByStatus) as number[]).reduce((a, b) => a + b, 0) : 0)}
+                  {stats.leadsByStatus
+                    ? (Object.values(stats.leadsByStatus) as number[]).reduce(
+                        (a, b) => a + b,
+                        0,
+                      )
+                    : stats.overall?.leadsByStatus
+                    ? (
+                        Object.values(stats.overall.leadsByStatus) as number[]
+                      ).reduce((a, b) => a + b, 0)
+                    : 0}
                 </Text>
                 <Text style={styles.chatStatLabel}>Active Conversations</Text>
               </View>
@@ -178,12 +196,16 @@ const StatisticsScreen = () => {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Lead Status Distribution</Text>
               <View style={styles.statusList}>
-                {Object.entries(stats.overall.leadsByStatus).map(([status, count]) => (
-                  <View key={status} style={styles.statusItem}>
-                    <Text style={styles.statusLabel}>{status.replace('_', ' ')}</Text>
-                    <Text style={styles.statusValue}>{String(count)}</Text>
-                  </View>
-                ))}
+                {Object.entries(stats.overall.leadsByStatus).map(
+                  ([status, count]) => (
+                    <View key={status} style={styles.statusItem}>
+                      <Text style={styles.statusLabel}>
+                        {status.replace('_', ' ')}
+                      </Text>
+                      <Text style={styles.statusValue}>{String(count)}</Text>
+                    </View>
+                  ),
+                )}
               </View>
             </View>
           )}
@@ -193,15 +215,21 @@ const StatisticsScreen = () => {
               <Text style={styles.sectionTitle}>Overall Metrics</Text>
               <View style={styles.statsGrid}>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{stats.overall.totalLeads || 0}</Text>
+                  <Text style={styles.statValue}>
+                    {stats.overall.totalLeads || 0}
+                  </Text>
                   <Text style={styles.statLabel}>Total Leads</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{stats.overall.totalProperties || 0}</Text>
+                  <Text style={styles.statValue}>
+                    {stats.overall.totalProperties || 0}
+                  </Text>
                   <Text style={styles.statLabel}>Properties</Text>
                 </View>
                 <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{`${stats.overall.conversionRate || 0}%`}</Text>
+                  <Text style={styles.statValue}>{`${
+                    stats.overall.conversionRate || 0
+                  }%`}</Text>
                   <Text style={styles.statLabel}>Conversion Rate</Text>
                 </View>
               </View>
@@ -216,51 +244,59 @@ const StatisticsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   header: {
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
     padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 5,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#aaa',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   content: {
-    padding: 15,
+    padding: 16,
   },
   section: {
-    backgroundColor: 'white',
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
     padding: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 16,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 16,
+    fontFamily: 'System',
   },
   statsGrid: {
     flexDirection: 'row',
@@ -269,80 +305,89 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     alignItems: 'center',
-    padding: 15,
+    padding: 16,
     marginHorizontal: 5,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   statValue: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#6a0dad',
-    marginBottom: 5,
+    fontWeight: '800',
+    color: '#5D3FD3',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   statLabel: {
     fontSize: 12,
-    color: '#666',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
   statusList: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    padding: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    padding: 16,
   },
   statusItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   statusLabel: {
     fontSize: 14,
-    color: '#333',
+    color: '#A0C4E4',
     textTransform: 'capitalize',
+    fontFamily: 'System',
   },
   statusValue: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6a0dad',
+    fontWeight: '700',
+    color: '#5D3FD3',
+    fontFamily: 'System',
   },
   filterContainer: {
-    backgroundColor: 'white',
-    padding: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   filterTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 12,
+    fontFamily: 'System',
   },
   filterButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   filterButton: {
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 20,
     flex: 1,
     marginHorizontal: 5,
     alignItems: 'center',
   },
   filterButtonActive: {
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#5D3FD3',
   },
   filterButtonText: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
     fontWeight: '600',
+    fontFamily: 'System',
   },
   filterButtonTextActive: {
-    color: 'white',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   chatStats: {
     flexDirection: 'row',
@@ -351,21 +396,25 @@ const styles = StyleSheet.create({
   chatStatItem: {
     flex: 1,
     alignItems: 'center',
-    padding: 15,
+    padding: 16,
     marginHorizontal: 5,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   chatStatValue: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2196F3',
-    marginBottom: 5,
+    fontWeight: '800',
+    color: '#3b82f6',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   chatStatLabel: {
     fontSize: 12,
-    color: '#666',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
 });
 

@@ -34,7 +34,6 @@ const PropertyDetailsScreen = () => {
   const loadProperty = useCallback(async () => {
     try {
       const response = await apiService.getPropertyById(propertyId);
-      console.log('Property details response:', response.property);
       setProperty(response.property);
     } catch (error) {
       console.error('Error loading property:', error);
@@ -51,9 +50,12 @@ const PropertyDetailsScreen = () => {
   useEffect(() => {
     if (property?.images && property.images.length > 1) {
       const interval = setInterval(() => {
-        setCurrentImageIndex((prevIndex) => {
+        setCurrentImageIndex(prevIndex => {
           const nextIndex = (prevIndex + 1) % property.images.length;
-          flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+          flatListRef.current?.scrollToIndex({
+            index: nextIndex,
+            animated: true,
+          });
           return nextIndex;
         });
       }, 2000);
@@ -66,8 +68,14 @@ const PropertyDetailsScreen = () => {
     if (!property) return;
 
     try {
-      const location = property.location ? `${property.location.city}, ${property.location.state}` : 'Unknown Location';
-      const message = `Check out this property: ${property.propertyType || 'Property'} in ${location}\nPrice: ₹${property.pricePerSqft}/sqft\n${property.description}`;
+      const location = property.location
+        ? `${property.location.city}, ${property.location.state}`
+        : 'Unknown Location';
+      const message = `Check out this property: ${
+        property.propertyType || 'Property'
+      } in ${location}\nPrice: ₹${property.pricePerSqft}/sqft\n${
+        property.description
+      }`;
       await Share.share({
         message,
       });
@@ -76,35 +84,44 @@ const PropertyDetailsScreen = () => {
     }
   };
 
-
-
   const handleDirections = () => {
     if (!property?.location?.latitude || !property?.location?.longitude) return;
 
     const { latitude, longitude } = property.location;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-    Linking.openURL(url);
+    Linking.openURL(url).catch(() =>
+      Alert.alert('Error', 'Could not open maps'),
+    );
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'AVAILABLE': return '#4CAF50';
-      case 'RESERVED': return '#FF9800';
-      case 'SOLD': return '#F44336';
-      case 'UNDER_MAINTENANCE': return '#9E9E9E';
-      default: return '#666';
+      case 'AVAILABLE':
+        return '#10b981'; // Emerald
+      case 'RESERVED':
+        return '#f59e0b'; // Amber
+      case 'SOLD':
+        return '#ef4444'; // Red
+      case 'UNDER_MAINTENANCE':
+        return '#94a3b8'; // Slate
+      default:
+        return '#64748b';
     }
   };
 
-  const renderImageItem = ({ item }: { item: string }) => (
+  const renderImageItem = ({ item }: { item: string }) =>
     item ? (
-      <Image key={item} source={{ uri: item }} style={styles.carouselImage} resizeMode="cover" />
+      <Image
+        key={item}
+        source={{ uri: item }}
+        style={styles.carouselImage}
+        resizeMode="cover"
+      />
     ) : (
       <View style={styles.carouselImage}>
         <Text style={styles.imagePlaceholder}>🏠</Text>
       </View>
-    )
-  );
+    );
 
   const onScrollEnd = (event: any) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
@@ -125,7 +142,10 @@ const PropertyDetailsScreen = () => {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Property not found</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>
@@ -169,7 +189,12 @@ const PropertyDetailsScreen = () => {
           </View>
         )}
         <View style={styles.statusBadge}>
-          <Text style={[styles.statusText, { backgroundColor: getStatusColor(property.status) }]}>
+          <Text
+            style={[
+              styles.statusText,
+              { backgroundColor: getStatusColor(property.status) },
+            ]}
+          >
             {property.status.toLowerCase().replace('_', ' ')}
           </Text>
         </View>
@@ -178,17 +203,20 @@ const PropertyDetailsScreen = () => {
       {/* Property Info */}
       <View style={styles.infoContainer}>
         <Text style={styles.title}>
-          {property.propertyType || 'Property'} in {property.location ? `${property.location.city}, ${property.location.state}` : 'Unknown Location'}
+          {property.propertyType || 'Property'} in{' '}
+          {property.location
+            ? `${property.location.city}, ${property.location.state}`
+            : 'Unknown Location'}
         </Text>
 
         {property.location?.address && (
-          <Text style={styles.address}>
-            📍 {property.location.address}
-          </Text>
+          <Text style={styles.address}>📍 {property.location.address}</Text>
         )}
 
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>₹{property.pricePerSqft?.toLocaleString()}/sqft</Text>
+          <Text style={styles.price}>
+            ₹{property.pricePerSqft?.toLocaleString()}/sqft
+          </Text>
           {property.totalPrice && (
             <Text style={styles.totalPrice}>
               Total: ₹{property.totalPrice.toLocaleString()}
@@ -218,7 +246,9 @@ const PropertyDetailsScreen = () => {
           )}
           <View style={styles.detailItem}>
             <Text style={styles.detailIcon}>👁️</Text>
-            <Text style={styles.detailText}>{property.viewCount || 0} views</Text>
+            <Text style={styles.detailText}>
+              {property.viewCount || 0} views
+            </Text>
           </View>
         </View>
 
@@ -273,116 +303,132 @@ const PropertyDetailsScreen = () => {
 
         {/* Action Buttons */}
         <View style={styles.actionsContainer}>
-
-           <TouchableOpacity style={styles.actionButton} onPress={handleDirections}>
-             <Text style={styles.actionButtonText}>🗺️ Directions</Text>
-           </TouchableOpacity>
-           <TouchableOpacity style={styles.actionButton} onPress={handleShare}>
-             <Text style={styles.actionButtonText}>📤 Share</Text>
-           </TouchableOpacity>
-         </View>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleDirections}
+          >
+            <Text style={styles.actionButtonText}>🗺️ Directions</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={handleShare}>
+            <Text style={styles.actionButtonText}>📤 Share</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
 };
 
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   errorText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
     marginBottom: 20,
+    fontFamily: 'System',
   },
   backButton: {
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#5D3FD3',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 5,
+    borderRadius: 8,
   },
   backButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'System',
   },
   imageContainer: {
     position: 'relative',
+    backgroundColor: '#000',
   },
   mainImage: {
     height: 250,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   imagePlaceholder: {
     fontSize: 60,
+    color: '#A0C4E4',
   },
   statusBadge: {
     position: 'absolute',
     top: 15,
     right: 15,
+    zIndex: 10,
   },
   statusText: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 15,
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontWeight: '700',
+    textTransform: 'capitalize',
+    fontFamily: 'System',
   },
   infoContainer: {
-    backgroundColor: 'white',
-    margin: 15,
-    marginTop: -20,
-    borderRadius: 15,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    margin: 16,
+    marginTop: -5,
+    borderRadius: 16,
+    padding: 30,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 12,
+    fontFamily: 'System',
   },
   address: {
     fontSize: 16,
-    color: '#666',
+    color: '#A0C4E4',
     marginBottom: 15,
+    fontFamily: 'System',
   },
   priceContainer: {
-    marginBottom: 15,
+    marginBottom: 18,
   },
   price: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#6a0dad',
+    fontWeight: '800',
+    color: '#FF69B4', // Accent pink
+    fontFamily: 'System',
   },
   totalPrice: {
     fontSize: 16,
-    color: '#666',
-    marginTop: 5,
+    color: '#A0C4E4',
+    marginTop: 6,
+    fontFamily: 'System',
   },
   detailsGrid: {
     flexDirection: 'row',
@@ -398,24 +444,28 @@ const styles = StyleSheet.create({
   detailIcon: {
     fontSize: 16,
     marginRight: 8,
+    color: '#A0C4E4',
   },
   detailText: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 22,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 10,
+    fontFamily: 'System',
   },
   description: {
     fontSize: 16,
-    color: '#666',
+    color: '#A0C4E4',
     lineHeight: 24,
+    fontFamily: 'System',
   },
   featuresGrid: {
     flexDirection: 'row',
@@ -427,7 +477,8 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   amenitiesGrid: {
     flexDirection: 'row',
@@ -439,45 +490,55 @@ const styles = StyleSheet.create({
   },
   amenityText: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   contactInfo: {
     fontSize: 16,
-    color: '#333',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   agentName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   agentUsername: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: 24,
   },
   actionButton: {
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#5D3FD3', // Deep purple
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
     flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 6,
     alignItems: 'center',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 3,
   },
   actionButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   carousel: {
     height: 250,
   },
   carouselImage: {
-    width: Dimensions.get('window').width,
+    width: width,
     height: 250,
   },
   indicatorContainer: {
@@ -496,7 +557,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeIndicator: {
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
   },
 });
 

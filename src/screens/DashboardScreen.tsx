@@ -17,7 +17,7 @@ const StatCard = ({
   title,
   value,
   subtitle,
-  color = '#6a0dad'
+  color = '#4A6FA5', // Default to blue card color
 }: {
   title: string;
   value: string | number;
@@ -35,7 +35,7 @@ const RecentActivityItem = ({
   type,
   title,
   subtitle,
-  time
+  time,
 }: {
   type: 'lead' | 'chat';
   title: string;
@@ -43,13 +43,22 @@ const RecentActivityItem = ({
   time: string;
 }) => (
   <View style={styles.activityItem}>
-    <View style={[styles.activityIcon, type === 'lead' ? styles.leadActivityIcon : styles.chatActivityIcon]}>
-      <Text style={styles.activityIconText}>{type === 'lead' ? '👤' : '💬'}</Text>
+    <View
+      style={[
+        styles.activityIcon,
+        type === 'lead' ? styles.leadActivityIcon : styles.chatActivityIcon,
+      ]}
+    >
+      <Text style={styles.activityIconText}>
+        {type === 'lead' ? '👤' : '💬'}
+      </Text>
     </View>
     <View style={styles.activityContent}>
       <Text style={styles.activityTitle}>{title}</Text>
       <Text style={styles.activitySubtitle}>{subtitle}</Text>
-      <Text style={styles.activityTime}>{new Date(time).toLocaleDateString()}</Text>
+      <Text style={styles.activityTime}>
+        {new Date(time).toLocaleDateString()}
+      </Text>
     </View>
   </View>
 );
@@ -69,16 +78,16 @@ const DashboardScreen = () => {
       const [dashboardStats, profile, userProperties] = await Promise.all([
         apiService.getDashboardStats(),
         apiService.getProfile(),
-        apiService.getUserProperties({ page: 1, limit: 1 }) // Just get count
+        apiService.getUserProperties({ page: 1, limit: 1 }),
       ]);
 
       setStats(dashboardStats);
       setUser(profile.user);
       setUserPropertyCount(userProperties.pagination.total);
 
-      // Calculate qualified leads (MEDIUM + HIGH status)
-      const qualifiedCount = (dashboardStats.overall.leadsByStatus.MEDIUM || 0) +
-                            (dashboardStats.overall.leadsByStatus.HIGH || 0);
+      const qualifiedCount =
+        (dashboardStats.overall.leadsByStatus.MEDIUM || 0) +
+        (dashboardStats.overall.leadsByStatus.HIGH || 0);
       setQualifiedLeadsCount(qualifiedCount);
     } catch (error) {
       console.error('Error loading dashboard stats:', error);
@@ -123,7 +132,12 @@ const DashboardScreen = () => {
     <ScrollView
       style={styles.container}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor="#FFFFFF"
+          colors={['#FFFFFF']}
+        />
       }
     >
       <View style={styles.header}>
@@ -151,19 +165,19 @@ const DashboardScreen = () => {
             title="New Leads"
             value={stats.today.newLeads}
             subtitle="Today"
-            color="#4CAF50"
+            color="#4A6FA5" // Blue card
           />
           <StatCard
             title="Chat Messages"
             value={stats.today.chatMessages}
             subtitle="Today"
-            color="#2196F3"
+            color="#5D3FD3" // Purple card
           />
           <StatCard
             title="Total Leads"
             value={stats.today.totalLeads}
             subtitle="Today"
-            color="#FF9800"
+            color="#4A6FA5" // Blue card
           />
         </View>
       </View>
@@ -176,19 +190,23 @@ const DashboardScreen = () => {
             title="My Properties"
             value={userPropertyCount}
             subtitle="Listed"
-            color="#9C27B0"
+            color="#5D3FD3" // Purple card
           />
           <StatCard
             title="Qualified Leads"
             value={qualifiedLeadsCount}
             subtitle="Total"
-            color="#FF5722"
+            color="#4A6FA5" // Blue card
           />
           <StatCard
             title="Lead Follow-ups"
-            value={stats.recentActivity.leads.filter(lead => lead.followUpStatus === 'PENDING').length}
+            value={
+              stats.recentActivity.leads.filter(
+                lead => lead.followUpStatus === 'PENDING',
+              ).length
+            }
             subtitle="Pending"
-            color="#795548"
+            color="#5D3FD3" // Purple card
           />
         </View>
       </View>
@@ -201,19 +219,19 @@ const DashboardScreen = () => {
             title="Leads"
             value={stats.thisWeek.leads}
             subtitle="This week"
-            color="#9C27B0"
+            color="#5D3FD3"
           />
           <StatCard
             title="Properties"
             value={stats.thisWeek.properties}
             subtitle="Listed"
-            color="#607D8B"
+            color="#4A6FA5"
           />
           <StatCard
             title="Conversion"
             value={`${stats.thisWeek.conversion}%`}
             subtitle="Rate"
-            color="#795548"
+            color="#5D3FD3"
           />
         </View>
       </View>
@@ -226,19 +244,19 @@ const DashboardScreen = () => {
             title="Total Leads"
             value={stats.overall.totalLeads}
             subtitle="All time"
-            color="#F44336"
+            color="#4A6FA5"
           />
           <StatCard
             title="Properties"
             value={stats.overall.totalProperties}
             subtitle="Listed"
-            color="#3F51B5"
+            color="#5D3FD3"
           />
           <StatCard
             title="Conversion Rate"
             value={`${stats.overall.conversionRate}%`}
             subtitle="Qualified leads"
-            color="#009688"
+            color="#4A6FA5"
           />
         </View>
       </View>
@@ -247,21 +265,23 @@ const DashboardScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Lead Status Distribution</Text>
         <View style={styles.statusGrid}>
-          {Object.entries(stats.overall.leadsByStatus).map(([status, count]) => (
-            <View key={status} style={styles.statusItem}>
-              <Text style={styles.statusLabel}>
-                {status.replace('_', ' ').toLowerCase()}
-              </Text>
-              <Text style={styles.statusValue}>{count}</Text>
-            </View>
-          ))}
+          {Object.entries(stats.overall.leadsByStatus).map(
+            ([status, count]) => (
+              <View key={status} style={styles.statusItem}>
+                <Text style={styles.statusLabel}>
+                  {status.replace('_', ' ').toLowerCase()}
+                </Text>
+                <Text style={styles.statusValue}>{count}</Text>
+              </View>
+            ),
+          )}
         </View>
       </View>
 
       {/* Recent Activity */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Activity</Text>
-        {stats.recentActivity.leads.slice(0, 3).map((lead) => (
+        {stats.recentActivity.leads.slice(0, 3).map(lead => (
           <RecentActivityItem
             key={lead.id}
             type="lead"
@@ -270,12 +290,16 @@ const DashboardScreen = () => {
             time={lead.createdAt}
           />
         ))}
-        {stats.recentActivity.chats.slice(0, 2).map((chat) => (
+        {stats.recentActivity.chats.slice(0, 2).map(chat => (
           <RecentActivityItem
             key={chat.id}
             type="chat"
             title={`Chat with ${chat.telegramUserId}`}
-            subtitle={chat.message.length > 50 ? `${chat.message.substring(0, 50)}...` : chat.message}
+            subtitle={
+              chat.message.length > 50
+                ? `${chat.message.substring(0, 50)}...`
+                : chat.message
+            }
             time={chat.timestamp}
           />
         ))}
@@ -322,84 +346,93 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71', // Primary background
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   errorText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
     marginBottom: 20,
+    fontFamily: 'System',
   },
   retryButton: {
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#FF69B4', // Accent pink
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 5,
+    borderRadius: 8,
   },
   retryButtonText: {
-    color: 'white',
+    color: '#1A1F71',
     fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'System',
   },
   header: {
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
     padding: 20,
     paddingTop: 40,
+    paddingBottom: 24,
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '800',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   headerSubtitle: {
-    fontSize: 16,
-    color: '#aaa',
+    fontSize: 15,
+    color: '#A0C4E4', // Light desaturated blue
+    fontFamily: 'System',
   },
   profileButton: {
-    padding: 5,
+    padding: 4,
   },
   profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#6a0dad',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#5D3FD3', // Deep purple
     justifyContent: 'center',
     alignItems: 'center',
   },
   profilePicText: {
     fontSize: 18,
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   section: {
-    margin: 15,
-    marginBottom: 0,
+    marginHorizontal: 16,
+    marginVertical: 12,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 14,
+    fontFamily: 'System',
   },
   statsGrid: {
     flexDirection: 'row',
@@ -407,103 +440,113 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   statCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    width: '31%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent white
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    width: '31.3%',
     borderLeftWidth: 4,
-    shadowColor: '#000',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 2,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
+    fontFamily: 'System',
   },
   statTitle: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 11,
+    color: '#A0C4E4',
     textTransform: 'uppercase',
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    fontFamily: 'System',
   },
   statSubtitle: {
     fontSize: 10,
-    color: '#999',
-    marginTop: 2,
+    color: '#FF69B4', // Accent pink
+    marginTop: 3,
+    fontFamily: 'System',
   },
   statusGrid: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    shadowColor: '#000',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 2,
   },
   statusItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   statusLabel: {
     fontSize: 14,
-    color: '#333',
+    color: '#A0C4E4',
     textTransform: 'capitalize',
+    fontFamily: 'System',
   },
   statusValue: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6a0dad',
+    fontWeight: '700',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   activityItem: {
     flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    shadowColor: '#000',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 2,
   },
   activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 14,
   },
   activityIconText: {
-    fontSize: 18,
+    fontSize: 20,
+    color: '#FFFFFF',
   },
   activityContent: {
     flex: 1,
   },
   activityTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 2,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 3,
+    fontFamily: 'System',
   },
   activitySubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
+    fontSize: 13,
+    color: '#A0C4E4',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   activityTime: {
     fontSize: 12,
-    color: '#999',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -511,33 +554,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   actionButton: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
+    backgroundColor: 'rgba(108, 74, 182, 0.3)', // #6C4AB6 semi-transparent
+    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 8,
     width: '48%',
     alignItems: 'center',
-    marginBottom: 10,
-    shadowColor: '#000',
+    marginBottom: 12,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 2,
   },
   actionIcon: {
-    fontSize: 30,
-    marginBottom: 10,
+    fontSize: 28,
+    marginBottom: 8,
+    color: '#FFFFFF',
   },
   actionText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#333',
+    color: '#FFFFFF',
     textAlign: 'center',
+    fontFamily: 'System',
   },
   leadActivityIcon: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4A6FA5',
   },
   chatActivityIcon: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#5D3FD3',
   },
 });
 

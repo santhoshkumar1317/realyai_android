@@ -6,29 +6,31 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  // ActivityIndicator,
+  Image,
+  Modal,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
 import { apiService, User } from '../utils/api';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { ActionSheetIOS } from 'react-native';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const { logoutUser } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  // const [subscription, setSubscription] = useState<any>(null);
-  // const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     loadProfile();
-    // loadSubscription(); // Commented out subscription loading
   }, []);
 
   const loadProfile = async () => {
     try {
       const profile = await apiService.getProfile();
-      console.log('Profile loaded:', profile);
       setUser(profile.user);
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -37,19 +39,6 @@ const ProfileScreen = () => {
       setLoading(false);
     }
   };
-
-  // const loadSubscription = async () => {
-  //   try {
-  //     setSubscriptionLoading(true);
-  //     const subscriptionData = await apiService.getUserSubscription();
-  //     setSubscription(subscriptionData.subscription);
-  //   } catch (error) {
-  //     console.error('Error loading subscription:', error);
-  //     // Don't show error alert for subscription - it's optional
-  //   } finally {
-  //     setSubscriptionLoading(false);
-  //   }
-  // };
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -60,7 +49,6 @@ const ProfileScreen = () => {
         onPress: async () => {
           try {
             await logoutUser();
-            // Navigate to login - this would be handled by auth context
           } catch (error) {
             console.error('Error logging out:', error);
           }
@@ -69,16 +57,121 @@ const ProfileScreen = () => {
     ]);
   };
 
+  const handleAvatarPress = () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: user?.profileImage ? ['View Image', 'Change Image', 'Cancel'] : ['Add Image', 'Cancel'],
+          cancelButtonIndex: user?.profileImage ? 2 : 1,
+          destructiveButtonIndex: undefined,
+        },
+        (buttonIndex) => {
+          if (user?.profileImage) {
+            if (buttonIndex === 0) {
+              setShowImageModal(true);
+            } else if (buttonIndex === 1) {
+              handleImagePick();
+            }
+          } else {
+            if (buttonIndex === 0) {
+              handleImagePick();
+            }
+          }
+        }
+      );
+    } else {
+      // For Android, show Alert with options
+      const options = user?.profileImage
+        ? ['View Image', 'Change Image', 'Cancel']
+        : ['Add Image', 'Cancel'];
+
+      Alert.alert(
+        'Profile Image',
+        'Choose an action',
+        options.map((option, index) => ({
+          text: option,
+          onPress: () => {
+            if (user?.profileImage) {
+              if (index === 0) setShowImageModal(true);
+              else if (index === 1) handleImagePick();
+            } else {
+              if (index === 0) handleImagePick();
+            }
+          },
+          style: option === 'Cancel' ? 'cancel' : 'default',
+        }))
+      );
+    }
+  };
+
+  const handleImagePick = async () => {
+    const options = {
+      mediaType: 'photo' as const,
+      includeBase64: true,
+      maxHeight: 800,
+      maxWidth: 800,
+      quality: 0.8 as any,
+    };
+
+    launchImageLibrary(options, async (response) => {
+      if (response.didCancel) {
+        return;
+      }
+
+      if (response.errorMessage) {
+        Alert.alert('Error', 'Failed to pick image');
+        return;
+      }
+
+      if (response.assets && response.assets[0]) {
+        const asset = response.assets[0];
+        setUploadingImage(true);
+
+        try {
+          let base64Data = asset.base64;
+
+          // If no base64, try to convert from URI
+          if (!base64Data && asset.uri) {
+            // For React Native, we can use the asset.uri directly
+            // In a real implementation, you might want to use a library like react-native-image-resizer
+            base64Data = asset.uri;
+          }
+
+          if (!base64Data) {
+            Alert.alert('Error', 'Failed to process image');
+            return;
+          }
+
+          const updateData = {
+            profileImage: base64Data.startsWith('data:') ? base64Data : `data:${asset.type};base64,${base64Data}`,
+          };
+
+          await apiService.updateProfile(updateData as any);
+          setUser(prev => (prev ? { ...prev, ...updateData } : null));
+          Alert.alert('Success', 'Profile image updated successfully');
+        } catch (error) {
+          console.error('Error updating profile image:', error);
+          Alert.alert('Error', 'Failed to update profile image');
+        } finally {
+          setUploadingImage(false);
+        }
+      }
+    });
+  };
+
   const toggleBotStatus = async (botType: 'telegram' | 'whatsapp') => {
     if (!user) return;
 
-    const currentStatus = botType === 'telegram' ? user.telegramBotActive : user.whatsappBotActive;
+    const currentStatus =
+      botType === 'telegram' ? user.telegramBotActive : user.whatsappBotActive;
     const newStatus = !currentStatus;
     const botName = botType === 'telegram' ? 'Telegram Bot' : 'WhatsApp Bot';
 
     Alert.alert(
       `Toggle ${botName}`,
-      `Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} the ${botName}?`,
+      `Are you sure you want to ${
+        newStatus ? 'activate' : 'deactivate'
+      } the ${botName}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -87,22 +180,26 @@ const ProfileScreen = () => {
           onPress: async () => {
             try {
               const updateData = {
-                [botType === 'telegram' ? 'telegramBotActive' : 'whatsappBotActive']: newStatus,
+                [botType === 'telegram'
+                  ? 'telegramBotActive'
+                  : 'whatsappBotActive']: newStatus,
               };
 
               await apiService.updateProfile(updateData);
-
-              // Update local state
-              setUser(prev => prev ? { ...prev, ...updateData } : null);
-
-              Alert.alert('Success', `${botName} ${newStatus ? 'activated' : 'deactivated'} successfully`);
+              setUser(prev => (prev ? { ...prev, ...updateData } : null));
+              Alert.alert(
+                'Success',
+                `${botName} ${
+                  newStatus ? 'activated' : 'deactivated'
+                } successfully`,
+              );
             } catch (error) {
               console.error(`Error toggling ${botType} bot status:`, error);
               Alert.alert('Error', `Failed to update ${botName} status`);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -117,14 +214,50 @@ const ProfileScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.email?.charAt(0).toUpperCase() || 'U'}
-          </Text>
-        </View>
+        <TouchableOpacity style={styles.avatarContainer} onPress={handleAvatarPress} disabled={uploadingImage}>
+          {user?.profileImage ? (
+            <Image source={{ uri: user.profileImage }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
+              </Text>
+            </View>
+          )}
+          {uploadingImage && (
+            <View style={styles.uploadingOverlay}>
+              <Text style={styles.uploadingText}>Uploading...</Text>
+            </View>
+          )}
+        </TouchableOpacity>
         <Text style={styles.username}>{user?.username}</Text>
         <Text style={styles.company}>{user?.companyName}</Text>
       </View>
+
+      <Modal
+        visible={showImageModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowImageModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setShowImageModal(false)}
+          >
+            <View style={styles.modalContent}>
+              {user?.profileImage && (
+                <Image
+                  source={{ uri: user.profileImage }}
+                  style={styles.modalImage}
+                  resizeMode="contain"
+                />
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
+      </Modal>
 
       <View style={styles.content}>
         <View style={styles.section}>
@@ -217,46 +350,6 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Subscription</Text>
-          {subscriptionLoading ? (
-            <View style={styles.subscriptionLoading}>
-              <ActivityIndicator size="small" color="#6a0dad" />
-              <Text style={styles.loadingText}>Loading subscription...</Text>
-            </View>
-          ) : subscription ? (
-            <View style={styles.subscriptionContainer}>
-              <View style={styles.subscriptionInfo}>
-                <Text style={styles.subscriptionPlan}>
-                  {subscription.subscriptionPlan?.name || 'Unknown Plan'}
-                </Text>
-                <Text style={styles.subscriptionStatus}>
-                  Status: {subscription.status}
-                </Text>
-                <Text style={styles.subscriptionDates}>
-                  Valid until: {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={styles.viewSubscriptionButton}
-                onPress={() => (navigation as any).navigate('SubscriptionDetails', { subscription })}
-              >
-                <Text style={styles.viewSubscriptionText}>View Details</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.noSubscriptionContainer}>
-              <Text style={styles.noSubscriptionText}>No active subscription</Text>
-              <TouchableOpacity
-                style={styles.upgradeButton}
-                onPress={() => (navigation as any).navigate('SubscriptionPlans')}
-              >
-                <Text style={styles.upgradeButtonText}>View Plans</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View> */}
-
         <View style={styles.actions}>
           <TouchableOpacity
             style={styles.actionButton}
@@ -282,202 +375,224 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   header: {
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
     padding: 30,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: 15,
   },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#5D3FD3',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  plusIconContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#5D3FD3',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  uploadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  uploadingText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+    fontFamily: 'System',
   },
   avatarText: {
     fontSize: 32,
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '800',
+    fontFamily: 'System',
   },
   username: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 5,
+    fontFamily: 'System',
   },
   company: {
     fontSize: 16,
-    color: '#aaa',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   content: {
-    padding: 15,
+    padding: 16,
   },
   section: {
-    backgroundColor: 'white',
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
     padding: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 16,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 15,
+    fontFamily: 'System',
   },
   infoItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   label: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
     fontWeight: '600',
+    fontFamily: 'System',
   },
   value: {
     fontSize: 14,
-    color: '#333',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   actions: {
-    marginTop: 20,
+    marginTop: 24,
   },
   actionButton: {
-    backgroundColor: '#6a0dad',
-    paddingVertical: 15,
+    backgroundColor: '#5D3FD3',
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 12,
+    marginBottom: 12,
     alignItems: 'center',
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   actionButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   logoutButton: {
-    backgroundColor: '#f44336',
+    backgroundColor: '#ef4444',
   },
   logoutButtonText: {
-    color: 'white',
-  },
-  botStatusValue: {
-    fontSize: 14,
-    color: '#4CAF50',
+    color: '#FFFFFF',
   },
   addressContainer: {
-    backgroundColor: '#f9f9f9',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    padding: 16,
+    borderRadius: 12,
   },
   addressLine: {
     fontSize: 14,
-    color: '#333',
-    marginBottom: 2,
+    color: '#FFFFFF',
+    marginBottom: 4,
+    fontFamily: 'System',
   },
   noAddressText: {
     fontSize: 14,
-    color: '#999',
+    color: '#A0C4E4',
     fontStyle: 'italic',
     textAlign: 'center',
     padding: 20,
+    fontFamily: 'System',
   },
   activeStatus: {
     fontSize: 14,
-    color: '#4CAF50',
-    fontWeight: 'bold',
+    color: '#10b981',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   inactiveStatus: {
     fontSize: 14,
-    color: '#F44336',
-    fontWeight: 'bold',
+    color: '#ef4444',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   statusContainer: {
     alignItems: 'flex-end',
   },
   tapHint: {
     fontSize: 10,
-    color: '#999',
+    color: '#94a3b8',
     marginTop: 2,
+    fontFamily: 'System',
   },
-  subscriptionLoading: {
-    alignItems: 'center',
-    padding: 20,
-  },
-  subscriptionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  subscriptionInfo: {
+  modalContainer: {
     flex: 1,
-  },
-  subscriptionPlan: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6a0dad',
-    marginBottom: 5,
-  },
-  subscriptionStatus: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 2,
-  },
-  subscriptionDates: {
-    fontSize: 12,
-    color: '#666',
-  },
-  viewSubscriptionButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  viewSubscriptionText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  noSubscriptionContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 20,
+    maxWidth: '90%',
+    maxHeight: '80%',
   },
-  noSubscriptionText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 15,
-  },
-  upgradeButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+  modalImage: {
+    width: 300,
+    height: 300,
     borderRadius: 8,
-  },
-  upgradeButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
   },
 });
 

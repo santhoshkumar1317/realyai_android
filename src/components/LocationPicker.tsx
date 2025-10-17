@@ -25,7 +25,7 @@ interface LocationData {
   latitude: number;
   longitude: number;
   formattedAddress?: string;
-  address?: string; // Keep for backward compatibility
+  address?: string;
 }
 
 interface PincodeResponse {
@@ -57,21 +57,15 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     'pincode' | 'select_area' | 'confirm_area' | 'mark_location' | 'street_name'
   >('pincode');
   const [pincode, setPincode] = useState('');
-  const [pincodeData, setPincodeData] = useState<
-    PincodeResponse['data'][0] | null
-  >(null);
-  const [pincodeOptions, setPincodeOptions] = useState<PincodeResponse['data']>(
-    [],
-  );
-  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(
-    null,
-  );
+  const [pincodeData, setPincodeData] = useState<PincodeResponse['data'][0] | null>(null);
+  const [pincodeOptions, setPincodeOptions] = useState<PincodeResponse['data']>([]);
+  const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
   const [streetName, setStreetName] = useState('');
 
   const [currentLocation, setCurrentLocation] = useState<{
     latitude: number;
     longitude: number;
-  } | null>({ latitude: 28.6139, longitude: 77.209 }); // Default to Delhi coordinates
+  } | null>({ latitude: 28.6139, longitude: 77.209 });
 
   const [loading, setLoading] = useState(false);
   const [tempMarkerPosition, setTempMarkerPosition] = useState<{
@@ -80,13 +74,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   } | null>(null);
   const mapRef = useRef<MapView>(null);
 
-  // Google Maps API key
   const GOOGLE_MAPS_API_KEY = 'AIzaSyC5lPB8YYytrDqkUbux__gKKaXtZIK6KKM';
 
-  // Pincode API call
-  const fetchPincodeDetails = async (
-    pincodeParam: string,
-  ): Promise<PincodeResponse | null> => {
+  const fetchPincodeDetails = async (pincodeParam: string): Promise<PincodeResponse | null> => {
     try {
       const data = await apiService.getPincodeDetails(pincodeParam);
       return data as PincodeResponse;
@@ -103,8 +93,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
             title: 'Location Permission',
-            message:
-              'This app needs access to your location to show your current position on the map.',
+            message: 'This app needs access to your location to show your current position on the map.',
             buttonNeutral: 'Ask Me Later',
             buttonNegative: 'Cancel',
             buttonPositive: 'OK',
@@ -123,21 +112,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   }, []);
 
-  // Request GPS permission only when entering map step
   useEffect(() => {
     if (currentStep === 'mark_location') {
       requestLocationPermission();
     }
   }, [currentStep, requestLocationPermission]);
 
-  // Animate map to geocoded location
   useEffect(() => {
     if (currentLocation && currentStep === 'mark_location' && mapRef.current) {
-      console.log('Animating map to region:', {
-        ...currentLocation,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1,
-      });
       mapRef.current.animateToRegion(
         {
           ...currentLocation,
@@ -149,70 +131,53 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   }, [currentLocation, currentStep]);
 
-  // Safety check for map rendering
   const renderMap = () => {
-    try {
-      if (!currentLocation) {
-        return (
-          <View style={styles.mapPlaceholder}>
-            <Text style={styles.mapPlaceholderText}>Loading map...</Text>
-            <ActivityIndicator size="large" color="#6a0dad" />
-          </View>
-        );
-      }
-
-      return (
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          initialRegion={{
-            latitude: currentLocation.latitude,
-            longitude: currentLocation.longitude,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
-          }}
-          onPress={handleMapPress}
-          showsUserLocation={true}
-          showsMyLocationButton={false}
-          mapType="standard"
-        >
-          {(tempMarkerPosition || selectedLocation) && (
-            <Marker
-              coordinate={
-                tempMarkerPosition || {
-                  latitude: selectedLocation!.latitude,
-                  longitude: selectedLocation!.longitude,
-                }
-              }
-              title="Selected Location"
-              description={selectedLocation?.address || 'Location selected'}
-              draggable={false}
-              onDragEnd={handleMarkerDrag}
-            />
-          )}
-        </MapView>
-      );
-    } catch (error) {
-      console.error('Map rendering error:', error);
+    if (!currentLocation) {
       return (
         <View style={styles.mapPlaceholder}>
-          <Text style={styles.mapPlaceholderText}>Map unavailable</Text>
-          <Text style={styles.mapPlaceholderText}>
-            Please check your connection
-          </Text>
+          <Text style={styles.mapPlaceholderText}>Loading map...</Text>
+          <ActivityIndicator size="large" color="#5D3FD3" />
         </View>
       );
     }
+
+    return (
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        initialRegion={{
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: 0.1,
+          longitudeDelta: 0.1,
+        }}
+        onPress={handleMapPress}
+        showsUserLocation={true}
+        showsMyLocationButton={false}
+        mapType="standard"
+      >
+        {(tempMarkerPosition || selectedLocation) && (
+          <Marker
+            coordinate={
+              tempMarkerPosition || {
+                latitude: selectedLocation!.latitude,
+                longitude: selectedLocation!.longitude,
+              }
+            }
+            title="Selected Location"
+            description={selectedLocation?.address || 'Location selected'}
+            draggable={false}
+            onDragEnd={handleMarkerDrag}
+          />
+        )}
+      </MapView>
+    );
   };
 
   const getCurrentLocation = () => {
-    // Just request GPS permission for showing user location on map
-    // Don't override the geocoded area location
     Geolocation.getCurrentPosition(
       _position => {
-        console.log(
-          'GPS permission granted - user location will be shown on map',
-        );
+        console.log('GPS permission granted');
       },
       error => {
         console.log('GPS permission denied or error:', error);
@@ -235,17 +200,10 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       setPincodeOptions(data.data);
 
       if (data.data.length === 1) {
-        // Only one area, use coordinates if available, otherwise geocode
         const selectedArea = data.data[0];
         setPincodeData(selectedArea);
 
-        // Check if pincode data has coordinates
         if (selectedArea.latitude && selectedArea.longitude) {
-          console.log(
-            'Using coordinates from pincode data:',
-            selectedArea.latitude,
-            selectedArea.longitude,
-          );
           setCurrentLocation({
             latitude: selectedArea.latitude,
             longitude: selectedArea.longitude,
@@ -255,54 +213,35 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             longitude: selectedArea.longitude,
           });
         } else {
-          // Geocode the area for map centering
           try {
             const searchQuery = `${selectedArea.area}, ${selectedArea.city}, ${selectedArea.state} ${pincode}, India`;
-            console.log('Geocoding search query:', searchQuery);
             const geocodeResponse = await fetch(
-              `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-                searchQuery,
-              )}&key=${GOOGLE_MAPS_API_KEY}`,
+              `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery)}&key=${GOOGLE_MAPS_API_KEY}`,
             );
 
             if (geocodeResponse.ok) {
               const geocodeData = await geocodeResponse.json();
-              console.log('Geocode response:', geocodeData);
               if (geocodeData.results && geocodeData.results.length > 0) {
                 const location = geocodeData.results[0].geometry.location;
-                console.log('Setting current location to:', location);
-                setCurrentLocation({
-                  latitude: location.lat,
-                  longitude: location.lng,
-                });
-                setTempMarkerPosition({
-                  latitude: location.lat,
-                  longitude: location.lng,
-                });
+                setCurrentLocation({ latitude: location.lat, longitude: location.lng });
+                setTempMarkerPosition({ latitude: location.lat, longitude: location.lng });
               } else {
-                console.log('No geocode results, keeping default location');
-                // Keep the default Delhi coordinates already set
                 setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
               }
             } else {
-              console.log('Geocode API error, keeping default location');
-              // Keep the default Delhi coordinates already set
               setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
             }
           } catch (error) {
             console.error('Geocoding error:', error);
-            // Keep the default Delhi coordinates already set
             setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
           }
         }
         setCurrentStep('confirm_area');
       } else {
-        // Multiple areas, let user choose
         setCurrentStep('select_area');
       }
     } else {
       Alert.alert('Error', 'Invalid pincode or no data found');
-      // Clear pincode to allow user to re-enter
       setPincode('');
     }
   }, [pincode]);
@@ -311,13 +250,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     setPincodeData(selectedArea);
     setLoading(true);
 
-    // Check if pincode data has coordinates
     if (selectedArea.latitude && selectedArea.longitude) {
-      console.log(
-        'Using coordinates from pincode data (area select):',
-        selectedArea.latitude,
-        selectedArea.longitude,
-      );
       setCurrentLocation({
         latitude: selectedArea.latitude,
         longitude: selectedArea.longitude,
@@ -328,47 +261,25 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       });
     } else {
       try {
-        // Geocode the selected area + city + pincode for map centering
         const searchQuery = `${selectedArea.area}, ${selectedArea.city}, ${selectedArea.state} ${pincode}, India`;
-        console.log('Geocoding search query (area select):', searchQuery);
         const geocodeResponse = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-            searchQuery,
-          )}&key=${GOOGLE_MAPS_API_KEY}`,
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery)}&key=${GOOGLE_MAPS_API_KEY}`,
         );
 
         if (geocodeResponse.ok) {
           const geocodeData = await geocodeResponse.json();
-          console.log('Geocode response (area select):', geocodeData);
           if (geocodeData.results && geocodeData.results.length > 0) {
             const location = geocodeData.results[0].geometry.location;
-            console.log('Setting current location to (area select):', location);
-            setCurrentLocation({
-              latitude: location.lat,
-              longitude: location.lng,
-            });
-            // Set initial marker position
-            setTempMarkerPosition({
-              latitude: location.lat,
-              longitude: location.lng,
-            });
+            setCurrentLocation({ latitude: location.lat, longitude: location.lng });
+            setTempMarkerPosition({ latitude: location.lat, longitude: location.lng });
           } else {
-            // Fallback if no results
-            console.log(
-              'No geocode results (area select), keeping default location',
-            );
             setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
           }
         } else {
-          // Fallback if API error
-          console.log(
-            'Geocode API error (area select), keeping default location',
-          );
           setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
         }
       } catch (error) {
         console.error('Geocoding error:', error);
-        // Keep default location
         setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
       }
     }
@@ -376,13 +287,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     setCurrentStep('confirm_area');
   };
 
-  // Auto-search when pincode reaches 6 digits
   useEffect(() => {
     if (pincode.length === 6 && currentStep === 'pincode' && !loading) {
       const timer = setTimeout(() => {
         handlePincodeSubmit();
-      }, 500); // Small delay to prevent rapid requests
-
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [pincode, currentStep, loading, handlePincodeSubmit]);
@@ -390,14 +299,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const handleConfirmArea = async () => {
     if (pincodeData) {
       setLoading(true);
-
-      // Check if pincode data has coordinates
       if (pincodeData.latitude && pincodeData.longitude) {
-        console.log(
-          'Using coordinates from pincode data (confirm area):',
-          pincodeData.latitude,
-          pincodeData.longitude,
-        );
         setCurrentLocation({
           latitude: pincodeData.latitude,
           longitude: pincodeData.longitude,
@@ -408,50 +310,25 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         });
       } else {
         try {
-          // Geocode the area + city + pincode to get coordinates for map centering
           const searchQuery = `${pincodeData.area}, ${pincodeData.city}, ${pincodeData.state} ${pincode}, India`;
-          console.log('Geocoding search query (confirm area):', searchQuery);
           const geocodeResponse = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-              searchQuery,
-            )}&key=${GOOGLE_MAPS_API_KEY}`,
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery)}&key=${GOOGLE_MAPS_API_KEY}`,
           );
 
           if (geocodeResponse.ok) {
             const geocodeData = await geocodeResponse.json();
-            console.log('Geocode response (confirm area):', geocodeData);
             if (geocodeData.results && geocodeData.results.length > 0) {
               const location = geocodeData.results[0].geometry.location;
-              console.log(
-                'Setting current location to (confirm area):',
-                location,
-              );
-              setCurrentLocation({
-                latitude: location.lat,
-                longitude: location.lng,
-              });
-              // Set initial marker position
-              setTempMarkerPosition({
-                latitude: location.lat,
-                longitude: location.lng,
-              });
+              setCurrentLocation({ latitude: location.lat, longitude: location.lng });
+              setTempMarkerPosition({ latitude: location.lat, longitude: location.lng });
             } else {
-              // Fallback if no results
-              console.log(
-                'No geocode results (confirm area), keeping default location',
-              );
               setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
             }
           } else {
-            // Fallback if API error
-            console.log(
-              'Geocode API error (confirm area), keeping default location',
-            );
             setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
           }
         } catch (error) {
           console.error('Geocoding error:', error);
-          // Keep default location
           setTempMarkerPosition({ latitude: 28.6139, longitude: 77.209 });
         }
       }
@@ -462,11 +339,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
   const handleLocationMarked = () => {
     if (tempMarkerPosition) {
-      const formattedAddress = `${pincodeData?.area || ''}, ${
-        pincodeData?.city || ''
-      }, ${pincodeData?.state || ''} ${pincode}, ${
-        pincodeData?.country || 'India'
-      }`;
+      const formattedAddress = `${pincodeData?.area || ''}, ${pincodeData?.city || ''}, ${pincodeData?.state || ''} ${pincode}, ${pincodeData?.country || 'India'}`;
       setSelectedLocation({
         street: '',
         area: pincodeData?.area || '',
@@ -494,7 +367,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       const finalLocation: LocationData = {
         ...selectedLocation,
         street: streetName,
-        address: formattedAddress, // Required by backend
+        address: formattedAddress,
         formattedAddress,
       };
       onLocationSelect(finalLocation);
@@ -516,11 +389,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const handleMapPress = (event: any) => {
     const { coordinate } = event.nativeEvent;
     if (!coordinate) return;
-
     const { latitude, longitude } = coordinate;
-    console.log('Map pressed at:', latitude, longitude);
-
-    // Set the temporary marker position
     setTempMarkerPosition({ latitude, longitude });
   };
 
@@ -533,62 +402,40 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     <View style={styles.container}>
       {/* Step Indicator */}
       <View style={styles.stepIndicator}>
-        <Text
-          style={[
-            styles.stepText,
-            currentStep === 'pincode' && styles.activeStep,
-          ]}
-        >
-          PINCode
-        </Text>
+        <Text style={[styles.stepText, currentStep === 'pincode' && styles.activeStep]}>PINCode</Text>
         <Text style={styles.stepArrow}>→</Text>
         <Text
           style={[
             styles.stepText,
-            (currentStep === 'select_area' || currentStep === 'confirm_area') &&
-              styles.activeStep,
+            (currentStep === 'select_area' || currentStep === 'confirm_area') && styles.activeStep,
           ]}
         >
           Select Area
         </Text>
         <Text style={styles.stepArrow}>→</Text>
-        <Text
-          style={[
-            styles.stepText,
-            currentStep === 'mark_location' && styles.activeStep,
-          ]}
-        >
-          Mark Location
-        </Text>
+        <Text style={[styles.stepText, currentStep === 'mark_location' && styles.activeStep]}>Mark Location</Text>
         <Text style={styles.stepArrow}>→</Text>
-        <Text
-          style={[
-            styles.stepText,
-            currentStep === 'street_name' && styles.activeStep,
-          ]}
-        >
-          Street Name
-        </Text>
+        <Text style={[styles.stepText, currentStep === 'street_name' && styles.activeStep]}>Street Name</Text>
       </View>
 
       {/* Step Content */}
       {currentStep === 'pincode' && (
         <View style={styles.stepContainer}>
           <Text style={styles.stepTitle}>Enter PIN Code</Text>
-          <Text style={styles.stepDescription}>
-            Enter the 6-digit PIN code to find your area details
-          </Text>
+          <Text style={styles.stepDescription}>Enter the 6-digit PIN code to find your area details</Text>
           <TextInput
             style={styles.pincodeInput}
             value={pincode}
             onChangeText={setPincode}
             placeholder="Enter PIN code (e.g., 400001)"
+            placeholderTextColor="#A0C4E4"
             keyboardType="numeric"
             maxLength={6}
+            selectionColor="#FFFFFF"
           />
           {loading && (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#6a0dad" />
+              <ActivityIndicator size="small" color="#5D3FD3" />
               <Text style={styles.loadingText}>Searching...</Text>
             </View>
           )}
@@ -599,8 +446,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         <View style={styles.stepContainer}>
           <Text style={styles.stepTitle}>Select Your Area</Text>
           <Text style={styles.stepDescription}>
-            Multiple areas found for PIN code {pincode}. Please select your
-            specific area:
+            Multiple areas found for PIN code {pincode}. Please select your specific area:
           </Text>
 
           <FlatList
@@ -610,18 +456,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             showsVerticalScrollIndicator={true}
             initialNumToRender={2}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.areaOption}
-                onPress={() => handleAreaSelect(item)}
-              >
+              <TouchableOpacity style={styles.areaOption} onPress={() => handleAreaSelect(item)}>
                 <View style={styles.areaOptionContent}>
                   <Text style={styles.areaOptionTitle}>{item.area}</Text>
-                  <Text style={styles.areaOptionSubtitle}>
-                    {item.city}, {item.state}
-                  </Text>
-                  <Text style={styles.areaOptionDetails}>
-                    📮 {item.pincode} • {item.country}
-                  </Text>
+                  <Text style={styles.areaOptionSubtitle}>{item.city}, {item.state}</Text>
+                  <Text style={styles.areaOptionDetails}>📮 {item.pincode} • {item.country}</Text>
                 </View>
                 <Text style={styles.selectArrow}>›</Text>
               </TouchableOpacity>
@@ -643,19 +482,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             <Text style={styles.areaText}>📍 Area: {pincodeData.area}</Text>
             <Text style={styles.areaText}>🏙️ City: {pincodeData.city}</Text>
             <Text style={styles.areaText}>🏛️ State: {pincodeData.state}</Text>
-            <Text style={styles.areaText}>
-              🇮🇳 Country: {pincodeData.country}
-            </Text>
+            <Text style={styles.areaText}>🇮🇳 Country: {pincodeData.country}</Text>
             <Text style={styles.areaText}>📮 PIN: {pincode}</Text>
           </View>
           <View style={styles.stepActions}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.stepButton}
-              onPress={handleConfirmArea}
-            >
+            <TouchableOpacity style={styles.stepButton} onPress={handleConfirmArea}>
               <Text style={styles.stepButtonText}>Continue</Text>
             </TouchableOpacity>
           </View>
@@ -664,15 +498,13 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
       {currentStep === 'mark_location' && (
         <View style={styles.mapStepContainer}>
-          <Text style={styles.stepDescription}>
-            Tap on the map to mark your exact location
-          </Text>
+          <Text style={styles.stepDescription}>Tap on the map to mark your exact location</Text>
 
           <View style={styles.mapContainer}>
             {renderMap()}
             {loading && (
               <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="large" color="#6a0dad" />
+                <ActivityIndicator size="large" color="#5D3FD3" />
                 <Text style={styles.loadingText}>Loading map...</Text>
               </View>
             )}
@@ -683,10 +515,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.stepButton,
-                !tempMarkerPosition && styles.stepButtonDisabled,
-              ]}
+              style={[styles.stepButton, !tempMarkerPosition && styles.stepButtonDisabled]}
               onPress={handleLocationMarked}
               disabled={!tempMarkerPosition}
             >
@@ -701,18 +530,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       {currentStep === 'street_name' && selectedLocation && (
         <View style={styles.stepContainer}>
           <Text style={styles.stepTitle}>Enter Street Name</Text>
-          <Text style={styles.stepDescription}>
-            Enter the exact street name or address for precise location
-          </Text>
+          <Text style={styles.stepDescription}>Enter the exact street name or address for precise location</Text>
 
           <View style={styles.locationSummary}>
-            <Text style={styles.summaryText}>
-              📍 Coordinates: {selectedLocation.latitude.toFixed(6)},{' '}
-              {selectedLocation.longitude.toFixed(6)}
-            </Text>
-            <Text style={styles.summaryText}>
-              🏙️ Area: {selectedLocation.area}, {selectedLocation.city}
-            </Text>
+            <Text style={styles.summaryText}>📍 Coordinates: {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}</Text>
+            <Text style={styles.summaryText}>🏙️ Area: {selectedLocation.area}, {selectedLocation.city}</Text>
             <Text style={styles.summaryText}>📮 PIN: {pincode}</Text>
           </View>
 
@@ -721,6 +543,8 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             value={streetName}
             onChangeText={setStreetName}
             placeholder="Enter street name and number"
+            placeholderTextColor="#A0C4E4"
+            selectionColor="#FFFFFF"
           />
 
           <View style={styles.stepActions}>
@@ -728,14 +552,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.stepButton,
-                !streetName.trim() && styles.stepButtonDisabled,
-              ]}
+              style={[styles.stepButton, !streetName.trim() && styles.stepButtonDisabled]}
               onPress={handleStreetSubmit}
               disabled={!streetName.trim()}
             >
-              <Text style={styles.stepButtonText}>Complete </Text>
+              <Text style={styles.stepButtonText}>Complete</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -743,7 +564,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
       {loading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#6a0dad" />
+          <ActivityIndicator size="large" color="#5D3FD3" />
           <Text style={styles.loadingText}>Processing...</Text>
         </View>
       )}
@@ -754,30 +575,31 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   stepIndicator: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     marginBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   stepText: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#A0C4E4',
     fontWeight: '600',
+    fontFamily: 'System',
   },
   activeStep: {
-    color: '#2563eb',
+    color: '#5D3FD3',
     fontWeight: '700',
   },
   stepArrow: {
     fontSize: 16,
-    color: '#cbd5e1',
+    color: 'rgba(255,255,255,0.4)',
     marginHorizontal: 8,
   },
   stepContainer: {
@@ -787,48 +609,52 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
+    fontWeight: '800',
+    color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 12,
+    fontFamily: 'System',
   },
   stepDescription: {
     fontSize: 18,
-    color: '#6b7280',
+    color: '#A0C4E4',
     textAlign: 'center',
     marginBottom: 32,
+    fontFamily: 'System',
   },
   pincodeInput: {
     borderWidth: 2,
-    borderColor: '#2563eb',
+    borderColor: '#5D3FD3',
     borderRadius: 12,
     padding: 16,
     fontSize: 18,
     textAlign: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     marginBottom: 30,
     marginHorizontal: 20,
-    color: '#111827',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   areaDetails: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     borderRadius: 16,
     padding: 24,
     marginBottom: 30,
     marginHorizontal: 20,
-    shadowColor: '#000',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   areaText: {
     fontSize: 18,
-    color: '#1f2937',
+    color: '#FFFFFF',
     marginBottom: 12,
     fontWeight: '500',
+    fontFamily: 'System',
   },
   stepActions: {
     flexDirection: 'row',
@@ -837,31 +663,30 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   stepButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#5D3FD3',
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderRadius: 12,
     flex: 1,
     marginHorizontal: 8,
     alignItems: 'center',
-    shadowColor: '#2563eb',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
   stepButtonDisabled: {
-    backgroundColor: '#9ca3af',
-    shadowOpacity: 0,
-    elevation: 0,
+    backgroundColor: '#64748b',
   },
   stepButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'System',
   },
   backButton: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderRadius: 12,
@@ -869,78 +694,67 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#e2e8f0',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   backButtonText: {
-    color: '#374151',
+    color: '#A0C4E4',
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'System',
   },
   mapStepContainer: {
     flex: 1,
   },
   locationSummary: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
     marginHorizontal: 20,
-    shadowColor: '#000',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   summaryText: {
     fontSize: 16,
-    color: '#1f2937',
+    color: '#A0C4E4',
     marginBottom: 8,
     fontWeight: '500',
+    fontFamily: 'System',
   },
   streetInput: {
     borderWidth: 2,
-    borderColor: '#d1d5db',
+    borderColor: 'rgba(255,255,255,0.3)',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     marginBottom: 30,
     marginHorizontal: 20,
-    color: '#111827',
-  },
-  header: {
-    backgroundColor: '#1a0033',
-    padding: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#aaa',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   mapContainer: {
     flex: 1,
     position: 'relative',
-    height: 700, // Increased height for larger map display
+    height: 700,
     marginHorizontal: 10,
     marginVertical: 15,
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 10,
   },
   map: {
     flex: 1,
-    height: 700, // Explicit height for better map rendering
+    height: 700,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -948,345 +762,35 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: 'white',
+    color: '#FFFFFF',
     marginTop: 10,
     fontSize: 16,
-  },
-  controls: {
-    padding: 15,
-    backgroundColor: 'white',
-  },
-  currentLocationButton: {
-    backgroundColor: '#6a0dad',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  coordinatesDisplay: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  coordinatesText: {
-    fontSize: 12,
-    color: '#666',
-    fontFamily: 'monospace',
-  },
-  searchContainer: {
-    padding: 15,
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: 'white',
-  },
-  searchLoader: {
-    position: 'absolute',
-    right: 25,
-    top: 27,
-  },
-  resultsContainer: {
-    flex: 1,
-    paddingHorizontal: 15,
-  },
-  resultsList: {
-    flex: 1,
-  },
-  searchResult: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  resultTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  resultAddress: {
-    fontSize: 14,
-    color: '#666',
-  },
-  coordinatesLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#6a0dad',
-    marginBottom: 8,
-  },
-  locationTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  locationAddress: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 4,
-  },
-  locationDetails: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  locationCoords: {
-    fontSize: 11,
-    color: '#999',
-    fontFamily: 'monospace',
-  },
-  mapPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  mapPlaceholderText: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-  },
-  searchButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginLeft: 10,
-    justifyContent: 'center',
-  },
-  searchButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  controlButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    borderRadius: 8,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: 'center',
-  },
-  controlButtonActive: {
-    backgroundColor: '#4CAF50',
-  },
-  resetButton: {
-    backgroundColor: '#f44336',
-  },
-  confirmButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  confirmButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 6,
-  },
-  activeTab: {
-    backgroundColor: '#6a0dad',
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#666',
-    fontWeight: '500',
-  },
-  activeTabText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  contentContainer: {
-    flex: 1,
-  },
-  manualForm: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  submitManualButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  submitManualButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  mapTabContainer: {
-    flex: 1,
-  },
-  mapControls: {
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-  },
-  mapControlButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-  },
-  mapControlActive: {
-    backgroundColor: '#2196F3',
-  },
-  mapActions: {
-    padding: 20,
-  },
-  verificationContainer: {
-    backgroundColor: '#f9f9f9',
-    margin: 20,
-    borderRadius: 12,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-  verificationTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  verificationDetails: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-  },
-  detailItem: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  verificationActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  editButton: {
-    backgroundColor: '#ff9800',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    flex: 1,
-    marginRight: 10,
-    alignItems: 'center',
-  },
-  editButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  confirmFinalButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    flex: 1,
-    marginLeft: 10,
-    alignItems: 'center',
-  },
-  confirmFinalButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  confirmFinalButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: 'white',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  halfWidth: {
-    width: '48%',
+    fontFamily: 'System',
   },
   areaList: {
     flex: 1,
     marginTop: 20,
   },
   areaOption: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     borderRadius: 16,
     padding: 20,
     marginBottom: 12,
     marginHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   areaOptionContent: {
     flex: 1,
@@ -1294,21 +798,24 @@ const styles = StyleSheet.create({
   areaOptionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: '#FFFFFF',
     marginBottom: 6,
+    fontFamily: 'System',
   },
   areaOptionSubtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#A0C4E4',
     marginBottom: 4,
+    fontFamily: 'System',
   },
   areaOptionDetails: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: '#94a3b8',
+    fontFamily: 'System',
   },
   selectArrow: {
     fontSize: 24,
-    color: '#2563eb',
+    color: '#5D3FD3',
     fontWeight: '700',
   },
   loadingContainer: {
@@ -1316,6 +823,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
+  },
+  mapPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  mapPlaceholderText: {
+    fontSize: 16,
+    color: '#A0C4E4',
+    marginBottom: 20,
+    fontFamily: 'System',
   },
 });
 

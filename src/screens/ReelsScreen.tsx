@@ -19,28 +19,18 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import auth from '@react-native-firebase/auth';
 import Video from 'react-native-video';
 
-// Prepare video source - now supports URLs from backend
 const prepareVideoSource = (videoReel: VideoReel) => {
-  // Priority: videoUrl > videoData (base64 fallback)
   if (videoReel.videoUrl) {
-    console.log('Using video URL:', videoReel.videoUrl);
     return { uri: videoReel.videoUrl };
   }
-
-  // Fallback to base64 if no URL (for backward compatibility)
   if (videoReel.videoData) {
-    console.log('Using base64 fallback, length:', videoReel.videoData.length);
     return { uri: `data:video/mp4;base64,${videoReel.videoData}` };
   }
-
-  // Final fallback
-  console.log('No video data available, using test video');
   return {
     uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
   };
 };
 
-// Video Modal Component - Optimized for smooth playback
 const VideoModal = ({
   visible,
   videoReel,
@@ -56,7 +46,6 @@ const VideoModal = ({
 
   const handleVideoError = (error: any) => {
     console.error('Video playback error:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
     Alert.alert('Playback Error', `Unable to play video: ${error?.error?.localizedDescription || error?.message || 'Unknown error'}. Please try again.`);
   };
 
@@ -66,13 +55,9 @@ const VideoModal = ({
 
   const handleBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
     setBuffering(isBuffering);
-    console.log('Video buffering:', isBuffering);
   };
 
   const handleLoad = (loadData: any) => {
-    console.log('Video loaded successfully:', loadData);
-    console.log('Video duration:', loadData.duration);
-    console.log('Video dimensions:', loadData.naturalSize);
     setIsPlaying(true);
   };
 
@@ -105,7 +90,6 @@ const VideoModal = ({
             </TouchableOpacity>
           </View>
 
-          {/* Custom Controls */}
           <View style={styles.customControls}>
             <TouchableOpacity
               style={[styles.controlButton, !isPlaying && styles.controlButtonActive]}
@@ -123,23 +107,18 @@ const VideoModal = ({
                 ref={videoRef}
                 source={prepareVideoSource(videoReel)}
                 style={styles.modalVideoPlayer}
-                controls={true} // Enable controls to see if they appear
+                controls={true}
                 paused={!isPlaying}
                 onError={handleVideoError}
                 onEnd={handleVideoEnd}
                 onLoad={handleLoad}
                 onBuffer={handleBuffer}
-                onLoadStart={() => console.log('Video load started')}
-                onProgress={(progress) => console.log('Video progress:', progress)}
                 resizeMode="contain"
                 playInBackground={false}
                 playWhenInactive={false}
                 ignoreSilentSwitch="ignore"
                 volume={1.0}
                 rate={1.0}
-                // Prevent memory leaks
-                poster={undefined}
-                posterResizeMode="contain"
               />
               {buffering && (
                 <View style={styles.bufferingOverlay}>
@@ -158,7 +137,6 @@ const VideoModal = ({
   );
 };
 
-// Video Reel Card Component
 const VideoReelCard = ({
   videoReel,
   onPlayVideo,
@@ -168,16 +146,11 @@ const VideoReelCard = ({
 }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED':
-        return '#4CAF50';
-      case 'PROCESSING':
-        return '#FF9800';
-      case 'PENDING':
-        return '#2196F3';
-      case 'FAILED':
-        return '#F44336';
-      default:
-        return '#666';
+      case 'COMPLETED': return '#10b981';
+      case 'PROCESSING': return '#f59e0b';
+      case 'PENDING': return '#3b82f6';
+      case 'FAILED': return '#ef4444';
+      default: return '#94a3b8';
     }
   };
 
@@ -233,7 +206,7 @@ const VideoReelCard = ({
                 : '📷 Processing images...'}
             </Text>
             {videoReel.status === 'PROCESSING' && (
-              <ActivityIndicator size="small" color="#6a0dad" />
+              <ActivityIndicator size="small" color="#5D3FD3" />
             )}
           </View>
         )}
@@ -253,7 +226,6 @@ const VideoReelCard = ({
   );
 };
 
-// Upload Form Component
 const UploadForm = ({
   showUploadForm,
   setShowUploadForm,
@@ -322,8 +294,10 @@ const UploadForm = ({
             value={uploadPrompt}
             onChangeText={setUploadPrompt}
             placeholder="Describe the video you want to create..."
+            placeholderTextColor="#A0C4E4"
             multiline
             numberOfLines={3}
+            selectionColor="#FFFFFF"
           />
         </View>
 
@@ -388,7 +362,6 @@ const UploadForm = ({
   );
 };
 
-// Main ReelsScreen Component
 const ReelsScreen = () => {
   const [videoReels, setVideoReels] = useState<VideoReel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -397,9 +370,7 @@ const ReelsScreen = () => {
   const [uploadPrompt, setUploadPrompt] = useState('');
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedVideoReel, setSelectedVideoReel] = useState<VideoReel | null>(
-    null,
-  );
+  const [selectedVideoReel, setSelectedVideoReel] = useState<VideoReel | null>(null);
 
   const loadVideoReels = useCallback(async () => {
     try {
@@ -424,10 +395,7 @@ const ReelsScreen = () => {
 
   const handleUpload = async () => {
     if (selectedImages.length < 2 || !uploadPrompt.trim()) {
-      Alert.alert(
-        'Error',
-        'Please select at least 2 images and enter a prompt',
-      );
+      Alert.alert('Error', 'Please select at least 2 images and enter a prompt');
       return;
     }
 
@@ -448,21 +416,17 @@ const ReelsScreen = () => {
 
       await apiService.createVideoReel(videoReelData);
 
-      Alert.alert(
-        'Success',
-        'Video reel creation started! The video will be available in a few minutes.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setShowUploadForm(false);
-              setSelectedImages([]);
-              setUploadPrompt('');
-              loadVideoReels();
-            },
+      Alert.alert('Success', 'Video reel creation started! The video will be available in a few minutes.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            setShowUploadForm(false);
+            setSelectedImages([]);
+            setUploadPrompt('');
+            loadVideoReels();
           },
-        ],
-      );
+        },
+      ]);
     } catch (error) {
       console.error('Error creating video reel:', error);
       Alert.alert('Error', 'Failed to create video reel');
@@ -472,18 +436,12 @@ const ReelsScreen = () => {
   };
 
   const handlePlayVideo = (videoReel: VideoReel) => {
-    console.log('Playing video reel:', videoReel.id);
-    console.log('Video data length:', videoReel.videoData?.length);
-    console.log('Video data preview:', videoReel.videoData?.substring(0, 100));
-    console.log('Video format:', videoReel.videoFormat);
-    console.log('Video size:', videoReel.videoSize);
     setSelectedVideoReel(videoReel);
     setModalVisible(true);
   };
 
   const handleCloseModal = () => {
     setModalVisible(false);
-    // Delay clearing the selected reel to allow smooth modal close animation
     setTimeout(() => {
       setSelectedVideoReel(null);
     }, 300);
@@ -492,7 +450,7 @@ const ReelsScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6a0dad" />
+        <ActivityIndicator size="large" color="#5D3FD3" />
         <Text style={styles.loadingText}>Loading video reels...</Text>
       </View>
     );
@@ -530,10 +488,6 @@ const ReelsScreen = () => {
             )}
             keyExtractor={item => item.id}
             contentContainerStyle={styles.reelsList}
-            removeClippedSubviews={true}
-            maxToRenderPerBatch={5}
-            windowSize={5}
-            initialNumToRender={5}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>No video reels yet</Text>
@@ -558,141 +512,168 @@ const ReelsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '800',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   createButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+    backgroundColor: '#5D3FD3',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 20,
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   createButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   reelsList: {
-    padding: 15,
+    padding: 16,
   },
   reelCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   reelHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   reelPrompt: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     flex: 1,
     marginRight: 10,
+    fontFamily: 'System',
   },
   statusBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    fontSize: 10,
-    color: 'white',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontSize: 11,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    textTransform: 'capitalize',
+    fontFamily: 'System',
   },
   reelContent: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   videoContainer: {
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 12,
   },
   videoPlaceholder: {
     fontSize: 18,
     marginBottom: 15,
-    color: '#333',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   playButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    backgroundColor: '#5D3FD3',
+    paddingHorizontal: 22,
+    paddingVertical: 12,
     borderRadius: 25,
-    marginBottom: 10,
+    marginBottom: 12,
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   playButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   shareButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#3b82f6',
     paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 20,
   },
   shareButtonText: {
     color: 'white',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   processingContainer: {
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff3cd',
-    borderRadius: 8,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
   },
   processingText: {
     fontSize: 16,
-    color: '#856404',
+    color: '#f59e0b',
     marginBottom: 10,
+    fontFamily: 'System',
   },
   reelFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 10,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   reelDate: {
     fontSize: 12,
-    color: '#999',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   reelDuration: {
     fontSize: 12,
-    color: '#6a0dad',
-    fontWeight: 'bold',
+    color: '#FF69B4',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   emptyContainer: {
     flex: 1,
@@ -702,14 +683,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 10,
+    fontFamily: 'System',
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
   uploadForm: {
     flex: 1,
@@ -723,81 +706,88 @@ const styles = StyleSheet.create({
   },
   uploadTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 20,
     textAlign: 'center',
+    fontFamily: 'System',
   },
   promptInput: {
     marginBottom: 20,
   },
   inputLabel: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 10,
+    fontFamily: 'System',
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 12,
+    padding: 14,
     fontSize: 16,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
     textAlignVertical: 'top',
+    fontFamily: 'System',
   },
   imageUploadSection: {
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 15,
+    fontFamily: 'System',
   },
   imageStep: {
     marginBottom: 15,
   },
   stepLabel: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
     marginBottom: 8,
+    fontFamily: 'System',
   },
   imageSelectButton: {
     borderWidth: 2,
-    borderColor: '#ddd',
+    borderColor: 'rgba(255,255,255,0.3)',
     borderStyle: 'dashed',
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 20,
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   imageSelected: {
-    borderColor: '#6a0dad',
-    backgroundColor: '#f8f4ff',
+    borderColor: '#5D3FD3',
+    backgroundColor: 'rgba(93, 63, 211, 0.15)',
   },
   selectImageText: {
     fontSize: 16,
-    color: '#666',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   selectedImage: {
     width: 80,
     height: 80,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   uploadActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopWidth: 1,
-    borderTopColor: '#ddd',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   cancelButton: {
-    backgroundColor: '#f44336',
+    backgroundColor: '#ef4444',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 12,
     flex: 1,
     marginRight: 10,
     alignItems: 'center',
@@ -805,85 +795,86 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   uploadButton: {
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#5D3FD3',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 12,
     flex: 1,
     marginLeft: 10,
     alignItems: 'center',
   },
   uploadButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#64748b',
   },
   uploadButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
     width: '90%',
     maxWidth: 400,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
+    backgroundColor: '#1A1F71',
+    borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#2a2a2a',
+    padding: 16,
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderBottomWidth: 1,
-    borderBottomColor: '#3a3a3a',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   modalTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontWeight: '700',
+    color: '#FFFFFF',
     flex: 1,
     marginRight: 10,
+    fontFamily: 'System',
   },
   modalCloseButton: {
     padding: 5,
   },
   modalCloseText: {
     fontSize: 20,
-    color: '#ffffff',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   videoWrapper: {
     position: 'relative',
     width: '100%',
     height: 400,
-    backgroundColor: 'black',
+    backgroundColor: '#000',
   },
   modalVideoPlayer: {
     width: '100%',
     height: 400,
-    backgroundColor: 'black',
+    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingVideoText: {
-    color: 'white',
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
   noVideoText: {
-    color: 'white',
+    color: '#A0C4E4',
     textAlign: 'center',
     fontSize: 16,
+    fontFamily: 'System',
   },
   bufferingOverlay: {
     position: 'absolute',
@@ -893,28 +884,29 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   customControls: {
     flexDirection: 'row',
     justifyContent: 'center',
-    padding: 10,
-    backgroundColor: '#2a2a2a',
+    padding: 12,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   controlButton: {
-    backgroundColor: '#6a0dad',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    backgroundColor: '#5D3FD3',
+    paddingHorizontal: 22,
+    paddingVertical: 12,
     borderRadius: 25,
     marginHorizontal: 10,
   },
   controlButtonActive: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#10b981',
   },
   controlButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
 });
 

@@ -23,6 +23,7 @@ export interface User {
   };
   phoneNumber: string;
   email: string;
+  profileImage?: string;
   telegramBotActive?: boolean;
   whatsappBotActive?: boolean;
   createdAt: string;
@@ -65,7 +66,8 @@ export interface Property {
 
 export interface Lead {
   id: string;
-  telegramUserId: string;
+  telegramUserId?: string;
+  whatsappUserId?: string;
   name?: string;
   phoneNumber?: string;
   budget?: number;
@@ -476,6 +478,102 @@ class ApiService {
     return this.request(`/leads/${id}`);
   }
 
+  // Telegram Leads endpoints
+  async getTelegramLeads(params?: {
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ telegramLeads: Lead[]; pagination: any }> {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+    return this.request('/telegram/leads', { params });
+  }
+
+  async getTelegramLeadById(id: string): Promise<{ telegramLead: Lead }> {
+    return this.request(`/telegram/leads/${id}`);
+  }
+
+  // WhatsApp Leads endpoints
+  async getWhatsAppLeads(params?: {
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ whatsappLeads: Lead[]; pagination: any }> {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+    return this.request('/whatsapp/leads', { params });
+  }
+
+  async getWhatsAppLeadById(id: string): Promise<{ whatsappLead: Lead }> {
+    return this.request(`/whatsapp/leads/${id}`);
+  }
+
+  // Bot Configuration endpoints
+  async getBotConfigs(): Promise<{ botConfigs: any[] }> {
+    return this.request('/bot-configs');
+  }
+
+  async getBotConfigById(id: string): Promise<{ botConfig: any }> {
+    return this.request(`/bot-configs/${id}`);
+  }
+
+  async createBotConfig(configData: any): Promise<{ botConfig: any }> {
+    return this.request('/bot-configs', {
+      method: 'POST',
+      body: JSON.stringify(configData),
+    });
+  }
+
+  async updateBotConfig(id: string, updates: any): Promise<{ botConfig: any }> {
+    return this.request(`/bot-configs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async updateBotConfigStatus(
+    id: string,
+    isActive: boolean,
+    lastError?: string,
+  ): Promise<{ botConfig: any }> {
+    return this.request(`/bot-configs/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ isActive, lastError }),
+    });
+  }
+
+  async testBotConfig(
+    id: string,
+  ): Promise<{ botConfig: any; testResult: any }> {
+    return this.request(`/bot-configs/${id}/test`, {
+      method: 'POST',
+    });
+  }
+
+  async deleteBotConfig(id: string) {
+    return this.request(`/bot-configs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   async createLead(leadData: Partial<Lead>) {
     return this.request('/leads', {
       method: 'POST',
@@ -681,7 +779,7 @@ class ApiService {
   }): Promise<any> {
     // Send directly to Python server instead of our backend
     const PYTHON_SERVER_URL =
-      'https://realyai-video-generation-649104059255.europe-west1.run.app/generate-video';
+      'https://7df8bf7c210d.ngrok-free.app/generate-video';
 
     const response = await fetch(PYTHON_SERVER_URL, {
       method: 'POST',
@@ -693,7 +791,9 @@ class ApiService {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Python server error: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(
+        `Python server error: ${response.status} ${response.statusText} - ${errorText}`,
+      );
     }
 
     return response.json();

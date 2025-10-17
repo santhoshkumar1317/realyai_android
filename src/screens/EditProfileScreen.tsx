@@ -38,7 +38,6 @@ const EditProfileScreen = () => {
   const loadProfile = async () => {
     try {
       const profile = await apiService.getProfile();
-      console.log('Profile loaded for editing:', profile);
       const user = profile.user;
       setFormData({
         username: user.username || '',
@@ -77,8 +76,11 @@ const EditProfileScreen = () => {
   };
 
   const handleSave = async () => {
-    // Basic validation
-    if (!formData.username.trim() || !formData.companyName.trim() || !formData.phoneNumber.trim()) {
+    if (
+      !formData.username.trim() ||
+      !formData.companyName.trim() ||
+      !formData.phoneNumber.trim()
+    ) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
@@ -101,7 +103,7 @@ const EditProfileScreen = () => {
 
       await apiService.updateProfile(updateData);
       Alert.alert('Success', 'Profile updated successfully', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -114,7 +116,7 @@ const EditProfileScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6a0dad" />
+        <ActivityIndicator size="large" color="#5D3FD3" />
         <Text style={styles.loadingText}>Loading profile...</Text>
       </View>
     );
@@ -124,7 +126,9 @@ const EditProfileScreen = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Edit Profile</Text>
-        <Text style={styles.headerSubtitle}>Update your account information</Text>
+        <Text style={styles.headerSubtitle}>
+          Update your account information
+        </Text>
       </View>
 
       <View style={styles.content}>
@@ -136,8 +140,10 @@ const EditProfileScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.username}
-              onChangeText={(value) => handleInputChange('username', value)}
+              onChangeText={value => handleInputChange('username', value)}
               placeholder="Enter your username"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
 
@@ -146,8 +152,10 @@ const EditProfileScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.companyName}
-              onChangeText={(value) => handleInputChange('companyName', value)}
+              onChangeText={value => handleInputChange('companyName', value)}
               placeholder="Enter your company name"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
 
@@ -156,8 +164,10 @@ const EditProfileScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.phoneNumber}
-              onChangeText={(value) => handleInputChange('phoneNumber', value)}
+              onChangeText={value => handleInputChange('phoneNumber', value)}
               placeholder="Enter your phone number"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
               keyboardType="phone-pad"
             />
           </View>
@@ -171,8 +181,12 @@ const EditProfileScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.companyAddress.street}
-              onChangeText={(value) => handleInputChange('companyAddress.street', value)}
+              onChangeText={value =>
+                handleInputChange('companyAddress.street', value)
+              }
               placeholder="Street address"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
 
@@ -181,8 +195,12 @@ const EditProfileScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.companyAddress.area}
-              onChangeText={(value) => handleInputChange('companyAddress.area', value)}
+              onChangeText={value =>
+                handleInputChange('companyAddress.area', value)
+              }
               placeholder="Area or locality"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
 
@@ -192,8 +210,12 @@ const EditProfileScreen = () => {
               <TextInput
                 style={styles.input}
                 value={formData.companyAddress.city}
-                onChangeText={(value) => handleInputChange('companyAddress.city', value)}
+                onChangeText={value =>
+                  handleInputChange('companyAddress.city', value)
+                }
                 placeholder="City"
+                placeholderTextColor="#A0C4E4"
+                selectionColor="#FFFFFF"
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
@@ -201,8 +223,12 @@ const EditProfileScreen = () => {
               <TextInput
                 style={styles.input}
                 value={formData.companyAddress.state}
-                onChangeText={(value) => handleInputChange('companyAddress.state', value)}
+                onChangeText={value =>
+                  handleInputChange('companyAddress.state', value)
+                }
                 placeholder="State"
+                placeholderTextColor="#A0C4E4"
+                selectionColor="#FFFFFF"
               />
             </View>
           </View>
@@ -213,8 +239,12 @@ const EditProfileScreen = () => {
               <TextInput
                 style={styles.input}
                 value={formData.companyAddress.country}
-                onChangeText={(value) => handleInputChange('companyAddress.country', value)}
+                onChangeText={value =>
+                  handleInputChange('companyAddress.country', value)
+                }
                 placeholder="Country"
+                placeholderTextColor="#A0C4E4"
+                selectionColor="#FFFFFF"
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
@@ -222,8 +252,12 @@ const EditProfileScreen = () => {
               <TextInput
                 style={styles.input}
                 value={formData.companyAddress.pincode}
-                onChangeText={(value) => handleInputChange('companyAddress.pincode', value)}
+                onChangeText={value =>
+                  handleInputChange('companyAddress.pincode', value)
+                }
                 placeholder="Pincode"
+                placeholderTextColor="#A0C4E4"
+                selectionColor="#FFFFFF"
                 keyboardType="numeric"
               />
             </View>
@@ -257,69 +291,80 @@ const EditProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   header: {
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
     padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 5,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#aaa',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   content: {
-    padding: 15,
+    padding: 16,
   },
   section: {
-    backgroundColor: 'white',
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
     padding: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 16,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 20,
+    fontFamily: 'System',
   },
   inputGroup: {
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontWeight: '700',
+    color: '#A0C4E4',
+    marginBottom: 10,
+    fontFamily: 'System',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 12,
+    padding: 14,
     fontSize: 16,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   row: {
     flexDirection: 'row',
@@ -329,36 +374,43 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   actions: {
-    marginTop: 20,
+    marginTop: 24,
     marginBottom: 40,
   },
   saveButton: {
-    backgroundColor: '#6a0dad',
-    paddingVertical: 15,
-    borderRadius: 8,
+    backgroundColor: '#5D3FD3',
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   saveButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#64748b',
   },
   saveButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   cancelButton: {
     backgroundColor: 'transparent',
-    paddingVertical: 15,
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   cancelButtonText: {
-    color: '#666',
+    color: '#A0C4E4',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
 });
 

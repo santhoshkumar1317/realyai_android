@@ -62,9 +62,9 @@ const AddEditPropertyScreen = () => {
     const options = {
       mediaType: 'photo' as const,
       includeBase64: true,
-      maxHeight: 1200, // Optimized size for good quality and reasonable file size
-      maxWidth: 1600, // Optimized size for good quality and reasonable file size
-      selectionLimit: 20, // Maximum photos allowed
+      maxHeight: 1200,
+      maxWidth: 1600,
+      selectionLimit: 20,
     };
 
     setImageProcessing(true);
@@ -83,7 +83,6 @@ const AddEditPropertyScreen = () => {
       }
 
       if (response.assets && response.assets.length > 0) {
-        // Validate minimum photos
         if (response.assets.length < minPhotos) {
           Alert.alert(
             'Insufficient Photos',
@@ -92,7 +91,6 @@ const AddEditPropertyScreen = () => {
           return;
         }
 
-        // Validate that all images have base64 data
         const validImages = response.assets.filter(
           asset => asset.base64 && asset.type && asset.uri,
         );
@@ -107,17 +105,14 @@ const AddEditPropertyScreen = () => {
         if (validImages.length < minPhotos) {
           Alert.alert(
             'Error',
-            `At least ${minPhotos} valid photos are required. Please try selecting different images.`,
+            `At least ${minPhotos} valid photos are required.`,
           );
           return;
         }
 
-        console.log(
-          `Successfully selected and compressed ${validImages.length} images`,
-        );
         setSelectedImages(validImages);
       } else {
-        Alert.alert('Error', 'No images were selected. Please try again.');
+        Alert.alert('Error', 'No images were selected.');
       }
     });
   };
@@ -166,7 +161,6 @@ const AddEditPropertyScreen = () => {
   };
 
   const handleSubmit = async () => {
-    // Basic validation
     if (
       !formData.description ||
       !formData.pricePerSqft ||
@@ -200,17 +194,8 @@ const AddEditPropertyScreen = () => {
           ? formData.amenities.split(',').map(a => a.trim())
           : undefined,
         images: selectedImages
-          .filter(img => img.base64 && img.type) // Ensure all images have required data
-          .map(img => {
-            console.log(
-              `Processing image: ${img.fileName || 'unnamed'} (${(
-                (img.base64!.length * 3) /
-                4 /
-                1024
-              ).toFixed(1)}KB)`,
-            );
-            return `data:${img.type};base64,${img.base64}`;
-          }),
+          .filter(img => img.base64 && img.type)
+          .map(img => `data:${img.type};base64,${img.base64}`),
       };
 
       await apiService.createProperty(propertyData);
@@ -346,7 +331,9 @@ const AddEditPropertyScreen = () => {
                   value={formData.area}
                   onChangeText={value => handleInputChange('area', value)}
                   placeholder="Area in sqft"
+                  placeholderTextColor="#A0C4E4"
                   keyboardType="numeric"
+                  selectionColor="#FFFFFF"
                 />
               </View>
 
@@ -359,7 +346,9 @@ const AddEditPropertyScreen = () => {
                     handleInputChange('pricePerSqft', value)
                   }
                   placeholder="₹"
+                  placeholderTextColor="#A0C4E4"
                   keyboardType="numeric"
+                  selectionColor="#FFFFFF"
                 />
               </View>
 
@@ -383,8 +372,10 @@ const AddEditPropertyScreen = () => {
                     handleInputChange('contactInfo', value)
                   }
                   placeholder="Phone number"
+                  placeholderTextColor="#A0C4E4"
                   keyboardType="phone-pad"
                   maxLength={10}
+                  selectionColor="#FFFFFF"
                 />
               </View>
 
@@ -401,7 +392,9 @@ const AddEditPropertyScreen = () => {
                           handleInputChange('bedrooms', value)
                         }
                         placeholder="No of bedrooms"
+                        placeholderTextColor="#A0C4E4"
                         keyboardType="numeric"
+                        selectionColor="#FFFFFF"
                       />
                     </View>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
@@ -413,7 +406,9 @@ const AddEditPropertyScreen = () => {
                           handleInputChange('bathrooms', value)
                         }
                         placeholder="No of bathrooms"
+                        placeholderTextColor="#A0C4E4"
                         keyboardType="numeric"
+                        selectionColor="#FFFFFF"
                       />
                     </View>
                   </View>
@@ -427,6 +422,8 @@ const AddEditPropertyScreen = () => {
                         handleInputChange('features', value)
                       }
                       placeholder="Pool, Garden, Terrace, etc."
+                      placeholderTextColor="#A0C4E4"
+                      selectionColor="#FFFFFF"
                     />
                   </View>
 
@@ -441,6 +438,8 @@ const AddEditPropertyScreen = () => {
                         handleInputChange('amenities', value)
                       }
                       placeholder="Gym, Parking, Security, etc."
+                      placeholderTextColor="#A0C4E4"
+                      selectionColor="#FFFFFF"
                     />
                   </View>
                 </>
@@ -455,8 +454,10 @@ const AddEditPropertyScreen = () => {
                     handleInputChange('description', value)
                   }
                   placeholder="Describe the property..."
+                  placeholderTextColor="#A0C4E4"
                   multiline
                   numberOfLines={4}
+                  selectionColor="#FFFFFF"
                 />
               </View>
             </ScrollView>
@@ -606,109 +607,25 @@ const AddEditPropertyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#1A1F71',
   },
   header: {
-    backgroundColor: '#40006eff',
+    backgroundColor: '#1A1F71',
     padding: 25,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 8,
+    fontFamily: 'System',
   },
   headerSubtitle: {
     fontSize: 18,
-    color: '#e0e7ff',
-  },
-  form: {
-    padding: 20,
-  },
-  inputGroup: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: '#f9fafb',
-    color: '#111827',
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  halfWidth: {
-    width: '48%',
-  },
-  submitButton: {
-    backgroundColor: '#2563eb',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 24,
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#9ca3af',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  selectedLocation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    backgroundColor: 'white',
-  },
-  locationText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  changeLocationButton: {
-    backgroundColor: '#dc2626',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    shadowColor: '#dc2626',
-    shadowOffset: { width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-    marginTop: 12,
-  },
-  changeLocationText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   stepIndicator: {
     flexDirection: 'row',
@@ -716,9 +633,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 24,
     paddingHorizontal: 20,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   stepContainer: {
     alignItems: 'center',
@@ -728,35 +645,37 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     borderWidth: 3,
-    borderColor: '#cbd5e1',
+    borderColor: 'rgba(255,255,255,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
   },
   stepActive: {
-    borderColor: '#2563eb',
-    backgroundColor: '#2563eb',
+    borderColor: '#5D3FD3',
+    backgroundColor: 'rgba(93, 63, 211, 0.2)',
   },
   stepText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#64748b',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   stepTextActive: {
-    color: 'white',
+    color: '#FFFFFF',
   },
   stepLabel: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#A0C4E4',
     fontWeight: '600',
+    fontFamily: 'System',
   },
   stepLabelActive: {
-    color: '#2563eb',
+    color: '#5D3FD3',
   },
   content: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
   stepContent: {
     flex: 1,
@@ -764,14 +683,16 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 12,
+    fontFamily: 'System',
   },
   stepSubtitle: {
     fontSize: 18,
-    color: '#6b7280',
+    color: '#A0C4E4',
     marginBottom: 32,
+    fontFamily: 'System',
   },
   propertyTypeGrid: {
     flexDirection: 'row',
@@ -784,143 +705,162 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 3,
   },
   propertyTypeSelected: {
-    borderColor: '#2563eb',
-    backgroundColor: '#eff6ff',
+    borderColor: '#5D3FD3',
+    backgroundColor: 'rgba(93, 63, 211, 0.2)',
   },
   propertyTypeText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#374151',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   propertyTypeTextSelected: {
-    color: '#2563eb',
+    color: '#FFFFFF',
   },
   locationSummary: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     padding: 35,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   locationTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: '#FFFFFF',
     marginBottom: 12,
+    fontFamily: 'System',
   },
   locationAddress: {
     fontSize: 18,
-    color: '#1f2937',
+    color: '#A0C4E4',
     marginBottom: 8,
+    fontFamily: 'System',
   },
   locationDetails: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#A0C4E4',
     marginBottom: 8,
+    fontFamily: 'System',
   },
   locationCoords: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: '#94a3b8',
     fontFamily: 'monospace',
+  },
+  changeLocationButton: {
+    backgroundColor: '#ef4444',
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginTop: 12,
+  },
+  changeLocationText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'System',
   },
   photoUploadArea: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderRadius: 16,
     padding: 32,
     marginVertical: 24,
     borderWidth: 2,
-    borderColor: '#e2e8f0',
+    borderColor: 'rgba(255,255,255,0.2)',
     borderStyle: 'dashed',
   },
   photoInstruction: {
     fontSize: 18,
-    color: '#374151',
+    color: '#A0C4E4',
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 28,
+    fontFamily: 'System',
   },
   uploadButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#5D3FD3',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 25,
     marginBottom: 16,
-    shadowColor: '#2563eb',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
   uploadButtonDisabled: {
-    backgroundColor: '#9ca3af',
-    shadowOpacity: 0,
-    elevation: 0,
+    backgroundColor: '#64748b',
   },
   uploadButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'System',
   },
   photoNote: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
   navigation: {
     flexDirection: 'row',
     padding: 24,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   navButton: {
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#d1d5db',
+    borderColor: 'rgba(255,255,255,0.3)',
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   navButtonDisabled: {
-    backgroundColor: '#f3f4f6',
-    borderColor: '#e5e7eb',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
   nextButton: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
-    shadowColor: '#2563eb',
+    backgroundColor: '#5D3FD3',
+    borderColor: '#5D3FD3',
+    shadowColor: 'rgba(255,255,255,0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
   nextButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
   },
   navSpacer: {
     width: 15,
@@ -929,14 +869,15 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingTop: 24,
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   selectedImagesTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: '#FFFFFF',
     marginBottom: 16,
     textAlign: 'center',
+    fontFamily: 'System',
   },
   imageContainer: {
     marginRight: 12,
@@ -947,26 +888,27 @@ const styles = StyleSheet.create({
     height: 90,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   imagePlaceholder: {
     fontSize: 30,
+    color: '#A0C4E4',
   },
   removeImageButton: {
     position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: '#dc2626',
+    backgroundColor: '#ef4444',
     borderRadius: 16,
     width: 28,
     height: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#dc2626',
+    shadowColor: 'rgba(239, 68, 68, 0.5)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 4,
   },
@@ -975,16 +917,48 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  inputGroup: {
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 10,
+    fontFamily: 'System',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+    fontFamily: 'System',
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  halfWidth: {
+    width: '48%',
+  },
   totalPriceDisplay: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   totalPriceText: {
     fontSize: 16,
-    color: '#374151',
+    color: '#A0C4E4',
     fontWeight: '500',
+    fontFamily: 'System',
   },
 });
 

@@ -36,7 +36,7 @@ const AddEditLocationScreen = () => {
       latitude: locationData.latitude?.toString() || '',
       longitude: locationData.longitude?.toString() || '',
     });
-    setShowMapPicker(false); // Switch to form view after selection
+    setShowMapPicker(false);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -44,14 +44,21 @@ const AddEditLocationScreen = () => {
   };
 
   const handleSubmit = async () => {
-    // Basic validation
-    if (!formData.address || !formData.city || !formData.state || !formData.country) {
+    if (
+      !formData.address ||
+      !formData.city ||
+      !formData.state ||
+      !formData.country
+    ) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
 
     if (!formData.latitude || !formData.longitude) {
-      Alert.alert('Error', 'Please select a location on the map to get coordinates');
+      Alert.alert(
+        'Error',
+        'Please select a location on the map to get coordinates',
+      );
       return;
     }
 
@@ -66,7 +73,7 @@ const AddEditLocationScreen = () => {
 
       await apiService.createLocation(locationData);
       Alert.alert('Success', 'Location created successfully', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
       console.error('Error creating location:', error);
@@ -80,10 +87,14 @@ const AddEditLocationScreen = () => {
     return (
       <LocationPicker
         onLocationSelect={handleLocationSelect}
-        initialLocation={formData.latitude && formData.longitude ? {
-          latitude: parseFloat(formData.latitude),
-          longitude: parseFloat(formData.longitude)
-        } : undefined}
+        initialLocation={
+          formData.latitude && formData.longitude
+            ? {
+                latitude: parseFloat(formData.latitude),
+                longitude: parseFloat(formData.longitude),
+              }
+            : undefined
+        }
       />
     );
   }
@@ -92,7 +103,9 @@ const AddEditLocationScreen = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Refine Location Details</Text>
-        <Text style={styles.headerSubtitle}>Review and adjust the selected location</Text>
+        <Text style={styles.headerSubtitle}>
+          Review and adjust the selected location
+        </Text>
         <TouchableOpacity
           style={styles.backToMapButton}
           onPress={() => setShowMapPicker(true)}
@@ -107,10 +120,12 @@ const AddEditLocationScreen = () => {
           <TextInput
             style={[styles.input, styles.textArea]}
             value={formData.address}
-            onChangeText={(value) => handleInputChange('address', value)}
+            onChangeText={value => handleInputChange('address', value)}
             placeholder="Full street address..."
+            placeholderTextColor="#A0C4E4"
             multiline
             numberOfLines={3}
+            selectionColor="#FFFFFF"
           />
         </View>
 
@@ -120,8 +135,10 @@ const AddEditLocationScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.city}
-              onChangeText={(value) => handleInputChange('city', value)}
+              onChangeText={value => handleInputChange('city', value)}
               placeholder="City name"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
           <View style={[styles.inputGroup, styles.halfWidth]}>
@@ -129,8 +146,10 @@ const AddEditLocationScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.state}
-              onChangeText={(value) => handleInputChange('state', value)}
+              onChangeText={value => handleInputChange('state', value)}
               placeholder="State/Province"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
         </View>
@@ -141,8 +160,10 @@ const AddEditLocationScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.country}
-              onChangeText={(value) => handleInputChange('country', value)}
+              onChangeText={value => handleInputChange('country', value)}
               placeholder="Country name"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
           <View style={[styles.inputGroup, styles.halfWidth]}>
@@ -150,14 +171,18 @@ const AddEditLocationScreen = () => {
             <TextInput
               style={styles.input}
               value={formData.postalCode}
-              onChangeText={(value) => handleInputChange('postalCode', value)}
+              onChangeText={value => handleInputChange('postalCode', value)}
               placeholder="ZIP/Postal code"
+              placeholderTextColor="#A0C4E4"
+              selectionColor="#FFFFFF"
             />
           </View>
         </View>
 
         <View style={styles.coordinatesDisplay}>
-          <Text style={styles.coordinatesLabel}>GPS Coordinates (Auto-filled from map selection)</Text>
+          <Text style={styles.coordinatesLabel}>
+            GPS Coordinates (Auto-filled from map selection)
+          </Text>
           <View style={styles.row}>
             <View style={[styles.inputGroup, styles.halfWidth]}>
               <Text style={styles.label}>Latitude *</Text>
@@ -166,6 +191,7 @@ const AddEditLocationScreen = () => {
                 value={formData.latitude}
                 editable={false}
                 placeholder="-90 to 90"
+                placeholderTextColor="#94a3b8"
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
@@ -175,6 +201,7 @@ const AddEditLocationScreen = () => {
                 value={formData.longitude}
                 editable={false}
                 placeholder="-180 to 180"
+                placeholderTextColor="#94a3b8"
               />
             </View>
           </View>
@@ -197,44 +224,65 @@ const AddEditLocationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   header: {
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
     padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 5,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#aaa',
+    color: '#A0C4E4',
+    fontFamily: 'System',
+  },
+  backToMapButton: {
+    marginTop: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  backToMapText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   form: {
     padding: 20,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 22,
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 10,
+    fontFamily: 'System',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 12,
+    padding: 14,
     fontSize: 16,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   textArea: {
-    height: 80,
+    height: 90,
     textAlignVertical: 'top',
   },
   row: {
@@ -245,51 +293,45 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   submitButton: {
-    backgroundColor: '#6a0dad',
-    paddingVertical: 15,
-    borderRadius: 8,
+    backgroundColor: '#5D3FD3',
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 24,
+    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   submitButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#64748b',
   },
   submitButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
-  },
-  backToMapButton: {
-    marginTop: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-  },
-  backToMapText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   coordinatesDisplay: {
-    backgroundColor: '#f0f8ff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
+    backgroundColor: 'rgba(93, 63, 211, 0.1)',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 22,
     borderWidth: 1,
-    borderColor: '#6a0dad',
+    borderColor: '#5D3FD3',
   },
   coordinatesLabel: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#6a0dad',
-    marginBottom: 10,
+    fontWeight: '700',
+    color: '#5D3FD3',
+    marginBottom: 12,
     textAlign: 'center',
+    fontFamily: 'System',
   },
   readOnly: {
-    backgroundColor: '#f5f5f5',
-    color: '#666',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    color: '#A0C4E4',
   },
 });
 

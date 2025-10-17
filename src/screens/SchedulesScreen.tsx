@@ -39,10 +39,14 @@ interface Schedule {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'COMPLETED': return '#4CAF50';
-    case 'SCHEDULED': return '#2196F3';
-    case 'CANCELLED': return '#F44336';
-    default: return '#666';
+    case 'COMPLETED':
+      return '#10b981';
+    case 'SCHEDULED':
+      return '#3b82f6';
+    case 'CANCELLED':
+      return '#ef4444';
+    default:
+      return '#94a3b8';
   }
 };
 
@@ -66,7 +70,7 @@ const ScheduleCard = ({ schedule }: { schedule: Schedule }) => {
       return {
         type: 'Property',
         name: schedule.property.description.substring(0, 50) + '...',
-        contact: schedule.property.location.address + ', ' + schedule.property.location.city,
+        contact: `${schedule.property.location.address}, ${schedule.property.location.city}`,
       };
     }
     return { type: 'Unknown', name: 'No details', contact: '' };
@@ -78,23 +82,37 @@ const ScheduleCard = ({ schedule }: { schedule: Schedule }) => {
     <View style={styles.scheduleCard}>
       <View style={styles.scheduleHeader}>
         <Text style={styles.entityType}>{entityInfo.type}</Text>
-        <Text style={[styles.statusBadge, { backgroundColor: getStatusColor(schedule.status) }]}>
-          {schedule.status}
+        <Text
+          style={[
+            styles.statusBadge,
+            { backgroundColor: getStatusColor(schedule.status) },
+          ]}
+        >
+          {schedule.status.toLowerCase()}
         </Text>
       </View>
 
       <View style={styles.scheduleContent}>
-        <Text style={styles.entityName} numberOfLines={2}>{entityInfo.name}</Text>
-        <Text style={styles.entityContact} numberOfLines={1}>{entityInfo.contact}</Text>
+        <Text style={styles.entityName} numberOfLines={2}>
+          {entityInfo.name}
+        </Text>
+        <Text style={styles.entityContact} numberOfLines={1}>
+          {entityInfo.contact}
+        </Text>
         {schedule.notes && (
-          <Text style={styles.notes} numberOfLines={2}>{schedule.notes}</Text>
+          <Text style={styles.notes} numberOfLines={2}>
+            {schedule.notes}
+          </Text>
         )}
       </View>
 
       <View style={styles.scheduleFooter}>
         <Text style={styles.scheduleDate}>
           {new Date(schedule.scheduledAt).toLocaleDateString()} at{' '}
-          {new Date(schedule.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {new Date(schedule.scheduledAt).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </Text>
       </View>
     </View>
@@ -108,12 +126,10 @@ const SchedulesScreen = () => {
 
   const loadSchedules = useCallback(async () => {
     try {
-      console.log('Frontend: Loading schedules...');
       const response = await apiService.getAllSchedules({ page: 1, limit: 50 });
-      console.log('Frontend: Schedules response:', response);
       setSchedules(response.schedules);
     } catch (error) {
-      console.error('Frontend: Error loading schedules:', error);
+      console.error('Error loading schedules:', error);
       Alert.alert('Error', 'Failed to load schedules');
     } finally {
       setLoading(false);
@@ -124,7 +140,7 @@ const SchedulesScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadSchedules();
-    }, [loadSchedules])
+    }, [loadSchedules]),
   );
 
   const onRefresh = useCallback(() => {
@@ -135,7 +151,7 @@ const SchedulesScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6a0dad" />
+        <ActivityIndicator size="large" color="#5D3FD3" />
         <Text style={styles.loadingText}>Loading schedules...</Text>
       </View>
     );
@@ -150,15 +166,22 @@ const SchedulesScreen = () => {
       <FlatList
         data={schedules}
         renderItem={({ item }) => <ScheduleCard schedule={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.schedulesList}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFFFFF"
+            colors={['#FFFFFF']}
+          />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No schedules yet</Text>
-            <Text style={styles.emptySubtext}>Your scheduled appointments will appear here</Text>
+            <Text style={styles.emptySubtext}>
+              Your scheduled appointments will appear here
+            </Text>
           </View>
         }
       />
@@ -169,92 +192,104 @@ const SchedulesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1F71',
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '800',
+    color: '#FFFFFF',
+    fontFamily: 'System',
   },
   schedulesList: {
-    padding: 15,
+    padding: 16,
   },
   scheduleCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   scheduleHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   entityType: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6a0dad',
+    fontWeight: '700',
+    color: '#5D3FD3',
+    fontFamily: 'System',
   },
   statusBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    fontSize: 10,
-    color: 'white',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontSize: 11,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    textTransform: 'capitalize',
+    fontFamily: 'System',
   },
   scheduleContent: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   entityName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   entityContact: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
+    color: '#A0C4E4',
+    marginBottom: 6,
+    fontFamily: 'System',
   },
   notes: {
     fontSize: 14,
-    color: '#555',
+    color: '#A0C4E4',
     fontStyle: 'italic',
+    fontFamily: 'System',
   },
   scheduleFooter: {
-    paddingTop: 10,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   scheduleDate: {
     fontSize: 12,
-    color: '#999',
+    color: '#A0C4E4',
+    fontFamily: 'System',
   },
   emptyContainer: {
     flex: 1,
@@ -264,14 +299,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 10,
+    fontFamily: 'System',
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#666',
+    color: '#A0C4E4',
     textAlign: 'center',
+    fontFamily: 'System',
   },
 });
 
