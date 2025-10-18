@@ -384,6 +384,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1A1F71', // Primary background
+    paddingTop: 20, // Add padding to prevent content from hiding behind status bar
   },
   statsHeader: {
     backgroundColor: '#1A1F71',

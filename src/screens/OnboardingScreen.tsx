@@ -12,11 +12,14 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { getAuth, GoogleAuthProvider, signInWithCredential } from '@react-native-firebase/auth';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithCredential,
+} from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../auth/AuthContext';
-
 import { apiService } from '../utils/api';
 
 const OnboardingScreen = () => {
@@ -131,12 +134,13 @@ const OnboardingScreen = () => {
                   <TextInput
                     style={styles.input}
                     placeholder="Enter your username"
-                    placeholderTextColor="#aaa"
+                    placeholderTextColor="#A0C4E4"
                     value={profileData.username}
                     onChangeText={text =>
                       setProfileData(prev => ({ ...prev, username: text }))
                     }
                     autoCapitalize="none"
+                    selectionColor="#FFFFFF"
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -144,11 +148,12 @@ const OnboardingScreen = () => {
                   <TextInput
                     style={styles.input}
                     placeholder="Enter your company name"
-                    placeholderTextColor="#aaa"
+                    placeholderTextColor="#A0C4E4"
                     value={profileData.companyName}
                     onChangeText={text =>
                       setProfileData(prev => ({ ...prev, companyName: text }))
                     }
+                    selectionColor="#FFFFFF"
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -156,12 +161,13 @@ const OnboardingScreen = () => {
                   <TextInput
                     style={styles.input}
                     placeholder="Enter your phone number"
-                    placeholderTextColor="#aaa"
+                    placeholderTextColor="#A0C4E4"
                     value={profileData.phoneNumber}
                     onChangeText={text =>
                       setProfileData(prev => ({ ...prev, phoneNumber: text }))
                     }
                     keyboardType="phone-pad"
+                    selectionColor="#FFFFFF"
                   />
                 </View>
               </View>
@@ -198,26 +204,24 @@ const OnboardingScreen = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      // This login function from useAuth is causing the premature navigation.
-      // We will handle the sign-in locally first.
       const userInfo = await GoogleSignin.signIn();
       const idToken = userInfo.data?.idToken;
       if (!idToken) {
         throw new Error('Google Sign-In failed: No ID token received.');
       }
       const googleCredential = GoogleAuthProvider.credential(idToken);
-      const userCredential = await signInWithCredential(getAuth(), googleCredential);
+      const userCredential = await signInWithCredential(
+        getAuth(),
+        googleCredential,
+      );
 
-      // Immediately set API token after successful Firebase sign-in
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken(true);
         if (token) {
           await apiService.setToken(token);
-          console.log('API token set immediately after onboarding sign-in');
         }
       }
 
-      // After successful login, move to profile slide
       setCurrentSlide(2);
     } catch (error) {
       Alert.alert('Error', 'Google Sign-In failed. Please try again.');
@@ -230,14 +234,10 @@ const OnboardingScreen = () => {
   const handleCompleteOnboarding = async () => {
     try {
       setIsLoading(true);
-
-      // Get Firebase user data
       const currentUser = getAuth().currentUser;
       if (!currentUser) {
         throw new Error('No authenticated user found');
       }
-
-      console.log('Creating profile for user:', currentUser.uid, currentUser.email);
 
       const response = await apiService.createProfile({
         firebaseUid: currentUser.uid,
@@ -246,24 +246,17 @@ const OnboardingScreen = () => {
         companyName: profileData.companyName.trim(),
         phoneNumber: profileData.phoneNumber.trim(),
       });
-
-      console.log('Profile creation response:', response);
-
-      // Mark onboarding as completed
+      console.log(response);
       await AsyncStorage.setItem('onboarding_completed', 'true');
       completeOnboarding();
-      // Navigate to main tabs
       (navigation as any).navigate('MainTabs');
     } catch (error: any) {
       console.error('Error completing onboarding:', error);
       if (error.status === 409) {
-        console.log('User already exists, proceeding to main app');
-        // User already exists, so we can consider onboarding complete
         await AsyncStorage.setItem('onboarding_completed', 'true');
         completeOnboarding();
         (navigation as any).navigate('MainTabs');
       } else {
-        console.error('Error completing onboarding:', error);
         Alert.alert('Error', error.message || 'Failed to complete setup');
       }
     } finally {
@@ -291,7 +284,7 @@ const OnboardingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a0033',
+    backgroundColor: '#1A1F71', // Updated to your theme
   },
   slide: {
     flex: 1,
@@ -307,16 +300,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'System',
   },
   subtitle: {
     fontSize: 16,
-    color: '#aaa',
+    color: '#A0C4E4',
     marginBottom: 40,
     textAlign: 'center',
+    fontFamily: 'System',
   },
   slideContent: {
     flex: 1,
@@ -328,11 +323,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   termsText: {
-    color: '#fff',
+    color: '#A0C4E4',
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: 20,
+    fontFamily: 'System',
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -345,56 +341,62 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderWidth: 2,
-    borderColor: '#6a0dad',
+    borderColor: '#5D3FD3', // Updated to your purple
     marginRight: 10,
     borderRadius: 4,
-    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#6a0dad',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#5D3FD3', // Updated
+    borderColor: '#5D3FD3',
   },
   checkmark: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
     fontWeight: 'bold',
   },
   checkboxLabel: {
-    color: '#fff',
+    color: '#A0C4E4',
     fontSize: 14,
-    // flex: 1,
     textAlign: 'center',
+    fontFamily: 'System',
   },
   loginText: {
-    color: '#aaa',
+    color: '#A0C4E4',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    fontFamily: 'System',
   },
   profileText: {
-    color: '#aaa',
+    color: '#A0C4E4',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    fontFamily: 'System',
   },
   button: {
-    backgroundColor: '#6a0dad',
-    borderRadius: 10,
+    backgroundColor: '#5D3FD3', // Updated to your purple
+    borderRadius: 12,
     width: '100%',
-    paddingVertical: 15,
+    paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 20,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
-    backgroundColor: '#333',
+    backgroundColor: '#64748b',
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   pagination: {
     flexDirection: 'row',
@@ -403,14 +405,14 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#333',
-    marginHorizontal: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#6a0dad',
+    backgroundColor: '#5D3FD3', // Updated
   },
   formContainer: {
     width: '100%',
@@ -420,18 +422,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   inputLabel: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
+    fontWeight: '700',
+    marginBottom: 10,
+    fontFamily: 'System',
   },
   input: {
-    backgroundColor: '#331a4d',
-    borderRadius: 10,
-    color: '#fff',
-    height: 50,
-    paddingHorizontal: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent
+    borderRadius: 12,
+    color: '#FFFFFF',
+    height: 52,
+    paddingHorizontal: 16,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    fontFamily: 'System',
   },
 });
 

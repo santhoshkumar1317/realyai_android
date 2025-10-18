@@ -495,11 +495,11 @@ class ApiService {
         }
       });
     }
-    return this.request('/telegram/leads', { params });
+    return this.request('/leads/telegram', { params });
   }
 
   async getTelegramLeadById(id: string): Promise<{ telegramLead: Lead }> {
-    return this.request(`/telegram/leads/${id}`);
+    return this.request(`/leads/telegram/${id}`);
   }
 
   // WhatsApp Leads endpoints
@@ -519,11 +519,11 @@ class ApiService {
         }
       });
     }
-    return this.request('/whatsapp/leads', { params });
+    return this.request('/leads/whatsapp', { params });
   }
 
   async getWhatsAppLeadById(id: string): Promise<{ whatsappLead: Lead }> {
-    return this.request(`/whatsapp/leads/${id}`);
+    return this.request(`/leads/whatsapp/${id}`);
   }
 
   // Bot Configuration endpoints
@@ -779,7 +779,7 @@ class ApiService {
   }): Promise<any> {
     // Send directly to Python server instead of our backend
     const PYTHON_SERVER_URL =
-      'https://7df8bf7c210d.ngrok-free.app/generate-video';
+      'https://realyai-video-generation-649104059255.europe-west1.run.app/generate-video';
 
     const response = await fetch(PYTHON_SERVER_URL, {
       method: 'POST',

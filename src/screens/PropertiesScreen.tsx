@@ -10,28 +10,50 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import { useNavigation, useFocusEffect, NavigationProp } from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  NavigationProp,
+} from '@react-navigation/native';
 import { apiService, Property } from '../utils/api';
 
 // Status color mapping using your theme
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'AVAILABLE': return '#10b981'; // Emerald (positive)
-    case 'RESERVED': return '#f59e0b'; // Amber
-    case 'SOLD': return '#ef4444'; // Red
-    case 'UNDER_MAINTENANCE': return '#94a3b8'; // Slate
-    default: return '#64748b';
+    case 'AVAILABLE':
+      return '#10b981'; // Emerald (positive)
+    case 'RESERVED':
+      return '#f59e0b'; // Amber
+    case 'SOLD':
+      return '#ef4444'; // Red
+    case 'UNDER_MAINTENANCE':
+      return '#94a3b8'; // Slate
+    default:
+      return '#64748b';
   }
 };
 
-const PropertyCard = ({ property, navigation }: { property: Property; navigation: any }) => (
+const PropertyCard = ({
+  property,
+  navigation,
+}: {
+  property: Property;
+  navigation: any;
+}) => (
   <TouchableOpacity
     style={styles.propertyCard}
-    onPress={() => navigation.navigate('PropertyDetails', { propertyId: property.id })}
+    onPress={() =>
+      navigation.navigate('PropertyDetails', { propertyId: property.id })
+    }
   >
     <View style={styles.propertyImage}>
       {property.images && property.images.length > 0 && property.images[0] ? (
-        <Image key={property.images[0]} source={{ uri: property.images[0] }} style={styles.cardImage} resizeMode="cover" />
+        <Image
+          key={property.images[0]}
+          source={{ uri: property.images[0] }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
       ) : (
         <View style={styles.cardImage}>
           <Text style={styles.imagePlaceholder}>🏠</Text>
@@ -40,11 +62,15 @@ const PropertyCard = ({ property, navigation }: { property: Property; navigation
     </View>
     <View style={styles.propertyInfo}>
       <Text style={styles.propertyTitle} numberOfLines={2}>
-        {property.propertyType || 'Property'} in {property.location ? `${property.location.city}, ${property.location.state}` : 'Unknown Location'}
+        {property.propertyType || 'Property'} in{' '}
+        {property.location
+          ? `${property.location.city}, ${property.location.state}`
+          : 'Unknown Location'}
       </Text>
       <Text style={styles.propertyPrice}>
         ₹{property.pricePerSqft?.toLocaleString()}/sqft
-        {property.totalPrice && ` (₹${property.totalPrice.toLocaleString()} total)`}
+        {property.totalPrice &&
+          ` (₹${property.totalPrice.toLocaleString()} total)`}
       </Text>
       <View style={styles.propertyDetails}>
         {property.area && (
@@ -61,7 +87,12 @@ const PropertyCard = ({ property, navigation }: { property: Property; navigation
         {property.description}
       </Text>
       <View style={styles.propertyFooter}>
-        <Text style={[styles.statusBadge, { backgroundColor: getStatusColor(property.status) }]}>
+        <Text
+          style={[
+            styles.statusBadge,
+            { backgroundColor: getStatusColor(property.status) },
+          ]}
+        >
           {property.status.toLowerCase().replace('_', ' ')}
         </Text>
         <Text style={styles.viewCount}>👁️ {property.viewCount || 0}</Text>
@@ -75,7 +106,7 @@ const FilterModal = ({
   setShowFilters,
   filters,
   setFilters,
-  loadProperties
+  loadProperties,
 }: {
   showFilters: boolean;
   setShowFilters: (show: boolean) => void;
@@ -110,7 +141,9 @@ const FilterModal = ({
         placeholder="Property Type"
         placeholderTextColor="#A0C4E4"
         value={filters.propertyType}
-        onChangeText={(text) => setFilters((prev: any) => ({ ...prev, propertyType: text }))}
+        onChangeText={text =>
+          setFilters((prev: any) => ({ ...prev, propertyType: text }))
+        }
         selectionColor="#FFFFFF"
       />
       <TextInput
@@ -118,7 +151,9 @@ const FilterModal = ({
         placeholder="Min Price"
         placeholderTextColor="#A0C4E4"
         value={filters.minPrice}
-        onChangeText={(text) => setFilters((prev: any) => ({ ...prev, minPrice: text }))}
+        onChangeText={text =>
+          setFilters((prev: any) => ({ ...prev, minPrice: text }))
+        }
         keyboardType="numeric"
         selectionColor="#FFFFFF"
       />
@@ -127,7 +162,9 @@ const FilterModal = ({
         placeholder="Max Price"
         placeholderTextColor="#A0C4E4"
         value={filters.maxPrice}
-        onChangeText={(text) => setFilters((prev: any) => ({ ...prev, maxPrice: text }))}
+        onChangeText={text =>
+          setFilters((prev: any) => ({ ...prev, maxPrice: text }))
+        }
         keyboardType="numeric"
         selectionColor="#FFFFFF"
       />
@@ -136,7 +173,9 @@ const FilterModal = ({
         placeholder="Location"
         placeholderTextColor="#A0C4E4"
         value={filters.location}
-        onChangeText={(text) => setFilters((prev: any) => ({ ...prev, location: text }))}
+        onChangeText={text =>
+          setFilters((prev: any) => ({ ...prev, location: text }))
+        }
         selectionColor="#FFFFFF"
       />
       <View style={styles.filterButtons}>
@@ -184,40 +223,43 @@ const PropertiesScreen = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  const loadProperties = useCallback(async (page = 1, append = false) => {
-    try {
-      const params: any = {
-        page,
-        limit: pagination.limit,
-        search: searchQuery || undefined,
-        propertyType: filters.propertyType || undefined,
-        minPrice: filters.minPrice ? parseFloat(filters.minPrice) : undefined,
-        maxPrice: filters.maxPrice ? parseFloat(filters.maxPrice) : undefined,
-        location: filters.location || undefined,
-      };
+  const loadProperties = useCallback(
+    async (page = 1, append = false) => {
+      try {
+        const params: any = {
+          page,
+          limit: pagination.limit,
+          search: searchQuery || undefined,
+          propertyType: filters.propertyType || undefined,
+          minPrice: filters.minPrice ? parseFloat(filters.minPrice) : undefined,
+          maxPrice: filters.maxPrice ? parseFloat(filters.maxPrice) : undefined,
+          location: filters.location || undefined,
+        };
 
-      const response = await apiService.getProperties(params);
+        const response = await apiService.getProperties(params);
 
-      if (append) {
-        setProperties(prev => [...prev, ...response.properties]);
-      } else {
-        setProperties(response.properties);
+        if (append) {
+          setProperties(prev => [...prev, ...response.properties]);
+        } else {
+          setProperties(response.properties);
+        }
+
+        setPagination(response.pagination);
+      } catch (error) {
+        console.error('Error loading properties:', error);
+        Alert.alert('Error', 'Failed to load properties');
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-
-      setPagination(response.pagination);
-    } catch (error) {
-      console.error('Error loading properties:', error);
-      Alert.alert('Error', 'Failed to load properties');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [pagination.limit, searchQuery, filters]);
+    },
+    [pagination.limit, searchQuery, filters],
+  );
 
   useFocusEffect(
     useCallback(() => {
       loadProperties(1, false);
-    }, [loadProperties])
+    }, [loadProperties]),
   );
 
   const onRefresh = () => {
@@ -275,12 +317,19 @@ const PropertiesScreen = () => {
       {/* Properties List */}
       <FlatList
         data={properties}
-        renderItem={({ item }) => <PropertyCard property={item} navigation={navigation} />}
-        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <PropertyCard property={item} navigation={navigation} />
+        )}
+        keyExtractor={item => item.id}
         onEndReached={loadMore}
         onEndReachedThreshold={0.1}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFFFFF" colors={['#FFFFFF']} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFFFFF"
+            colors={['#FFFFFF']}
+          />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -315,6 +364,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1F71', // Deep navy background
   },
   header: {
+    marginTop: 40,
     flexDirection: 'row',
     padding: 15,
     backgroundColor: '#1A1F71',
@@ -446,8 +496,6 @@ const styles = StyleSheet.create({
     height: 100,
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   imagePlaceholder: {
     fontSize: 30,
@@ -456,15 +504,18 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 100,
     height: 100,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
+    marginTop: 20,
+    marginLeft: 13,
+    borderRadius: 8,
   },
   propertyInfo: {
     flex: 1,
-    padding: 14,
+    padding: 20,
   },
   propertyTitle: {
     fontSize: 15,
+    marginLeft: 10,
+
     fontWeight: '700',
     color: '#FFFFFF',
     marginBottom: 6,
@@ -475,16 +526,20 @@ const styles = StyleSheet.create({
     color: '#FF69B4', // Accent pink
     fontWeight: '700',
     marginBottom: 6,
+    marginLeft: 10,
+
     fontFamily: 'System',
   },
   propertyDetails: {
     flexDirection: 'row',
     marginBottom: 6,
+    marginLeft: 10,
   },
   detailText: {
     fontSize: 12,
     color: '#A0C4E4',
     marginRight: 14,
+
     fontFamily: 'System',
   },
   propertyDescription: {
@@ -492,6 +547,7 @@ const styles = StyleSheet.create({
     color: '#A0C4E4',
     marginBottom: 10,
     fontFamily: 'System',
+    marginLeft: 10,
   },
   propertyFooter: {
     flexDirection: 'row',
@@ -507,6 +563,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textTransform: 'capitalize',
     fontFamily: 'System',
+    marginLeft: 10,
   },
   viewCount: {
     fontSize: 12,

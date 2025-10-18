@@ -325,10 +325,10 @@ const DashboardScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate('Chat' as never)}
+            onPress={() => navigation.navigate('BotConfiguration' as never)}
           >
-            <Text style={styles.actionIcon}>📬</Text>
-            <Text style={styles.actionText}>Inbox</Text>
+            <Text style={styles.actionIcon}>🤖</Text>
+            <Text style={styles.actionText}>Bot Config</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}

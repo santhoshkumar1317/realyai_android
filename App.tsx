@@ -11,7 +11,7 @@ import {
   StyleSheet,
   View,
   ActivityIndicator,
-  Text,
+  Image,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -54,16 +54,16 @@ const TabBarIcon = ({
   color: string;
   size: number;
 }) => {
-  const iconMap: Record<string, string> = {
-    dashboard: '📊',
-    home: '🏠',
-    people: '👥',
-    chat: '💬',
-    person: '👤',
-    reels: '🎬',
-    schedule: '📅',
+  const iconMap: Record<string, any> = {
+    dashboard: require('./src/assets/bottomIconImages/dashboard.png'),
+    home: require('./src/assets/bottomIconImages/properties.png'),
+    people: require('./src/assets/bottomIconImages/leads.png'),
+    chat: require('./src/assets/bottomIconImages/leads.png'), // Assuming chat uses leads icon or add chat.png if available
+    person: require('./src/assets/bottomIconImages/profile.png'),
+    reels: require('./src/assets/bottomIconImages/video.png'),
+    schedule: require('./src/assets/bottomIconImages/schedule.png'),
   };
-  return <Text style={{ fontSize: size, color }}>{iconMap[name] || '●'}</Text>;
+  return <Image source={iconMap[name]} style={{ width: size, height: size, tintColor: color }} />;
 };
 
 // Icon components
@@ -91,17 +91,17 @@ const MainTabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false, // 👈 Hide header for all tab screens
-        tabBarActiveTintColor: '#FFFFFF', // Active = white
-        tabBarInactiveTintColor: '#A0C4E4', // Inactive = light blue
+        tabBarActiveTintColor: '#186bf1ff', // Active = white
+        tabBarInactiveTintColor: '#7c7c7cff', // Inactive = white
         tabBarStyle: {
-          backgroundColor: '#00033cff', // Deep navy background
+          backgroundColor: '#2f3377ff', // Deep navy background
           borderTopWidth: 0,
           height: 70,
           paddingBottom: 8,
           paddingTop: 6,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
           marginBottom: 2,
           fontFamily: 'System',
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1A1F71',
+    backgroundColor: '#2029c5ff',
   },
 });
 

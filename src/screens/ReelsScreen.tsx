@@ -57,7 +57,7 @@ const VideoModal = ({
     setBuffering(isBuffering);
   };
 
-  const handleLoad = (loadData: any) => {
+  const handleLoad = () => {
     setIsPlaying(true);
   };
 
@@ -527,6 +527,7 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
   },
   header: {
+    marginTop: 40, 
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

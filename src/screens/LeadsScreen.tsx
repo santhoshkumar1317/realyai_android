@@ -334,27 +334,22 @@ const LeadsScreen = () => {
           />
         </View>
 
-        {/* Channel Navigation */}
-        <View style={styles.channelNavigation}>
-          <TouchableOpacity
-            style={styles.channelButton}
-            onPress={() => navigation.navigate('TelegramLeads')}
-          >
-            <Text style={styles.channelButtonText}>📱 Telegram Leads</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.channelButton}
-            onPress={() => navigation.navigate('WhatsAppLeads')}
-          >
-            <Text style={styles.channelButtonText}>💬 WhatsApp Leads</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.channelButton}
-            onPress={() => navigation.navigate('BotConfiguration')}
-          >
-            <Text style={styles.channelButtonText}>🤖 Bot Config</Text>
-          </TouchableOpacity>
-        </View>
+      </View>
+
+      {/* Channel Navigation */}
+      <View style={styles.channelNavigation}>
+        <TouchableOpacity
+          style={styles.channelButton}
+          onPress={() => navigation.navigate('TelegramLeads')}
+        >
+          <Text style={styles.channelButtonText}>📱 Telegram</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.channelButton}
+          onPress={() => navigation.navigate('WhatsAppLeads')}
+        >
+          <Text style={styles.channelButtonText}>💬 WhatsApp</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Search */}
@@ -421,6 +416,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1A1F71', // Primary background
+    paddingTop: 20, // Add padding to prevent content from hiding behind status bar
   },
   statsHeader: {
     backgroundColor: '#1A1F71',

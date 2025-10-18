@@ -207,6 +207,7 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
   },
   header: {
+    marginTop: 40,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

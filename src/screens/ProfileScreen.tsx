@@ -61,11 +61,13 @@ const ProfileScreen = () => {
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: user?.profileImage ? ['View Image', 'Change Image', 'Cancel'] : ['Add Image', 'Cancel'],
+          options: user?.profileImage
+            ? ['View Image', 'Change Image', 'Cancel']
+            : ['Add Image', 'Cancel'],
           cancelButtonIndex: user?.profileImage ? 2 : 1,
           destructiveButtonIndex: undefined,
         },
-        (buttonIndex) => {
+        buttonIndex => {
           if (user?.profileImage) {
             if (buttonIndex === 0) {
               setShowImageModal(true);
@@ -77,7 +79,7 @@ const ProfileScreen = () => {
               handleImagePick();
             }
           }
-        }
+        },
       );
     } else {
       // For Android, show Alert with options
@@ -99,7 +101,7 @@ const ProfileScreen = () => {
             }
           },
           style: option === 'Cancel' ? 'cancel' : 'default',
-        }))
+        })),
       );
     }
   };
@@ -113,7 +115,7 @@ const ProfileScreen = () => {
       quality: 0.8 as any,
     };
 
-    launchImageLibrary(options, async (response) => {
+    launchImageLibrary(options, async response => {
       if (response.didCancel) {
         return;
       }
@@ -143,7 +145,9 @@ const ProfileScreen = () => {
           }
 
           const updateData = {
-            profileImage: base64Data.startsWith('data:') ? base64Data : `data:${asset.type};base64,${base64Data}`,
+            profileImage: base64Data.startsWith('data:')
+              ? base64Data
+              : `data:${asset.type};base64,${base64Data}`,
           };
 
           await apiService.updateProfile(updateData as any);
@@ -214,7 +218,11 @@ const ProfileScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.avatarContainer} onPress={handleAvatarPress} disabled={uploadingImage}>
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          onPress={handleAvatarPress}
+          disabled={uploadingImage}
+        >
           {user?.profileImage ? (
             <Image source={{ uri: user.profileImage }} style={styles.avatar} />
           ) : (
@@ -389,6 +397,7 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
   },
   header: {
+    marginTop: 40,
     backgroundColor: '#1A1F71',
     padding: 30,
     alignItems: 'center',

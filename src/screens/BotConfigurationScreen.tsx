@@ -393,6 +393,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1A1F71',
+    paddingTop: 20, // Add padding to prevent content from hiding behind status bar
   },
   loadingContainer: {
     flex: 1,
