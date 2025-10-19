@@ -14,6 +14,7 @@ import {
   Modal,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, VideoReel } from '../utils/api';
 import { launchImageLibrary } from 'react-native-image-picker';
 import auth from '@react-native-firebase/auth';
@@ -363,6 +364,7 @@ const UploadForm = ({
 };
 
 const ReelsScreen = () => {
+  const { isDarkMode } = useTheme();
   const [videoReels, setVideoReels] = useState<VideoReel[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -457,9 +459,9 @@ const ReelsScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Video Reels</Text>
+    <View style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.darkText : styles.lightText]}>Video Reels</Text>
         <TouchableOpacity
           style={styles.createButton}
           onPress={() => setShowUploadForm(true)}
@@ -908,6 +910,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     fontFamily: 'System',
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
   },
 });
 

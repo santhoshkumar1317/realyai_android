@@ -8,18 +8,19 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 
 // Component moved outside to avoid unstable nested components
-const ChatSessionCard = ({ session, onPress }: { session: any; onPress: () => void }) => (
-  <TouchableOpacity style={styles.chatCard} onPress={onPress}>
+const ChatSessionCard = ({ session, onPress, isDarkMode }: { session: any; onPress: () => void; isDarkMode: boolean }) => (
+  <TouchableOpacity style={[styles.chatCard, isDarkMode ? styles.darkChatCard : styles.lightChatCard]} onPress={onPress}>
     <View style={styles.chatHeader}>
-      <Text style={styles.leadName}>{session.lead?.name || 'Unknown User'}</Text>
-      <Text style={styles.messageCount}>{session.messageCount} messages</Text>
+      <Text style={[styles.leadName, isDarkMode ? styles.lightText : styles.darkText]}>{session.lead?.name || 'Unknown User'}</Text>
+      <Text style={[styles.messageCount, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>{session.messageCount} messages</Text>
     </View>
-    <Text style={styles.lastMessage}>
+    <Text style={[styles.lastMessage, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
       {session.lastMessage?.message || 'No messages yet'}
     </Text>
-    <Text style={styles.timestamp}>
+    <Text style={[styles.timestamp, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
       {new Date(session.lastActivity).toLocaleString()}
     </Text>
   </TouchableOpacity>
@@ -33,6 +34,7 @@ type NavigationProps = NavigationProp<RootStackParamList>;
 
 const ChatScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const { isDarkMode } = useTheme();
   const [activeChats, setActiveChats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,19 +71,19 @@ const ChatScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Active Conversations</Text>
-        <Text style={styles.headerSubtitle}>Chat with your leads</Text>
+    <View style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.lightText : styles.darkText]}>Active Conversations</Text>
+        <Text style={[styles.headerSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Chat with your leads</Text>
       </View>
 
       <FlatList
         data={activeChats}
-        renderItem={({ item }) => <ChatSessionCard session={item} onPress={() => handleChatPress(item)} />}
+        renderItem={({ item }) => <ChatSessionCard session={item} onPress={() => handleChatPress(item)} isDarkMode={isDarkMode} />}
         keyExtractor={(item) => item.telegramUserId}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
+            <Text style={[styles.emptyText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               {loading ? 'Loading conversations...' : 'No active conversations'}
             </Text>
           </View>
@@ -96,9 +98,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  lightBackground: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkBackground: {
+    backgroundColor: '#1A1F71',
+  },
   header: {
     backgroundColor: '#1a0033',
     padding: 20,
+  },
+  lightHeader: {
+    backgroundColor: '#FFFFFF',
+  },
+  darkHeader: {
+    backgroundColor: '#1a0033',
   },
   headerTitle: {
     fontSize: 24,
@@ -110,6 +124,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#aaa',
   },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightTextSecondary: {
+    color: '#666666',
+  },
+  darkTextSecondary: {
+    color: '#A0C4E4',
+  },
   chatCard: {
     backgroundColor: 'white',
     margin: 10,
@@ -120,6 +146,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  lightChatCard: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  darkChatCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
   },
   chatHeader: {
     flexDirection: 'row',

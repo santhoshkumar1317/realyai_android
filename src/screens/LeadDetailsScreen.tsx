@@ -13,6 +13,7 @@ import {
   RouteProp,
   NavigationProp,
 } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, Lead, ChatMessage } from '../utils/api';
 
 type RouteParams = {
@@ -30,6 +31,7 @@ const LeadDetailsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RouteParams, 'LeadDetails'>>();
   const { leadId, channel } = route.params;
+  const { isDarkMode } = useTheme();
 
   const [lead, setLead] = useState<Lead | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
@@ -78,16 +80,16 @@ const LeadDetailsScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading lead details...</Text>
+      <View style={[styles.loadingContainer, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
+        <Text style={[styles.loadingText, isDarkMode ? styles.lightText : styles.darkText]}>Loading lead details...</Text>
       </View>
     );
   }
 
   if (!lead) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Lead not found</Text>
+      <View style={[styles.errorContainer, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
+        <Text style={[styles.errorText, isDarkMode ? styles.lightText : styles.darkText]}>Lead not found</Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -99,12 +101,12 @@ const LeadDetailsScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
       {/* Lead Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
         <View style={styles.headerContent}>
-          <Text style={styles.leadName}>{lead.name || 'Unknown Lead'}</Text>
-          <Text style={styles.telegramId}>
+          <Text style={[styles.leadName, isDarkMode ? styles.lightText : styles.darkText]}>{lead.name || 'Unknown Lead'}</Text>
+          <Text style={[styles.telegramId, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
             @{lead.telegramUserId || lead.whatsappUserId}
           </Text>
           <Text
@@ -119,21 +121,21 @@ const LeadDetailsScreen = () => {
       </View>
 
       {/* Lead Info */}
-      <View style={styles.infoContainer}>
+      <View style={[styles.infoContainer, isDarkMode ? styles.darkSection : styles.lightSection]}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
+          <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Contact Information</Text>
           {lead.phoneNumber && (
-            <Text style={styles.infoText}>📞 {lead.phoneNumber}</Text>
+            <Text style={[styles.infoText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>📞 {lead.phoneNumber}</Text>
           )}
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
             🗣️ Language: {lead.language.toUpperCase()}
           </Text>
         </View>
 
         {lead.budget && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Budget</Text>
-            <Text style={styles.budgetText}>
+            <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Budget</Text>
+            <Text style={[styles.budgetText, isDarkMode ? styles.lightText : styles.darkText]}>
               ₹{lead.budget.toLocaleString()}
             </Text>
           </View>
@@ -141,30 +143,30 @@ const LeadDetailsScreen = () => {
 
         {lead.expectations && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Expectations</Text>
-            <Text style={styles.expectationsText}>{lead.expectations}</Text>
+            <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Expectations</Text>
+            <Text style={[styles.expectationsText, isDarkMode ? styles.lightText : styles.darkText]}>{lead.expectations}</Text>
           </View>
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Timeline</Text>
-          <Text style={styles.infoText}>
+          <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Timeline</Text>
+          <Text style={[styles.infoText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
             Created: {new Date(lead.createdAt).toLocaleDateString()}
           </Text>
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
             Updated: {new Date(lead.updatedAt).toLocaleDateString()}
           </Text>
         </View>
       </View>
 
       {/* Chat History */}
-      <View style={styles.chatContainer}>
-        <Text style={styles.sectionTitle}>Chat History</Text>
+      <View style={[styles.chatContainer, isDarkMode ? styles.darkSection : styles.lightSection]}>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Chat History</Text>
         {chatHistory.length > 0 ? (
           chatHistory.slice(0, 10).map(chat => (
             <TouchableOpacity
               key={chat.id}
-              style={styles.chatMessage}
+              style={[styles.chatMessage, isDarkMode ? styles.darkChatMessage : styles.lightChatMessage]}
               onPress={() =>
                 navigation.navigate('ChatDetail', {
                   telegramUserId:
@@ -174,21 +176,21 @@ const LeadDetailsScreen = () => {
               }
             >
               <View style={styles.messageHeader}>
-                <Text style={styles.messageType}>
+                <Text style={[styles.messageType, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                   {chat.messageType === 'text' ? '💬' : '📎'} {chat.messageType}
                 </Text>
-                <Text style={styles.messageTime}>
+                <Text style={[styles.messageTime, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                   {new Date(chat.timestamp).toLocaleString()}
                 </Text>
               </View>
-              <Text style={styles.messageText}>{chat.message}</Text>
+              <Text style={[styles.messageText, isDarkMode ? styles.lightText : styles.darkText]}>{chat.message}</Text>
               {chat.response && (
-                <Text style={styles.responseText}>🤖 {chat.response}</Text>
+                <Text style={[styles.responseText, isDarkMode ? styles.lightText : styles.darkText]}>🤖 {chat.response}</Text>
               )}
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.noChatText}>No chat history available</Text>
+          <Text style={[styles.noChatText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>No chat history available</Text>
         )}
       </View>
     </ScrollView>
@@ -198,6 +200,12 @@ const LeadDetailsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1A1F71',
+  },
+  lightBackground: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkBackground: {
     backgroundColor: '#1A1F71',
   },
   loadingContainer: {
@@ -210,6 +218,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightTextSecondary: {
+    color: '#666666',
+  },
+  darkTextSecondary: {
+    color: '#A0C4E4',
   },
   errorContainer: {
     flex: 1,
@@ -239,6 +259,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1F71',
     padding: 20,
     borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#FFFFFF',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerContent: {
@@ -278,6 +306,16 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  lightSection: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  darkSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
     borderColor: 'rgba(255,255,255,0.1)',
   },
   section: {
@@ -328,6 +366,14 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  lightChatMessage: {
+    backgroundColor: '#F8F9FA',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  darkChatMessage: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderColor: 'rgba(255,255,255,0.1)',
   },
   messageHeader: {

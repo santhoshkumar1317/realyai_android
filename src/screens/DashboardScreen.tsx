@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, DashboardStats, User } from '../utils/api';
 
 // Components moved outside to avoid unstable nested components
@@ -18,15 +19,17 @@ const StatCard = ({
   value,
   subtitle,
   color = '#4A6FA5', // Default to blue card color
+  isDarkMode = true,
 }: {
   title: string;
   value: string | number;
   subtitle?: string;
   color?: string;
+  isDarkMode?: boolean;
 }) => (
   <View style={[styles.statCard, { borderLeftColor: color }]}>
-    <Text style={styles.statValue}>{value}</Text>
-    <Text style={styles.statTitle}>{title}</Text>
+    <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>{value}</Text>
+    <Text style={[styles.statTitle, isDarkMode ? null : styles.lightStatTitle]}>{title}</Text>
     {subtitle && <Text style={styles.statSubtitle}>{subtitle}</Text>}
   </View>
 );
@@ -66,6 +69,7 @@ const RecentActivityItem = ({
 const DashboardScreen = () => {
   const navigation = useNavigation();
   const { isTokenReady } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -130,73 +134,88 @@ const DashboardScreen = () => {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor="#FFFFFF"
-          colors={['#FFFFFF']}
+          tintColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
+          colors={[isDarkMode ? "#FFFFFF" : "#1A1F71"]}
         />
       }
     >
-      <View style={styles.header}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
         <View style={styles.headerTop}>
-          <Text style={styles.headerTitle}>Dashboard</Text>
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={() => navigation.navigate('Profile' as never)}
-          >
-            <View style={styles.profilePic}>
-              <Text style={styles.profilePicText}>
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
+          <Text style={[styles.headerTitle, isDarkMode ? styles.darkText : styles.lightText]}>Dashboard</Text>
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={styles.themeButton}
+              onPress={toggleTheme}
+            >
+              <Text style={styles.themeIcon}>
+                {isDarkMode ? '☀️' : '🌙'}
               </Text>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.profileButton}
+              onPress={() => navigation.navigate('Profile' as never)}
+            >
+              <View style={styles.profilePic}>
+                <Text style={styles.profilePicText}>
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.headerSubtitle}>Real Estate CRM Overview</Text>
+        <Text style={[styles.headerSubtitle, isDarkMode ? styles.darkSubtitle : styles.lightSubtitle]}>Real Estate CRM Overview</Text>
       </View>
 
       {/* Today's Stats */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Today's Performance</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Today's Performance</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="New Leads"
             value={stats.today.newLeads}
             subtitle="Today"
             color="#4A6FA5" // Blue card
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Chat Messages"
             value={stats.today.chatMessages}
             subtitle="Today"
             color="#5D3FD3" // Purple card
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Total Leads"
             value={stats.today.totalLeads}
             subtitle="Today"
             color="#4A6FA5" // Blue card
+            isDarkMode={isDarkMode}
           />
         </View>
       </View>
 
       {/* My Stats */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>My Stats</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>My Stats</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="My Properties"
             value={userPropertyCount}
             subtitle="Listed"
             color="#5D3FD3" // Purple card
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Qualified Leads"
             value={qualifiedLeadsCount}
             subtitle="Total"
             color="#4A6FA5" // Blue card
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Lead Follow-ups"
@@ -207,63 +226,70 @@ const DashboardScreen = () => {
             }
             subtitle="Pending"
             color="#5D3FD3" // Purple card
+            isDarkMode={isDarkMode}
           />
         </View>
       </View>
 
       {/* This Week Stats */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>This Week</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>This Week</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="Leads"
             value={stats.thisWeek.leads}
             subtitle="This week"
             color="#5D3FD3"
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Properties"
             value={stats.thisWeek.properties}
             subtitle="Listed"
             color="#4A6FA5"
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Conversion"
             value={`${stats.thisWeek.conversion}%`}
             subtitle="Rate"
             color="#5D3FD3"
+            isDarkMode={isDarkMode}
           />
         </View>
       </View>
 
       {/* Overall Stats */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Overall Performance</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Overall Performance</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="Total Leads"
             value={stats.overall.totalLeads}
             subtitle="All time"
             color="#4A6FA5"
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Properties"
             value={stats.overall.totalProperties}
             subtitle="Listed"
             color="#5D3FD3"
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Conversion Rate"
             value={`${stats.overall.conversionRate}%`}
             subtitle="Qualified leads"
             color="#4A6FA5"
+            isDarkMode={isDarkMode}
           />
         </View>
       </View>
 
       {/* Lead Status Distribution */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Lead Status Distribution</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Lead Status Distribution</Text>
         <View style={styles.statusGrid}>
           {Object.entries(stats.overall.leadsByStatus).map(
             ([status, count]) => (
@@ -280,7 +306,7 @@ const DashboardScreen = () => {
 
       {/* Recent Activity */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Recent Activity</Text>
         {stats.recentActivity.leads.slice(0, 3).map(lead => (
           <RecentActivityItem
             key={lead.id}
@@ -307,7 +333,7 @@ const DashboardScreen = () => {
 
       {/* Quick Actions */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Quick Actions</Text>
         <View style={styles.actionsGrid}>
           <TouchableOpacity
             style={styles.actionButton}
@@ -347,6 +373,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1A1F71', // Primary background
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA', // Glazier shiny white background
   },
   loadingContainer: {
     flex: 1,
@@ -389,11 +421,28 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 24,
   },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+  },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 4,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  themeButton: {
+    padding: 8,
+    marginRight: 8,
+  },
+  themeIcon: {
+    fontSize: 24,
   },
   headerTitle: {
     fontSize: 28,
@@ -401,10 +450,22 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'System',
   },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
   headerSubtitle: {
     fontSize: 15,
     color: '#A0C4E4', // Light desaturated blue
     fontFamily: 'System',
+  },
+  darkSubtitle: {
+    color: '#A0C4E4',
+  },
+  lightSubtitle: {
+    color: '#1A1F71',
   },
   profileButton: {
     padding: 4,
@@ -455,17 +516,23 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#3577cdff',
     marginBottom: 4,
     fontFamily: 'System',
   },
+  lightStatValue: {
+    color: '#1A1F71',
+  },
   statTitle: {
     fontSize: 11,
-    color: '#A0C4E4',
+    color: '#4d97d7ff',
     textTransform: 'uppercase',
     fontWeight: '700',
     letterSpacing: 0.5,
     fontFamily: 'System',
+  },
+  lightStatTitle: {
+    color: '#666666',
   },
   statSubtitle: {
     fontSize: 10,
@@ -500,7 +567,7 @@ const styles = StyleSheet.create({
   statusValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#281497ff',
     fontFamily: 'System',
   },
   activityItem: {

@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, ChatMessage } from '../utils/api';
 
 type RootStackParamList = {
@@ -35,6 +36,7 @@ const ChatDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<ChatDetailRouteProp>();
   const { telegramUserId, leadName } = route.params;
+  const { isDarkMode } = useTheme();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,17 +92,17 @@ const ChatDetailScreen = () => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{leadName || 'Chat'}</Text>
-          <Text style={styles.headerSubtitle}>@{telegramUserId}</Text>
+          <Text style={[styles.headerTitle, isDarkMode ? styles.lightText : styles.darkText]}>{leadName || 'Chat'}</Text>
+          <Text style={[styles.headerSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>@{telegramUserId}</Text>
         </View>
       </View>
 
@@ -114,7 +116,7 @@ const ChatDetailScreen = () => {
         inverted={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
+            <Text style={[styles.emptyText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               {loading ? 'Loading messages...' : 'No messages yet'}
             </Text>
           </View>
@@ -122,10 +124,11 @@ const ChatDetailScreen = () => {
       />
 
       {/* Message Input */}
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, isDarkMode ? styles.darkInputContainer : styles.lightInputContainer]}>
         <TextInput
-          style={styles.messageInput}
+          style={[styles.messageInput, isDarkMode ? styles.darkMessageInput : styles.lightMessageInput]}
           placeholder="Type a message..."
+          placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
           value={newMessage}
           onChangeText={setNewMessage}
           multiline
@@ -148,12 +151,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  lightBackground: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkBackground: {
+    backgroundColor: '#1A1F71',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1a0033',
     padding: 15,
     paddingTop: 50,
+  },
+  lightHeader: {
+    backgroundColor: '#FFFFFF',
+  },
+  darkHeader: {
+    backgroundColor: '#1a0033',
   },
   backButton: {
     marginRight: 15,
@@ -170,6 +185,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightTextSecondary: {
+    color: '#666666',
+  },
+  darkTextSecondary: {
+    color: '#A0C4E4',
   },
   headerSubtitle: {
     fontSize: 14,
@@ -240,6 +267,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
   },
+  lightInputContainer: {
+    backgroundColor: '#FFFFFF',
+    borderTopColor: '#e0e0e0',
+  },
+  darkInputContainer: {
+    backgroundColor: '#1A1F71',
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
   messageInput: {
     flex: 1,
     borderWidth: 1,
@@ -250,6 +285,16 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: '#f9f9f9',
     maxHeight: 100,
+  },
+  lightMessageInput: {
+    backgroundColor: '#f9f9f9',
+    borderColor: '#ddd',
+    color: '#333',
+  },
+  darkMessageInput: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.3)',
+    color: '#FFFFFF',
   },
   sendButton: {
     backgroundColor: '#6a0dad',

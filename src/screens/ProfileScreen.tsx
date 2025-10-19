@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, User } from '../utils/api';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { ActionSheetIOS } from 'react-native';
@@ -19,6 +20,7 @@ import { ActionSheetIOS } from 'react-native';
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const { logoutUser } = useAuth();
+  const { isDarkMode } = useTheme();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -216,8 +218,8 @@ const ProfileScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <ScrollView style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
         <TouchableOpacity
           style={styles.avatarContainer}
           onPress={handleAvatarPress}
@@ -238,8 +240,8 @@ const ProfileScreen = () => {
             </View>
           )}
         </TouchableOpacity>
-        <Text style={styles.username}>{user?.username}</Text>
-        <Text style={styles.company}>{user?.companyName}</Text>
+        <Text style={[styles.username, isDarkMode ? styles.darkText : styles.lightText]}>{user?.username}</Text>
+        <Text style={[styles.company, isDarkMode ? styles.darkCompany : styles.lightCompany]}>{user?.companyName}</Text>
       </View>
 
       <Modal
@@ -268,23 +270,23 @@ const ProfileScreen = () => {
       </Modal>
 
       <View style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account Information</Text>
-          <View style={styles.infoItem}>
-            <Text style={styles.label}>Email:</Text>
-            <Text style={styles.value}>{user?.email}</Text>
+        <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Account Information</Text>
+          <View style={[styles.infoItem, isDarkMode ? null : styles.lightInfoItem]}>
+            <Text style={[styles.label, isDarkMode ? null : styles.lightLabel]}>Email:</Text>
+            <Text style={[styles.value, isDarkMode ? null : styles.lightValue]}>{user?.email}</Text>
           </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.label}>Phone:</Text>
-            <Text style={styles.value}>{user?.phoneNumber}</Text>
+          <View style={[styles.infoItem, isDarkMode ? null : styles.lightInfoItem]}>
+            <Text style={[styles.label, isDarkMode ? null : styles.lightLabel]}>Phone:</Text>
+            <Text style={[styles.value, isDarkMode ? null : styles.lightValue]}>{user?.phoneNumber}</Text>
           </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.label}>Company:</Text>
-            <Text style={styles.value}>{user?.companyName}</Text>
+          <View style={[styles.infoItem, isDarkMode ? null : styles.lightInfoItem]}>
+            <Text style={[styles.label, isDarkMode ? null : styles.lightLabel]}>Company:</Text>
+            <Text style={[styles.value, isDarkMode ? null : styles.lightValue]}>{user?.companyName}</Text>
           </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.label}>Member since:</Text>
-            <Text style={styles.value}>
+          <View style={[styles.infoItem, isDarkMode ? null : styles.lightInfoItem]}>
+            <Text style={[styles.label, isDarkMode ? null : styles.lightLabel]}>Member since:</Text>
+            <Text style={[styles.value, isDarkMode ? null : styles.lightValue]}>
               {user?.createdAt
                 ? new Date(user.createdAt).toLocaleDateString()
                 : 'N/A'}
@@ -292,39 +294,39 @@ const ProfileScreen = () => {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Company Address</Text>
+        <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Company Address</Text>
           {user?.companyAddress ? (
-            <View style={styles.addressContainer}>
+            <View style={[styles.addressContainer, isDarkMode ? null : styles.lightAddressContainer]}>
               {user.companyAddress.street && (
-                <Text style={styles.addressLine}>
+                <Text style={[styles.addressLine, isDarkMode ? null : styles.lightAddressLine]}>
                   {user.companyAddress.street}
                 </Text>
               )}
               {user.companyAddress.area && (
-                <Text style={styles.addressLine}>
+                <Text style={[styles.addressLine, isDarkMode ? null : styles.lightAddressLine]}>
                   {user.companyAddress.area}
                 </Text>
               )}
-              <Text style={styles.addressLine}>
+              <Text style={[styles.addressLine, isDarkMode ? null : styles.lightAddressLine]}>
                 {user.companyAddress.city}, {user.companyAddress.state}
               </Text>
-              <Text style={styles.addressLine}>
+              <Text style={[styles.addressLine, isDarkMode ? null : styles.lightAddressLine]}>
                 {user.companyAddress.country} - {user.companyAddress.pincode}
               </Text>
             </View>
           ) : (
-            <Text style={styles.noAddressText}>No company address set</Text>
+            <Text style={[styles.noAddressText, isDarkMode ? null : styles.lightNoAddressText]}>No company address set</Text>
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Communication Channels</Text>
+        <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Communication Channels</Text>
           <TouchableOpacity
-            style={styles.infoItem}
+            style={[styles.infoItem, isDarkMode ? null : styles.lightInfoItem]}
             onPress={() => toggleBotStatus('telegram')}
           >
-            <Text style={styles.label}>Telegram Bot:</Text>
+            <Text style={[styles.label, isDarkMode ? null : styles.lightLabel]}>Telegram Bot:</Text>
             <View style={styles.statusContainer}>
               <Text
                 style={
@@ -335,14 +337,14 @@ const ProfileScreen = () => {
               >
                 {user?.telegramBotActive ? 'Active' : 'Inactive'}
               </Text>
-              <Text style={styles.tapHint}>Tap to toggle</Text>
+              <Text style={[styles.tapHint, isDarkMode ? null : styles.lightTapHint]}>Tap to toggle</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.infoItem}
+            style={[styles.infoItem, isDarkMode ? null : styles.lightInfoItem]}
             onPress={() => toggleBotStatus('whatsapp')}
           >
-            <Text style={styles.label}>WhatsApp Bot:</Text>
+            <Text style={[styles.label, isDarkMode ? null : styles.lightLabel]}>WhatsApp Bot:</Text>
             <View style={styles.statusContainer}>
               <Text
                 style={
@@ -353,7 +355,7 @@ const ProfileScreen = () => {
               >
                 {user?.whatsappBotActive ? 'Active' : 'Inactive'}
               </Text>
-              <Text style={styles.tapHint}>Tap to toggle</Text>
+              <Text style={[styles.tapHint, isDarkMode ? null : styles.lightTapHint]}>Tap to toggle</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -602,6 +604,60 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     borderRadius: 8,
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkCompany: {
+    color: '#A0C4E4',
+  },
+  lightCompany: {
+    color: '#666666',
+  },
+  lightSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  lightSectionTitle: {
+    color: '#1A1F71',
+  },
+  lightInfoItem: {
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  lightLabel: {
+    color: '#666666',
+  },
+  lightValue: {
+    color: '#1A1F71',
+  },
+  lightAddressContainer: {
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+  lightAddressLine: {
+    color: '#1A1F71',
+  },
+  lightNoAddressText: {
+    color: '#666666',
+  },
+  lightTapHint: {
+    color: '#999999',
   },
 });
 

@@ -9,11 +9,13 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../utils/api';
 import LocationPicker from '../components/LocationPicker';
 
 const AddEditLocationScreen = () => {
   const navigation = useNavigation();
+  const { isDarkMode } = useTheme();
   const [loading, setLoading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(true);
   const [formData, setFormData] = useState({
@@ -100,10 +102,10 @@ const AddEditLocationScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Refine Location Details</Text>
-        <Text style={styles.headerSubtitle}>
+    <ScrollView style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.darkText : styles.lightText]}>Refine Location Details</Text>
+        <Text style={[styles.headerSubtitle, isDarkMode ? styles.darkSubtitle : styles.lightSubtitle]}>
           Review and adjust the selected location
         </Text>
         <TouchableOpacity
@@ -118,14 +120,14 @@ const AddEditLocationScreen = () => {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Address *</Text>
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, isDarkMode ? styles.darkInput : styles.lightInput]}
             value={formData.address}
             onChangeText={value => handleInputChange('address', value)}
             placeholder="Full street address..."
-            placeholderTextColor="#A0C4E4"
+            placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
             multiline
             numberOfLines={3}
-            selectionColor="#FFFFFF"
+            selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
           />
         </View>
 
@@ -133,23 +135,23 @@ const AddEditLocationScreen = () => {
           <View style={[styles.inputGroup, styles.halfWidth]}>
             <Text style={styles.label}>City *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.city}
               onChangeText={value => handleInputChange('city', value)}
               placeholder="City name"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
           <View style={[styles.inputGroup, styles.halfWidth]}>
             <Text style={styles.label}>State *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.state}
               onChangeText={value => handleInputChange('state', value)}
               placeholder="State/Province"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
         </View>
@@ -158,23 +160,23 @@ const AddEditLocationScreen = () => {
           <View style={[styles.inputGroup, styles.halfWidth]}>
             <Text style={styles.label}>Country *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.country}
               onChangeText={value => handleInputChange('country', value)}
               placeholder="Country name"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
           <View style={[styles.inputGroup, styles.halfWidth]}>
             <Text style={styles.label}>Postal Code</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.postalCode}
               onChangeText={value => handleInputChange('postalCode', value)}
               placeholder="ZIP/Postal code"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
         </View>
@@ -187,21 +189,21 @@ const AddEditLocationScreen = () => {
             <View style={[styles.inputGroup, styles.halfWidth]}>
               <Text style={styles.label}>Latitude *</Text>
               <TextInput
-                style={[styles.input, styles.readOnly]}
+                style={[styles.input, styles.readOnly, isDarkMode ? styles.darkReadOnly : styles.lightReadOnly]}
                 value={formData.latitude}
                 editable={false}
                 placeholder="-90 to 90"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={isDarkMode ? "#94a3b8" : "#999999"}
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
               <Text style={styles.label}>Longitude *</Text>
               <TextInput
-                style={[styles.input, styles.readOnly]}
+                style={[styles.input, styles.readOnly, isDarkMode ? styles.darkReadOnly : styles.lightReadOnly]}
                 value={formData.longitude}
                 editable={false}
                 placeholder="-180 to 180"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={isDarkMode ? "#94a3b8" : "#999999"}
               />
             </View>
           </View>
@@ -226,11 +228,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1A1F71',
   },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
   header: {
     backgroundColor: '#1A1F71',
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -239,10 +255,22 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     fontFamily: 'System',
   },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
   headerSubtitle: {
     fontSize: 16,
     color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkSubtitle: {
+    color: '#A0C4E4',
+  },
+  lightSubtitle: {
+    color: '#666666',
   },
   backToMapButton: {
     marginTop: 12,
@@ -280,6 +308,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
     color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  lightInput: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0,0,0,0.2)',
+    color: '#1A1F71',
+  },
+  darkInput: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.3)',
+    color: '#FFFFFF',
   },
   textArea: {
     height: 90,
@@ -330,6 +368,14 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
   },
   readOnly: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    color: '#A0C4E4',
+  },
+  lightReadOnly: {
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    color: '#666666',
+  },
+  darkReadOnly: {
     backgroundColor: 'rgba(255,255,255,0.08)',
     color: '#A0C4E4',
   },

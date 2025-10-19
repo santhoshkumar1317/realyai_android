@@ -9,6 +9,7 @@ import {
   Alert,
   Switch,
 } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../utils/api';
 
 interface BotConfig {
@@ -277,6 +278,7 @@ const BotConfigCard = ({
 };
 
 const BotConfigurationScreen = () => {
+  const { isDarkMode } = useTheme();
   const [configs, setConfigs] = useState<BotConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -338,10 +340,10 @@ const BotConfigurationScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Bot Configuration</Text>
-        <Text style={styles.subtitle}>Configure your Telegram, WhatsApp, and Email bots</Text>
+    <ScrollView style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.title, isDarkMode ? styles.darkText : styles.lightText]}>Bot Configuration</Text>
+        <Text style={[styles.subtitle, isDarkMode ? styles.darkSubtitle : styles.lightSubtitle]}>Configure your Telegram, WhatsApp, and Email bots</Text>
       </View>
 
       {configs.length === 0 ? (
@@ -621,6 +623,30 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkSubtitle: {
+    color: '#A0C4E4',
+  },
+  lightSubtitle: {
+    color: '#666666',
   },
 });
 

@@ -16,6 +16,7 @@ import {
 } from '@react-navigation/native';
 import { apiService, Lead } from '../utils/api';
 import { RootStackParamList } from '../types/navigation';
+import { useTheme } from '../context/ThemeContext';
 
 // Utility function to format time duration
 const formatTimeAgo = (dateString: string | null): string => {
@@ -63,13 +64,13 @@ const getFollowUpStatusColor = (status?: string) => {
   }
 };
 
-const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
+const LeadCard = ({ lead, navigation, isDarkMode = true }: { lead: Lead; navigation: any; isDarkMode?: boolean }) => {
   const isTelegram = !!lead.telegramUserId;
   const isWhatsApp = !!lead.whatsappUserId;
 
   return (
     <TouchableOpacity
-      style={styles.leadCard}
+      style={[styles.leadCard, isDarkMode ? null : styles.lightLeadCard]}
       onPress={() =>
         navigation.navigate('LeadDetails', {
           leadId: lead.id,
@@ -83,8 +84,8 @@ const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
     >
       <View style={styles.leadHeader}>
         <View style={styles.leadInfo}>
-          <Text style={styles.leadName}>{lead.name || 'Unknown Lead'}</Text>
-          <Text style={styles.telegramId}>
+          <Text style={[styles.leadName, isDarkMode ? null : styles.lightLeadName]}>{lead.name || 'Unknown Lead'}</Text>
+          <Text style={[styles.telegramId, isDarkMode ? null : styles.lightTelegramId]}>
             @{lead.telegramUserId || lead.whatsappUserId}
           </Text>
         </View>
@@ -115,9 +116,9 @@ const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
       <View style={styles.leadDetails}>
         <View style={styles.leadDetailsRow}>
           {lead.phoneNumber && (
-            <Text style={styles.detailText}>📞 {lead.phoneNumber}</Text>
+            <Text style={[styles.detailText, isDarkMode ? null : styles.lightDetailText]}>📞 {lead.phoneNumber}</Text>
           )}
-          <Text style={styles.mediumText}>
+          <Text style={[styles.mediumText, isDarkMode ? null : styles.lightMediumText]}>
             {isTelegram
               ? '📱 Telegram'
               : isWhatsApp
@@ -126,22 +127,22 @@ const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
           </Text>
         </View>
         {lead.budget && (
-          <Text style={styles.detailText}>
+          <Text style={[styles.detailText, isDarkMode ? null : styles.lightDetailText]}>
             💰 ₹{lead.budget.toLocaleString()}
           </Text>
         )}
         {lead.expectations && (
-          <Text style={styles.expectationsText} numberOfLines={2}>
+          <Text style={[styles.expectationsText, isDarkMode ? null : styles.lightExpectationsText]} numberOfLines={2}>
             {lead.expectations}
           </Text>
         )}
       </View>
 
-      <View style={styles.leadFooter}>
-        <Text style={styles.dateText}>
+      <View style={[styles.leadFooter, isDarkMode ? null : styles.lightLeadFooter]}>
+        <Text style={[styles.dateText, isDarkMode ? null : styles.lightDateText]}>
           {new Date(lead.createdAt).toLocaleDateString()}
         </Text>
-        <Text style={styles.interactionText}>
+        <Text style={[styles.interactionText, isDarkMode ? null : styles.lightInteractionText]}>
           Last: {formatTimeAgo(lead.lastInteraction || null)}
         </Text>
       </View>
@@ -152,15 +153,17 @@ const LeadCard = ({ lead, navigation }: { lead: Lead; navigation: any }) => {
 const StatusFilter = ({
   statusFilter,
   setStatusFilter,
+  isDarkMode = true,
 }: {
   statusFilter: string;
   setStatusFilter: (status: string) => void;
+  isDarkMode?: boolean;
 }) => {
   const statuses = ['ALL', 'HIGH', 'MEDIUM', 'NOT_QUALIFIED'];
 
   return (
-    <View style={styles.filterContainer}>
-      <Text style={styles.filterTitle}>Filter by Status:</Text>
+    <View style={[styles.filterContainer, isDarkMode ? styles.darkFilterContainer : styles.lightFilterContainer]}>
+      <Text style={[styles.filterTitle, isDarkMode ? styles.darkFilterTitle : styles.lightFilterTitle]}>Filter by Status:</Text>
       <View style={styles.filterButtons}>
         {statuses.map(status => (
           <TouchableOpacity
@@ -193,21 +196,24 @@ const StatCard = ({
   value,
   subtitle,
   color = '#4A6FA5',
+  isDarkMode = true,
 }: {
   title: string;
   value: string | number;
   subtitle?: string;
   color?: string;
+  isDarkMode?: boolean;
 }) => (
   <View style={[styles.statCard, { borderLeftColor: color }]}>
-    <Text style={styles.statValue}>{value}</Text>
-    <Text style={styles.statTitle}>{title}</Text>
+    <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>{value}</Text>
+    <Text style={[styles.statTitle, isDarkMode ? null : styles.lightStatTitle]}>{title}</Text>
     {subtitle && <Text style={styles.statSubtitle}>{subtitle}</Text>}
   </View>
 );
 
 const LeadsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { isDarkMode } = useTheme();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -309,58 +315,61 @@ const LeadsScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
       {/* Stats Header */}
-      <View style={styles.statsHeader}>
-        <Text style={styles.statsHeaderTitle}>Leads Overview</Text>
+      <View style={[styles.statsHeader, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.statsHeaderTitle, isDarkMode ? styles.darkText : styles.lightText]}>Leads Overview</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="Total Leads"
             value={stats.totalLeads}
             subtitle="All channels"
             color="#4A6FA5" // Blue
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Qualified Leads"
             value={stats.qualifiedLeads}
             subtitle="High/Medium"
             color="#5D3FD3" // Purple
+            isDarkMode={isDarkMode}
           />
           <StatCard
             title="Pending Follow-ups"
             value={stats.pendingFollowUps}
             subtitle="Requires action"
             color="#FF69B4" // Accent pink
+            isDarkMode={isDarkMode}
           />
         </View>
 
       </View>
 
       {/* Channel Navigation */}
-      <View style={styles.channelNavigation}>
+      <View style={[styles.channelNavigation, isDarkMode ? styles.darkChannelNavigation : styles.lightChannelNavigation]}>
         <TouchableOpacity
-          style={styles.channelButton}
+          style={[styles.channelButton, isDarkMode ? styles.darkChannelButton : styles.lightChannelButton]}
           onPress={() => navigation.navigate('TelegramLeads')}
         >
-          <Text style={styles.channelButtonText}>📱 Telegram</Text>
+          <Text style={[styles.channelButtonText, isDarkMode ? styles.darkChannelButtonText : styles.lightChannelButtonText]}>📱 Telegram</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.channelButton}
+          style={[styles.channelButton, isDarkMode ? styles.darkChannelButton : styles.lightChannelButton]}
           onPress={() => navigation.navigate('WhatsAppLeads')}
         >
-          <Text style={styles.channelButtonText}>💬 WhatsApp</Text>
+          <Text style={[styles.channelButtonText, isDarkMode ? styles.darkChannelButtonText : styles.lightChannelButtonText]}>💬 WhatsApp</Text>
         </TouchableOpacity>
       </View>
 
       {/* Search */}
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer, isDarkMode ? styles.darkSearchContainer : styles.lightSearchContainer]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, isDarkMode ? styles.darkSearchInput : styles.lightSearchInput]}
           placeholder="Search leads by name or phone..."
-          placeholderTextColor="#A0C4E4"
+          placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
           value={searchQuery}
           onChangeText={handleSearch}
-          selectionColor="#FFFFFF"
+          selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
         />
       </View>
 
@@ -368,6 +377,7 @@ const LeadsScreen = () => {
       <StatusFilter
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
+        isDarkMode={isDarkMode}
       />
 
       {/* Leads List */}
@@ -383,8 +393,8 @@ const LeadsScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFFFFF"
-            colors={['#FFFFFF']}
+            tintColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
+            colors={[isDarkMode ? "#FFFFFF" : "#1A1F71"]}
           />
         }
         ListEmptyComponent={
@@ -418,11 +428,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1F71', // Primary background
     paddingTop: 20, // Add padding to prevent content from hiding behind status bar
   },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA', // Glazier shiny white background
+  },
   statsHeader: {
     backgroundColor: '#1A1F71',
     padding: 20,
     paddingTop: 40,
     paddingBottom: 24,
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
   },
   statsHeaderTitle: {
     fontSize: 24,
@@ -430,6 +452,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 16,
     fontFamily: 'System',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
   },
   statsGrid: {
     flexDirection: 'row',
@@ -456,6 +484,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontFamily: 'System',
   },
+  lightStatValue: {
+    color: '#1A1F71',
+  },
   statTitle: {
     fontSize: 11,
     color: '#A0C4E4',
@@ -463,6 +494,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
     fontFamily: 'System',
+  },
+  lightStatTitle: {
+    color: '#666666',
   },
   statSubtitle: {
     fontSize: 10,
@@ -476,6 +510,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
+  darkSearchContainer: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightSearchContainer: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
   searchInput: {
     height: 42,
     borderWidth: 1,
@@ -486,11 +528,29 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'System',
   },
+  darkSearchInput: {
+    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+  },
+  lightSearchInput: {
+    borderColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    color: '#1A1F71',
+  },
   filterContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.12)',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  darkFilterContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightFilterContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   filterTitle: {
     fontSize: 14,
@@ -498,6 +558,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 12,
     fontFamily: 'System',
+  },
+  darkFilterTitle: {
+    color: '#FFFFFF',
+  },
+  lightFilterTitle: {
+    color: '#1A1F71',
   },
   filterButtons: {
     flexDirection: 'row',
@@ -667,14 +733,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  darkChannelNavigation: {
+    // No additional styles needed for dark mode
+  },
+  lightChannelNavigation: {
+    // No additional styles needed for light mode
+  },
   channelButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderRadius: 12,
+    marginBottom: 10,
     flex: 1,
     marginHorizontal: 4,
     alignItems: 'center',
+  },
+  darkChannelButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  lightChannelButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   channelButtonText: {
     fontSize: 12,
@@ -682,6 +761,40 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkChannelButtonText: {
+    color: '#FFFFFF',
+  },
+  lightChannelButtonText: {
+    color: '#1A1F71',
+  },
+  lightLeadCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  lightLeadName: {
+    color: '#1A1F71',
+  },
+  lightTelegramId: {
+    color: '#666666',
+  },
+  lightDetailText: {
+    color: '#666666',
+  },
+  lightMediumText: {
+    color: '#FF69B4',
+  },
+  lightExpectationsText: {
+    color: '#1A1F71',
+  },
+  lightLeadFooter: {
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  lightDateText: {
+    color: '#666666',
+  },
+  lightInteractionText: {
+    color: '#666666',
   },
 });
 

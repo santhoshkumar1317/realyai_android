@@ -9,6 +9,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../utils/api';
 
 interface Schedule {
@@ -120,6 +121,7 @@ const ScheduleCard = ({ schedule }: { schedule: Schedule }) => {
 };
 
 const SchedulesScreen = () => {
+  const { isDarkMode } = useTheme();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -158,9 +160,9 @@ const SchedulesScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Schedules</Text>
+    <View style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.darkText : styles.lightText]}>Schedules</Text>
       </View>
 
       <FlatList
@@ -310,6 +312,26 @@ const styles = StyleSheet.create({
     color: '#A0C4E4',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
   },
 });
 

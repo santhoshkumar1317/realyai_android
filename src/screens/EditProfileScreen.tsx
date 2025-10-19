@@ -10,10 +10,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, User } from '../utils/api';
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
+  const { isDarkMode } = useTheme();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -115,149 +117,149 @@ const EditProfileScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#5D3FD3" />
-        <Text style={styles.loadingText}>Loading profile...</Text>
+      <View style={[styles.loadingContainer, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
+        <ActivityIndicator size="large" color={isDarkMode ? "#FFFFFF" : "#5D3FD3"} />
+        <Text style={[styles.loadingText, isDarkMode ? styles.lightText : styles.darkText]}>Loading profile...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
-        <Text style={styles.headerSubtitle}>
+    <ScrollView style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.lightText : styles.darkText]}>Edit Profile</Text>
+        <Text style={[styles.headerSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
           Update your account information
         </Text>
       </View>
 
       <View style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Basic Information</Text>
+        <View style={[styles.section, isDarkMode ? styles.darkSection : styles.lightSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Basic Information</Text>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Username *</Text>
+            <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Username *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.username}
               onChangeText={value => handleInputChange('username', value)}
               placeholder="Enter your username"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Company Name *</Text>
+            <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Company Name *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.companyName}
               onChangeText={value => handleInputChange('companyName', value)}
               placeholder="Enter your company name"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Phone Number *</Text>
+            <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Phone Number *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.phoneNumber}
               onChangeText={value => handleInputChange('phoneNumber', value)}
               placeholder="Enter your phone number"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
               keyboardType="phone-pad"
             />
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Company Address</Text>
+        <View style={[styles.section, isDarkMode ? styles.darkSection : styles.lightSection]}>
+          <Text style={[styles.sectionTitle, isDarkMode ? styles.lightText : styles.darkText]}>Company Address</Text>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Street</Text>
+            <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Street</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.companyAddress.street}
               onChangeText={value =>
                 handleInputChange('companyAddress.street', value)
               }
               placeholder="Street address"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Area/Locality</Text>
+            <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Area/Locality</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.companyAddress.area}
               onChangeText={value =>
                 handleInputChange('companyAddress.area', value)
               }
               placeholder="Area or locality"
-              placeholderTextColor="#A0C4E4"
-              selectionColor="#FFFFFF"
+              placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+              selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
             />
           </View>
 
           <View style={styles.row}>
             <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>City *</Text>
+              <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>City *</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                 value={formData.companyAddress.city}
                 onChangeText={value =>
                   handleInputChange('companyAddress.city', value)
                 }
                 placeholder="City"
-                placeholderTextColor="#A0C4E4"
-                selectionColor="#FFFFFF"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+                selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>State *</Text>
+              <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>State *</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                 value={formData.companyAddress.state}
                 onChangeText={value =>
                   handleInputChange('companyAddress.state', value)
                 }
                 placeholder="State"
-                placeholderTextColor="#A0C4E4"
-                selectionColor="#FFFFFF"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+                selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
               />
             </View>
           </View>
 
           <View style={styles.row}>
             <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>Country *</Text>
+              <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Country *</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                 value={formData.companyAddress.country}
                 onChangeText={value =>
                   handleInputChange('companyAddress.country', value)
                 }
                 placeholder="Country"
-                placeholderTextColor="#A0C4E4"
-                selectionColor="#FFFFFF"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+                selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>Pincode</Text>
+              <Text style={[styles.label, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Pincode</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                 value={formData.companyAddress.pincode}
                 onChangeText={value =>
                   handleInputChange('companyAddress.pincode', value)
                 }
                 placeholder="Pincode"
-                placeholderTextColor="#A0C4E4"
-                selectionColor="#FFFFFF"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+                selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                 keyboardType="numeric"
               />
             </View>
@@ -276,11 +278,11 @@ const EditProfileScreen = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.cancelButton}
+            style={[styles.cancelButton, isDarkMode ? styles.darkCancelButton : styles.lightCancelButton]}
             onPress={() => navigation.goBack()}
             disabled={saving}
           >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={[styles.cancelButtonText, isDarkMode ? styles.lightText : styles.darkText]}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -291,6 +293,12 @@ const EditProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1A1F71',
+  },
+  lightBackground: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkBackground: {
     backgroundColor: '#1A1F71',
   },
   loadingContainer: {
@@ -305,10 +313,30 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'System',
   },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightTextSecondary: {
+    color: '#666666',
+  },
+  darkTextSecondary: {
+    color: '#A0C4E4',
+  },
   header: {
     backgroundColor: '#1A1F71',
     padding: 20,
     borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#FFFFFF',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
@@ -339,6 +367,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
   },
+  lightSection: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  darkSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
@@ -365,6 +403,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
     color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  lightInput: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0,0,0,0.2)',
+    color: '#1A1F71',
+  },
+  darkInput: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.3)',
+    color: '#FFFFFF',
   },
   row: {
     flexDirection: 'row',
@@ -404,6 +452,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  lightCancelButton: {
+    borderColor: 'rgba(0,0,0,0.2)',
+  },
+  darkCancelButton: {
     borderColor: 'rgba(255,255,255,0.3)',
   },
   cancelButtonText: {

@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 const StatisticsScreen = () => {
+  const { isDarkMode } = useTheme();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<
@@ -120,10 +122,10 @@ const StatisticsScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Statistics & Analytics</Text>
-        <Text style={styles.headerSubtitle}>Detailed performance metrics</Text>
+    <ScrollView style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.darkText : styles.lightText]}>Statistics & Analytics</Text>
+        <Text style={[styles.headerSubtitle, isDarkMode ? styles.darkSubtitle : styles.lightSubtitle]}>Detailed performance metrics</Text>
       </View>
 
       <PeriodFilter
@@ -133,49 +135,49 @@ const StatisticsScreen = () => {
 
       {stats && (
         <View style={styles.content}>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{getPeriodTitle()}</Text>
+          <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+            <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>{getPeriodTitle()}</Text>
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>
+              <View style={[styles.statCard, isDarkMode ? null : styles.lightStatCard]}>
+                <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>
                   {stats.totalLeads || stats.leads || 0}
                 </Text>
-                <Text style={styles.statLabel}>Total Leads</Text>
+                <Text style={[styles.statLabel, isDarkMode ? null : styles.lightStatLabel]}>Total Leads</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>
+              <View style={[styles.statCard, isDarkMode ? null : styles.lightStatCard]}>
+                <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>
                   {stats.chatMessages || stats.totalChats || 0}
                 </Text>
-                <Text style={styles.statLabel}>Chat Messages</Text>
+                <Text style={[styles.statLabel, isDarkMode ? null : styles.lightStatLabel]}>Chat Messages</Text>
               </View>
               {stats.newLeads !== undefined && (
-                <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{stats.newLeads}</Text>
-                  <Text style={styles.statLabel}>New Leads</Text>
+                <View style={[styles.statCard, isDarkMode ? null : styles.lightStatCard]}>
+                  <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>{stats.newLeads}</Text>
+                  <Text style={[styles.statLabel, isDarkMode ? null : styles.lightStatLabel]}>New Leads</Text>
                 </View>
               )}
             </View>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Lead Chat Analysis</Text>
+          <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+            <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Lead Chat Analysis</Text>
             <View style={styles.chatStats}>
-              <View style={styles.chatStatItem}>
-                <Text style={styles.chatStatValue}>
+              <View style={[styles.chatStatItem, isDarkMode ? null : styles.lightChatStatItem]}>
+                <Text style={[styles.chatStatValue, isDarkMode ? null : styles.lightChatStatValue]}>
                   {stats.chatMessages || stats.totalChats || 0}
                 </Text>
-                <Text style={styles.chatStatLabel}>Total Messages</Text>
+                <Text style={[styles.chatStatLabel, isDarkMode ? null : styles.lightChatStatLabel]}>Total Messages</Text>
               </View>
-              <View style={styles.chatStatItem}>
-                <Text style={styles.chatStatValue}>
+              <View style={[styles.chatStatItem, isDarkMode ? null : styles.lightChatStatItem]}>
+                <Text style={[styles.chatStatValue, isDarkMode ? null : styles.lightChatStatValue]}>
                   {stats.totalLeads
                     ? Math.round((stats.chatMessages || 0) / stats.totalLeads)
                     : 0}
                 </Text>
-                <Text style={styles.chatStatLabel}>Avg per Lead</Text>
+                <Text style={[styles.chatStatLabel, isDarkMode ? null : styles.lightChatStatLabel]}>Avg per Lead</Text>
               </View>
-              <View style={styles.chatStatItem}>
-                <Text style={styles.chatStatValue}>
+              <View style={[styles.chatStatItem, isDarkMode ? null : styles.lightChatStatItem]}>
+                <Text style={[styles.chatStatValue, isDarkMode ? null : styles.lightChatStatValue]}>
                   {stats.leadsByStatus
                     ? (Object.values(stats.leadsByStatus) as number[]).reduce(
                         (a, b) => a + b,
@@ -187,22 +189,22 @@ const StatisticsScreen = () => {
                       ).reduce((a, b) => a + b, 0)
                     : 0}
                 </Text>
-                <Text style={styles.chatStatLabel}>Active Conversations</Text>
+                <Text style={[styles.chatStatLabel, isDarkMode ? null : styles.lightChatStatLabel]}>Active Conversations</Text>
               </View>
             </View>
           </View>
 
           {stats.overall?.leadsByStatus && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Lead Status Distribution</Text>
-              <View style={styles.statusList}>
+            <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+              <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Lead Status Distribution</Text>
+              <View style={[styles.statusList, isDarkMode ? null : styles.lightStatusList]}>
                 {Object.entries(stats.overall.leadsByStatus).map(
                   ([status, count]) => (
-                    <View key={status} style={styles.statusItem}>
-                      <Text style={styles.statusLabel}>
+                    <View key={status} style={[styles.statusItem, isDarkMode ? null : styles.lightStatusItem]}>
+                      <Text style={[styles.statusLabel, isDarkMode ? null : styles.lightStatusLabel]}>
                         {status.replace('_', ' ')}
                       </Text>
-                      <Text style={styles.statusValue}>{String(count)}</Text>
+                      <Text style={[styles.statusValue, isDarkMode ? null : styles.lightStatusValue]}>{String(count)}</Text>
                     </View>
                   ),
                 )}
@@ -211,26 +213,26 @@ const StatisticsScreen = () => {
           )}
 
           {stats.overall && (
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Overall Metrics</Text>
+            <View style={[styles.section, isDarkMode ? null : styles.lightSection]}>
+              <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Overall Metrics</Text>
               <View style={styles.statsGrid}>
-                <View style={styles.statCard}>
-                  <Text style={styles.statValue}>
+                <View style={[styles.statCard, isDarkMode ? null : styles.lightStatCard]}>
+                  <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>
                     {stats.overall.totalLeads || 0}
                   </Text>
-                  <Text style={styles.statLabel}>Total Leads</Text>
+                  <Text style={[styles.statLabel, isDarkMode ? null : styles.lightStatLabel]}>Total Leads</Text>
                 </View>
-                <View style={styles.statCard}>
-                  <Text style={styles.statValue}>
+                <View style={[styles.statCard, isDarkMode ? null : styles.lightStatCard]}>
+                  <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>
                     {stats.overall.totalProperties || 0}
                   </Text>
-                  <Text style={styles.statLabel}>Properties</Text>
+                  <Text style={[styles.statLabel, isDarkMode ? null : styles.lightStatLabel]}>Properties</Text>
                 </View>
-                <View style={styles.statCard}>
-                  <Text style={styles.statValue}>{`${
+                <View style={[styles.statCard, isDarkMode ? null : styles.lightStatCard]}>
+                  <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>{`${
                     stats.overall.conversionRate || 0
                   }%`}</Text>
-                  <Text style={styles.statLabel}>Conversion Rate</Text>
+                  <Text style={[styles.statLabel, isDarkMode ? null : styles.lightStatLabel]}>Conversion Rate</Text>
                 </View>
               </View>
             </View>
@@ -415,6 +417,71 @@ const styles = StyleSheet.create({
     color: '#A0C4E4',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkSubtitle: {
+    color: '#A0C4E4',
+  },
+  lightSubtitle: {
+    color: '#666666',
+  },
+  lightSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  lightSectionTitle: {
+    color: '#1A1F71',
+  },
+  lightStatCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  lightStatValue: {
+    color: '#1A1F71',
+  },
+  lightStatLabel: {
+    color: '#666666',
+  },
+  lightChatStatItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  lightChatStatValue: {
+    color: '#1A1F71',
+  },
+  lightChatStatLabel: {
+    color: '#666666',
+  },
+  lightStatusList: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  lightStatusItem: {
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  lightStatusLabel: {
+    color: '#666666',
+  },
+  lightStatusValue: {
+    color: '#1A1F71',
   },
 });
 

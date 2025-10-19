@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, Property } from '../utils/api';
 
 type RouteParams = {
@@ -25,6 +26,7 @@ const PropertyDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'PropertyDetails'>>();
   const { propertyId } = route.params;
+  const { isDarkMode } = useTheme();
 
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
@@ -132,16 +134,40 @@ const PropertyDetailsScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading property details...</Text>
+      <View
+        style={[
+          styles.loadingContainer,
+          isDarkMode ? styles.darkBackground : styles.lightBackground,
+        ]}
+      >
+        <Text
+          style={[
+            styles.loadingText,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}
+        >
+          Loading property details...
+        </Text>
       </View>
     );
   }
 
   if (!property) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Property not found</Text>
+      <View
+        style={[
+          styles.errorContainer,
+          isDarkMode ? styles.darkBackground : styles.lightBackground,
+        ]}
+      >
+        <Text
+          style={[
+            styles.errorText,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}
+        >
+          Property not found
+        </Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -153,7 +179,12 @@ const PropertyDetailsScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={[
+        styles.container,
+        isDarkMode ? styles.darkBackground : styles.lightBackground,
+      ]}
+    >
       {/* Property Images */}
       <View style={styles.imageContainer}>
         {property.images && property.images.length > 0 ? (
@@ -201,8 +232,18 @@ const PropertyDetailsScreen = () => {
       </View>
 
       {/* Property Info */}
-      <View style={styles.infoContainer}>
-        <Text style={styles.title}>
+      <View
+        style={[
+          styles.infoContainer,
+          isDarkMode ? styles.darkSection : styles.lightSection,
+        ]}
+      >
+        <Text
+          style={[
+            styles.title,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}
+        >
           {property.propertyType || 'Property'} in{' '}
           {property.location
             ? `${property.location.city}, ${property.location.state}`
@@ -210,15 +251,34 @@ const PropertyDetailsScreen = () => {
         </Text>
 
         {property.location?.address && (
-          <Text style={styles.address}>📍 {property.location.address}</Text>
+          <Text
+            style={[
+              styles.address,
+              isDarkMode ? styles.darkTextSecondary : styles.lightTextSecondary,
+            ]}
+          >
+            📍 {property.location.address}
+          </Text>
         )}
 
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>
+          <Text
+            style={[
+              styles.price,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
             ₹{property.pricePerSqft?.toLocaleString()}/sqft
           </Text>
           {property.totalPrice && (
-            <Text style={styles.totalPrice}>
+            <Text
+              style={[
+                styles.totalPrice,
+                isDarkMode
+                  ? styles.lightTextSecondary
+                  : styles.darkTextSecondary,
+              ]}
+            >
               Total: ₹{property.totalPrice.toLocaleString()}
             </Text>
           )}
@@ -228,25 +288,95 @@ const PropertyDetailsScreen = () => {
         <View style={styles.detailsGrid}>
           {property.area && (
             <View style={styles.detailItem}>
-              <Text style={styles.detailIcon}>📐</Text>
-              <Text style={styles.detailText}>{property.area} sqft</Text>
+              <Text
+                style={[
+                  styles.detailIcon,
+                  isDarkMode
+                    ? styles.lightTextSecondary
+                    : styles.darkTextSecondary,
+                ]}
+              >
+                📐
+              </Text>
+              <Text
+                style={[
+                  styles.detailText,
+                  isDarkMode
+                    ? styles.lightTextSecondary
+                    : styles.darkTextSecondary,
+                ]}
+              >
+                {property.area} sqft
+              </Text>
             </View>
           )}
           {property.bedrooms && (
             <View style={styles.detailItem}>
-              <Text style={styles.detailIcon}>🛏️</Text>
-              <Text style={styles.detailText}>{property.bedrooms} bed</Text>
+              <Text
+                style={[
+                  styles.detailIcon,
+                  isDarkMode
+                    ? styles.lightTextSecondary
+                    : styles.darkTextSecondary,
+                ]}
+              >
+                🛏️
+              </Text>
+              <Text
+                style={[
+                  styles.detailText,
+                  isDarkMode
+                    ? styles.lightTextSecondary
+                    : styles.darkTextSecondary,
+                ]}
+              >
+                {property.bedrooms} bed
+              </Text>
             </View>
           )}
           {property.bathrooms && (
             <View style={styles.detailItem}>
-              <Text style={styles.detailIcon}>🚿</Text>
-              <Text style={styles.detailText}>{property.bathrooms} bath</Text>
+              <Text
+                style={[
+                  styles.detailIcon,
+                  isDarkMode
+                    ? styles.lightTextSecondary
+                    : styles.darkTextSecondary,
+                ]}
+              >
+                🚿
+              </Text>
+              <Text
+                style={[
+                  styles.detailText,
+                  isDarkMode
+                    ? styles.lightTextSecondary
+                    : styles.darkTextSecondary,
+                ]}
+              >
+                {property.bathrooms} bath
+              </Text>
             </View>
           )}
           <View style={styles.detailItem}>
-            <Text style={styles.detailIcon}>👁️</Text>
-            <Text style={styles.detailText}>
+            <Text
+              style={[
+                styles.detailIcon,
+                isDarkMode
+                  ? styles.lightTextSecondary
+                  : styles.darkTextSecondary,
+              ]}
+            >
+              👁️
+            </Text>
+            <Text
+              style={[
+                styles.detailText,
+                isDarkMode
+                  ? styles.lightTextSecondary
+                  : styles.darkTextSecondary,
+              ]}
+            >
               {property.viewCount || 0} views
             </Text>
           </View>
@@ -254,18 +384,48 @@ const PropertyDetailsScreen = () => {
 
         {/* Description */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Description</Text>
-          <Text style={styles.description}>{property.description}</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Description
+          </Text>
+          <Text
+            style={[
+              styles.description,
+              isDarkMode ? styles.darkTextSecondary : styles.lightTextSecondary,
+            ]}
+          >
+            {property.description}
+          </Text>
         </View>
 
         {/* Features */}
         {property.features && property.features.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Features</Text>
+            <Text
+              style={[
+                styles.sectionTitle,
+                isDarkMode ? styles.darkText : styles.lightText,
+              ]}
+            >
+              Features
+            </Text>
             <View style={styles.featuresGrid}>
               {property.features.map((feature, index) => (
                 <View key={index} style={styles.featureItem}>
-                  <Text style={styles.featureText}>✓ {feature}</Text>
+                  <Text
+                    style={[
+                      styles.featureText,
+                      isDarkMode
+                        ? styles.lightTextSecondary
+                        : styles.darkTextSecondary,
+                    ]}
+                  >
+                    ✓ {feature}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -275,11 +435,27 @@ const PropertyDetailsScreen = () => {
         {/* Amenities */}
         {property.amenities && property.amenities.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Amenities</Text>
+            <Text
+              style={[
+                styles.sectionTitle,
+                isDarkMode ? styles.darkText : styles.lightText,
+              ]}
+            >
+              Amenities
+            </Text>
             <View style={styles.amenitiesGrid}>
               {property.amenities.map((amenity, index) => (
                 <View key={index} style={styles.amenityItem}>
-                  <Text style={styles.amenityText}>🏢 {amenity}</Text>
+                  <Text
+                    style={[
+                      styles.amenityText,
+                      isDarkMode
+                        ? styles.lightTextSecondary
+                        : styles.darkTextSecondary,
+                    ]}
+                  >
+                    🏢 {amenity}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -288,16 +464,53 @@ const PropertyDetailsScreen = () => {
 
         {/* Contact Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
-          <Text style={styles.contactInfo}>{property.contactInfo}</Text>
+          <Text
+            style={[
+              styles.sectionTitle,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            Contact Information
+          </Text>
+          <Text
+            style={[
+              styles.contactInfo,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}
+          >
+            {property.contactInfo}
+          </Text>
         </View>
 
         {/* Agent Info */}
         {property.user && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Listed by</Text>
-            <Text style={styles.agentName}>{property.user.companyName}</Text>
-            <Text style={styles.agentUsername}>@{property.user.username}</Text>
+            <Text
+              style={[
+                styles.sectionTitle,
+                isDarkMode ? styles.darkText : styles.lightText,
+              ]}
+            >
+              Listed by
+            </Text>
+            <Text
+              style={[
+                styles.agentName,
+                isDarkMode ? styles.darkText : styles.lightText,
+              ]}
+            >
+              {property.user.companyName}
+            </Text>
+            <Text
+              style={[
+                styles.agentUsername,
+                isDarkMode
+                  ? styles.lightTextSecondary
+                  : styles.darkTextSecondary,
+              ]}
+            >
+              @{property.user.username}
+            </Text>
           </View>
         )}
 
@@ -325,6 +538,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1A1F71',
   },
+  lightBackground: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkBackground: {
+    backgroundColor: '#1A1F71',
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -335,6 +554,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightTextSecondary: {
+    color: '#666666',
+  },
+  darkTextSecondary: {
+    color: '#A0C4E4',
   },
   errorContainer: {
     flex: 1,
@@ -402,6 +633,16 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 4,
   },
+  lightSection: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  darkSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+  },
   title: {
     fontSize: 22,
     fontWeight: '800',
@@ -457,7 +698,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#ffffffff',
     marginBottom: 10,
     fontFamily: 'System',
   },

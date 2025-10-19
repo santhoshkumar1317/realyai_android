@@ -16,6 +16,7 @@ import {
   NavigationProp,
 } from '@react-navigation/native';
 import { apiService, Property } from '../utils/api';
+import { useTheme } from '../context/ThemeContext';
 
 // Status color mapping using your theme
 const getStatusColor = (status: string) => {
@@ -36,12 +37,14 @@ const getStatusColor = (status: string) => {
 const PropertyCard = ({
   property,
   navigation,
+  isDarkMode,
 }: {
   property: Property;
   navigation: any;
+  isDarkMode?: boolean;
 }) => (
   <TouchableOpacity
-    style={styles.propertyCard}
+    style={[styles.propertyCard, isDarkMode ? styles.darkPropertyCard : styles.lightPropertyCard]}
     onPress={() =>
       navigation.navigate('PropertyDetails', { propertyId: property.id })
     }
@@ -61,7 +64,7 @@ const PropertyCard = ({
       )}
     </View>
     <View style={styles.propertyInfo}>
-      <Text style={styles.propertyTitle} numberOfLines={2}>
+      <Text style={[styles.propertyTitle, isDarkMode ? styles.darkPropertyTitle : styles.lightPropertyTitle]} numberOfLines={2}>
         {property.propertyType || 'Property'} in{' '}
         {property.location
           ? `${property.location.city}, ${property.location.state}`
@@ -74,16 +77,16 @@ const PropertyCard = ({
       </Text>
       <View style={styles.propertyDetails}>
         {property.area && (
-          <Text style={styles.detailText}>📐 {property.area} sqft</Text>
+          <Text style={[styles.detailText, isDarkMode ? styles.darkDetailText : styles.lightDetailText]}>📐 {property.area} sqft</Text>
         )}
         {property.bedrooms && (
-          <Text style={styles.detailText}>🛏️ {property.bedrooms} bed</Text>
+          <Text style={[styles.detailText, isDarkMode ? styles.darkDetailText : styles.lightDetailText]}>🛏️ {property.bedrooms} bed</Text>
         )}
         {property.bathrooms && (
-          <Text style={styles.detailText}>🚿 {property.bathrooms} bath</Text>
+          <Text style={[styles.detailText, isDarkMode ? styles.darkDetailText : styles.lightDetailText]}>🚿 {property.bathrooms} bath</Text>
         )}
       </View>
-      <Text style={styles.propertyDescription} numberOfLines={2}>
+      <Text style={[styles.propertyDescription, isDarkMode ? styles.darkPropertyDescription : styles.lightPropertyDescription]} numberOfLines={2}>
         {property.description}
       </Text>
       <View style={styles.propertyFooter}>
@@ -95,7 +98,7 @@ const PropertyCard = ({
         >
           {property.status.toLowerCase().replace('_', ' ')}
         </Text>
-        <Text style={styles.viewCount}>👁️ {property.viewCount || 0}</Text>
+        <Text style={[styles.viewCount, isDarkMode ? styles.darkViewCount : styles.lightViewCount]}>👁️ {property.viewCount || 0}</Text>
       </View>
     </View>
   </TouchableOpacity>
@@ -107,12 +110,14 @@ const FilterModal = ({
   filters,
   setFilters,
   loadProperties,
+  isDarkMode,
 }: {
   showFilters: boolean;
   setShowFilters: (show: boolean) => void;
   filters: any;
   setFilters: (filters: any) => void;
   loadProperties: (page: number, append: boolean) => void;
+  isDarkMode?: boolean;
 }) => {
   const clearFilters = () => {
     setFilters({
@@ -126,7 +131,7 @@ const FilterModal = ({
   if (!showFilters) return null;
 
   return (
-    <View style={styles.filterContainer}>
+    <View style={[styles.filterContainer, isDarkMode ? null : styles.lightFilterContainer]}>
       <View style={styles.filterHeader}>
         <Text style={styles.filterTitle}>Filters</Text>
         <TouchableOpacity
@@ -137,46 +142,46 @@ const FilterModal = ({
         </TouchableOpacity>
       </View>
       <TextInput
-        style={styles.filterInput}
+        style={[styles.filterInput, isDarkMode ? styles.darkFilterInput : styles.lightFilterInput]}
         placeholder="Property Type"
-        placeholderTextColor="#A0C4E4"
+        placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
         value={filters.propertyType}
         onChangeText={text =>
           setFilters((prev: any) => ({ ...prev, propertyType: text }))
         }
-        selectionColor="#FFFFFF"
+        selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
       />
       <TextInput
-        style={styles.filterInput}
+        style={[styles.filterInput, isDarkMode ? styles.darkFilterInput : styles.lightFilterInput]}
         placeholder="Min Price"
-        placeholderTextColor="#A0C4E4"
+        placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
         value={filters.minPrice}
         onChangeText={text =>
           setFilters((prev: any) => ({ ...prev, minPrice: text }))
         }
         keyboardType="numeric"
-        selectionColor="#FFFFFF"
+        selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
       />
       <TextInput
-        style={styles.filterInput}
+        style={[styles.filterInput, isDarkMode ? styles.darkFilterInput : styles.lightFilterInput]}
         placeholder="Max Price"
-        placeholderTextColor="#A0C4E4"
+        placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
         value={filters.maxPrice}
         onChangeText={text =>
           setFilters((prev: any) => ({ ...prev, maxPrice: text }))
         }
         keyboardType="numeric"
-        selectionColor="#FFFFFF"
+        selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
       />
       <TextInput
-        style={styles.filterInput}
+        style={[styles.filterInput, isDarkMode ? styles.darkFilterInput : styles.lightFilterInput]}
         placeholder="Location"
-        placeholderTextColor="#A0C4E4"
+        placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
         value={filters.location}
         onChangeText={text =>
           setFilters((prev: any) => ({ ...prev, location: text }))
         }
-        selectionColor="#FFFFFF"
+        selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
       />
       <View style={styles.filterButtons}>
         <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
@@ -205,6 +210,7 @@ type NavigationProps = NavigationProp<RootStackParamList>;
 
 const PropertiesScreen = () => {
   const navigation = useNavigation<NavigationProps>();
+  const { isDarkMode } = useTheme();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -278,16 +284,16 @@ const PropertiesScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
       {/* Search and Filter Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, isDarkMode ? styles.darkSearchInput : styles.lightSearchInput]}
           placeholder="Search properties..."
-          placeholderTextColor="#A0C4E4"
+          placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
           value={searchQuery}
           onChangeText={handleSearch}
-          selectionColor="#FFFFFF"
+          selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
         />
         <View style={styles.headerButtons}>
           <TouchableOpacity
@@ -312,13 +318,14 @@ const PropertiesScreen = () => {
         filters={filters}
         setFilters={setFilters}
         loadProperties={loadProperties}
+        isDarkMode={isDarkMode}
       />
 
       {/* Properties List */}
       <FlatList
         data={properties}
         renderItem={({ item }) => (
-          <PropertyCard property={item} navigation={navigation} />
+          <PropertyCard property={item} navigation={navigation} isDarkMode={isDarkMode} />
         )}
         keyExtractor={item => item.id}
         onEndReached={loadMore}
@@ -333,7 +340,7 @@ const PropertiesScreen = () => {
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
+            <Text style={[styles.emptyText, isDarkMode ? styles.darkEmptyText : styles.lightEmptyText]}>
               {loading ? 'Loading properties...' : 'No properties found'}
             </Text>
           </View>
@@ -341,7 +348,7 @@ const PropertiesScreen = () => {
         ListFooterComponent={
           pagination.page < pagination.pages ? (
             <View style={styles.loadingMore}>
-              <Text style={styles.loadingMoreText}>Loading more...</Text>
+              <Text style={[styles.loadingMoreText, isDarkMode ? styles.darkLoadingMoreText : styles.lightLoadingMoreText]}>Loading more...</Text>
             </View>
           ) : null
         }
@@ -349,8 +356,8 @@ const PropertiesScreen = () => {
       />
 
       {/* Results count */}
-      <View style={styles.footer}>
-        <Text style={styles.resultsText}>
+      <View style={[styles.footer, isDarkMode ? styles.darkFooter : styles.lightFooter]}>
+        <Text style={[styles.resultsText, isDarkMode ? styles.darkResultsText : styles.lightResultsText]}>
           {pagination.total} properties found
         </Text>
       </View>
@@ -363,6 +370,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1A1F71', // Deep navy background
   },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA', // Glazier shiny white background
+  },
   header: {
     marginTop: 40,
     flexDirection: 'row',
@@ -370,6 +383,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1F71',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#FFFFFF',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   searchInput: {
     flex: 1,
@@ -382,6 +408,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
     color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  darkSearchInput: {
+    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+  },
+  lightSearchInput: {
+    borderColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: '#FFFFFF',
+    color: '#1A1F71',
   },
   headerButtons: {
     flexDirection: 'row',
@@ -416,6 +452,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
+  lightFilterContainer: {
+    backgroundColor: '#F8F9FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
   filterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -446,6 +486,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  darkFilterInput: {
+    borderColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    color: '#FFFFFF',
+  },
+  lightFilterInput: {
+    borderColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: '#FFFFFF',
+    color: '#1A1F71',
   },
   filterButtons: {
     flexDirection: 'row',
@@ -491,6 +541,16 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  lightPropertyCard: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  darkPropertyCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+  },
   propertyImage: {
     width: 100,
     height: 100,
@@ -515,11 +575,16 @@ const styles = StyleSheet.create({
   propertyTitle: {
     fontSize: 15,
     marginLeft: 10,
-
     fontWeight: '700',
     color: '#FFFFFF',
     marginBottom: 6,
     fontFamily: 'System',
+  },
+  lightPropertyTitle: {
+    color: '#1A1F71',
+  },
+  darkPropertyTitle: {
+    color: '#FFFFFF',
   },
   propertyPrice: {
     fontSize: 14,
@@ -527,7 +592,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 6,
     marginLeft: 10,
-
     fontFamily: 'System',
   },
   propertyDetails: {
@@ -539,8 +603,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#A0C4E4',
     marginRight: 14,
-
     fontFamily: 'System',
+  },
+  lightDetailText: {
+    color: '#666666',
+  },
+  darkDetailText: {
+    color: '#A0C4E4',
   },
   propertyDescription: {
     fontSize: 12,
@@ -548,6 +617,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'System',
     marginLeft: 10,
+  },
+  lightPropertyDescription: {
+    color: '#666666',
+  },
+  darkPropertyDescription: {
+    color: '#A0C4E4',
   },
   propertyFooter: {
     flexDirection: 'row',
@@ -570,6 +645,12 @@ const styles = StyleSheet.create({
     color: '#A0C4E4',
     fontFamily: 'System',
   },
+  lightViewCount: {
+    color: '#666666',
+  },
+  darkViewCount: {
+    color: '#A0C4E4',
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -582,6 +663,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'System',
   },
+  lightEmptyText: {
+    color: '#666666',
+  },
+  darkEmptyText: {
+    color: '#A0C4E4',
+  },
   loadingMore: {
     padding: 20,
     alignItems: 'center',
@@ -589,6 +676,12 @@ const styles = StyleSheet.create({
   loadingMoreText: {
     color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  lightLoadingMoreText: {
+    color: '#666666',
+  },
+  darkLoadingMoreText: {
+    color: '#A0C4E4',
   },
   footer: {
     padding: 12,
@@ -601,10 +694,29 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  lightFooter: {
+    backgroundColor: '#FFFFFF',
+    borderTopColor: 'rgba(0,0,0,0.1)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  darkFooter: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
   resultsText: {
     fontSize: 13,
     color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  lightResultsText: {
+    color: '#666666',
+  },
+  darkResultsText: {
+    color: '#A0C4E4',
   },
 });
 

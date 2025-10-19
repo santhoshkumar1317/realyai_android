@@ -19,6 +19,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
+import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import './src/utils/firebase'; // Initialize Firebase
 
 // Screens
@@ -87,14 +88,15 @@ const ScheduleIcon = ({ color, size }: { color: string; size: number }) => (
 );
 
 const MainTabNavigator = () => {
+  const { isDarkMode } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false, // 👈 Hide header for all tab screens
-        tabBarActiveTintColor: '#186bf1ff', // Active = white
-        tabBarInactiveTintColor: '#7c7c7cff', // Inactive = white
+        tabBarActiveTintColor: isDarkMode ? '#186bf1ff' : '#1A1F71', // Active = blue in dark, dark blue in light
+        tabBarInactiveTintColor: isDarkMode ? '#7c7c7cff' : '#666666', // Inactive = gray in dark, darker gray in light
         tabBarStyle: {
-          backgroundColor: '#2f3377ff', // Deep navy background
+          backgroundColor: isDarkMode ? '#2f3377ff' : '#E0F7FA', // Deep navy in dark, light blue in light
           borderTopWidth: 0,
           height: 70,
           paddingBottom: 8,
@@ -212,13 +214,15 @@ function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
-        {/* Fixed status bar style for light-on-dark */}
-        <StatusBar barStyle="light-content" backgroundColor="#1A1F71" />
-        <NavigationContainer>
-          <AuthProvider>
-            <AppNavigator />
-          </AuthProvider>
-        </NavigationContainer>
+        <ThemeProvider>
+          {/* Fixed status bar style for light-on-dark */}
+          <StatusBar barStyle="light-content" backgroundColor="#1A1F71" />
+          <NavigationContainer>
+            <AuthProvider>
+              <AppNavigator />
+            </AuthProvider>
+          </NavigationContainer>
+        </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

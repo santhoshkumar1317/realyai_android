@@ -11,12 +11,14 @@ import {
   FlatList,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService } from '../utils/api';
 import LocationPicker from '../components/LocationPicker';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const AddEditPropertyScreen = () => {
   const navigation = useNavigation();
+  const { isDarkMode } = useTheme();
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
@@ -253,8 +255,8 @@ const AddEditPropertyScreen = () => {
       case 1:
         return (
           <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Select Property Type</Text>
-            <Text style={styles.stepSubtitle}>
+            <Text style={[styles.stepTitle, isDarkMode ? styles.lightText : styles.darkText]}>Select Property Type</Text>
+            <Text style={[styles.stepSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               Choose the type of property you want to list
             </Text>
             <View style={styles.propertyTypeGrid}>
@@ -263,6 +265,7 @@ const AddEditPropertyScreen = () => {
                   key={type.value}
                   style={[
                     styles.propertyTypeCard,
+                    isDarkMode ? styles.darkPropertyTypeCard : styles.lightPropertyTypeCard,
                     formData.propertyType === type.value &&
                       styles.propertyTypeSelected,
                   ]}
@@ -273,6 +276,7 @@ const AddEditPropertyScreen = () => {
                   <Text
                     style={[
                       styles.propertyTypeText,
+                      isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary,
                       formData.propertyType === type.value &&
                         styles.propertyTypeTextSelected,
                     ]}
@@ -289,16 +293,16 @@ const AddEditPropertyScreen = () => {
         return (
           <View style={styles.stepContent}>
             {selectedLocation ? (
-              <View style={styles.locationSummary}>
-                <Text style={styles.locationTitle}>📍 Selected Location</Text>
-                <Text style={styles.locationAddress}>
+              <View style={[styles.locationSummary, isDarkMode ? styles.darkSection : styles.lightSection]}>
+                <Text style={[styles.locationTitle, isDarkMode ? styles.lightText : styles.darkText]}>📍 Selected Location</Text>
+                <Text style={[styles.locationAddress, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                   {selectedLocation.address}
                 </Text>
-                <Text style={styles.locationDetails}>
+                <Text style={[styles.locationDetails, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                   {selectedLocation.city}, {selectedLocation.state},{' '}
                   {selectedLocation.country}
                 </Text>
-                <Text style={styles.locationCoords}>
+                <Text style={[styles.locationCoords, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                   Lat: {selectedLocation.latitude?.toFixed(6)}, Lng:{' '}
                   {selectedLocation.longitude?.toFixed(6)}
                 </Text>
@@ -318,44 +322,44 @@ const AddEditPropertyScreen = () => {
       case 3:
         return (
           <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Property Details</Text>
-            <Text style={styles.stepSubtitle}>
+            <Text style={[styles.stepTitle, isDarkMode ? styles.lightText : styles.darkText]}>Property Details</Text>
+            <Text style={[styles.stepSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               Enter pricing and property information
             </Text>
 
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Area (sqft) *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Area (sqft) *</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.area}
                   onChangeText={value => handleInputChange('area', value)}
                   placeholder="Area in sqft"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   keyboardType="numeric"
-                  selectionColor="#FFFFFF"
+                  selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                 />
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Price per sqft *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Price per sqft *</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.pricePerSqft}
                   onChangeText={value =>
                     handleInputChange('pricePerSqft', value)
                   }
                   placeholder="₹"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   keyboardType="numeric"
-                  selectionColor="#FFFFFF"
+                  selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                 />
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Total Price</Text>
-                <View style={[styles.input, styles.totalPriceDisplay]}>
-                  <Text style={styles.totalPriceText}>
+                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Total Price</Text>
+                <View style={[styles.input, styles.totalPriceDisplay, isDarkMode ? styles.darkTotalPriceDisplay : styles.lightTotalPriceDisplay]}>
+                  <Text style={[styles.totalPriceText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                     {calculateTotalPrice()
                       ? `₹${calculateTotalPrice()}`
                       : 'Enter area and price per sqft'}
@@ -364,18 +368,18 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Contact Info *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Contact Info *</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.contactInfo}
                   onChangeText={value =>
                     handleInputChange('contactInfo', value)
                   }
                   placeholder="Phone number"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   keyboardType="phone-pad"
                   maxLength={10}
-                  selectionColor="#FFFFFF"
+                  selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                 />
               </View>
 
@@ -384,80 +388,80 @@ const AddEditPropertyScreen = () => {
                 <>
                   <View style={styles.row}>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
-                      <Text style={styles.label}>Bedrooms</Text>
+                      <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Bedrooms</Text>
                       <TextInput
-                        style={styles.input}
+                        style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                         value={formData.bedrooms}
                         onChangeText={value =>
                           handleInputChange('bedrooms', value)
                         }
                         placeholder="No of bedrooms"
-                        placeholderTextColor="#A0C4E4"
+                        placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                         keyboardType="numeric"
-                        selectionColor="#FFFFFF"
+                        selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                       />
                     </View>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
-                      <Text style={styles.label}>Bathrooms</Text>
+                      <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Bathrooms</Text>
                       <TextInput
-                        style={styles.input}
+                        style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                         value={formData.bathrooms}
                         onChangeText={value =>
                           handleInputChange('bathrooms', value)
                         }
                         placeholder="No of bathrooms"
-                        placeholderTextColor="#A0C4E4"
+                        placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                         keyboardType="numeric"
-                        selectionColor="#FFFFFF"
+                        selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                       />
                     </View>
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Features (comma separated)</Text>
+                    <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Features (comma separated)</Text>
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                       value={formData.features}
                       onChangeText={value =>
                         handleInputChange('features', value)
                       }
                       placeholder="Pool, Garden, Terrace, etc."
-                      placeholderTextColor="#A0C4E4"
-                      selectionColor="#FFFFFF"
+                      placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+                      selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                     />
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={styles.label}>
+                    <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>
                       Amenities (comma separated)
                     </Text>
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                       value={formData.amenities}
                       onChangeText={value =>
                         handleInputChange('amenities', value)
                       }
                       placeholder="Gym, Parking, Security, etc."
-                      placeholderTextColor="#A0C4E4"
-                      selectionColor="#FFFFFF"
+                      placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+                      selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                     />
                   </View>
                 </>
               )}
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Description</Text>
+                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Description</Text>
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.description}
                   onChangeText={value =>
                     handleInputChange('description', value)
                   }
                   placeholder="Describe the property..."
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   multiline
                   numberOfLines={4}
-                  selectionColor="#FFFFFF"
+                  selectionColor={isDarkMode ? "#FFFFFF" : "#000000"}
                 />
               </View>
             </ScrollView>
@@ -467,14 +471,14 @@ const AddEditPropertyScreen = () => {
       case 4:
         return (
           <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Property Photos</Text>
-            <Text style={styles.stepSubtitle}>
+            <Text style={[styles.stepTitle, isDarkMode ? styles.lightText : styles.darkText]}>Property Photos</Text>
+            <Text style={[styles.stepSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               Upload photos of your{' '}
               {formData.propertyType.toLowerCase().replace('_', ' ')}
             </Text>
 
-            <View style={styles.photoUploadArea}>
-              <Text style={styles.photoInstruction}>
+            <View style={[styles.photoUploadArea, isDarkMode ? styles.darkPhotoUploadArea : styles.lightPhotoUploadArea]}>
+              <Text style={[styles.photoInstruction, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                 📸{' '}
                 {formData.propertyType === 'LAND'
                   ? 'Upload land/plot photos'
@@ -498,14 +502,14 @@ const AddEditPropertyScreen = () => {
                 </Text>
               </TouchableOpacity>
 
-              <Text style={styles.photoNote}>
+              <Text style={[styles.photoNote, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                 Minimum: {formData.propertyType === 'LAND' ? '2' : '5'} photos
                 required
               </Text>
 
               {selectedImages.length > 0 && (
                 <View style={styles.selectedImagesContainer}>
-                  <Text style={styles.selectedImagesTitle}>
+                  <Text style={[styles.selectedImagesTitle, isDarkMode ? styles.lightText : styles.darkText]}>
                     Selected Photos ({selectedImages.length})
                   </Text>
                   <FlatList
@@ -589,10 +593,10 @@ const AddEditPropertyScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Add New Property</Text>
-        <Text style={styles.headerSubtitle}>Step {currentStep} of 4</Text>
+    <View style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
+      <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.lightText : styles.darkText]}>Add New Property</Text>
+        <Text style={[styles.headerSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Step {currentStep} of 4</Text>
       </View>
 
       {renderStepIndicator()}
@@ -609,11 +613,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1A1F71',
   },
+  lightBackground: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkBackground: {
+    backgroundColor: '#1A1F71',
+  },
   header: {
     backgroundColor: '#1A1F71',
     padding: 25,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
+  },
+  lightHeader: {
+    backgroundColor: '#FFFFFF',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 28,
@@ -626,6 +644,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  lightText: {
+    color: '#1A1F71',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightTextSecondary: {
+    color: '#666666',
+  },
+  darkTextSecondary: {
+    color: '#A0C4E4',
   },
   stepIndicator: {
     flexDirection: 'row',
@@ -714,6 +744,16 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  lightPropertyTypeCard: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0,0,0,0.2)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  darkPropertyTypeCard: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.2)',
+    shadowColor: 'rgba(255,255,255,0.3)',
+  },
   propertyTypeSelected: {
     borderColor: '#5D3FD3',
     backgroundColor: 'rgba(93, 63, 211, 0.2)',
@@ -737,6 +777,16 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  lightSection: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  darkSection: {
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    shadowColor: 'rgba(255,255,255,0.3)',
     borderColor: 'rgba(255,255,255,0.1)',
   },
   locationTitle: {
@@ -787,6 +837,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.2)',
     borderStyle: 'dashed',
+  },
+  lightPhotoUploadArea: {
+    backgroundColor: '#F8F9FA',
+    borderColor: 'rgba(0,0,0,0.2)',
+  },
+  darkPhotoUploadArea: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   photoInstruction: {
     fontSize: 18,
@@ -937,6 +995,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'System',
   },
+  lightInput: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0,0,0,0.2)',
+    color: '#1A1F71',
+  },
+  darkInput: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.3)',
+    color: '#FFFFFF',
+  },
   textArea: {
     height: 100,
     textAlignVertical: 'top',
@@ -952,6 +1020,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.08)',
     justifyContent: 'center',
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  lightTotalPriceDisplay: {
+    backgroundColor: '#F0F0F0',
+    borderColor: 'rgba(0,0,0,0.2)',
+  },
+  darkTotalPriceDisplay: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderColor: 'rgba(255,255,255,0.2)',
   },
   totalPriceText: {

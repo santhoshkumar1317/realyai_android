@@ -14,6 +14,7 @@ import {
   useFocusEffect,
   NavigationProp,
 } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
 import { apiService, Lead } from '../utils/api';
 import { RootStackParamList } from '../types/navigation';
 
@@ -193,6 +194,7 @@ const StatCard = ({
 
 const TelegramLeadsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { isDarkMode } = useTheme();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -294,10 +296,10 @@ const TelegramLeadsScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
       {/* Stats Header */}
-      <View style={styles.statsHeader}>
-        <Text style={styles.statsHeaderTitle}>📱 Telegram Leads</Text>
+      <View style={[styles.statsHeader, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
+        <Text style={[styles.statsHeaderTitle, isDarkMode ? styles.darkText : styles.lightText]}>📱 Telegram Leads</Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="Total Leads"
@@ -629,6 +631,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
   },
 });
 
