@@ -39,27 +39,29 @@ const RecentActivityItem = ({
   title,
   subtitle,
   time,
+  isDarkMode = true,
 }: {
   type: 'lead' | 'chat';
   title: string;
   subtitle: string;
   time: string;
+  isDarkMode?: boolean;
 }) => (
-  <View style={styles.activityItem}>
+  <View style={[styles.activityItem, isDarkMode ? null : styles.lightActivityItem]}>
     <View
       style={[
         styles.activityIcon,
         type === 'lead' ? styles.leadActivityIcon : styles.chatActivityIcon,
       ]}
     >
-      <Text style={styles.activityIconText}>
+      <Text style={[styles.activityIconText, isDarkMode ? null : styles.lightActivityIconText]}>
         {type === 'lead' ? '👤' : '💬'}
       </Text>
     </View>
     <View style={styles.activityContent}>
-      <Text style={styles.activityTitle}>{title}</Text>
-      <Text style={styles.activitySubtitle}>{subtitle}</Text>
-      <Text style={styles.activityTime}>
+      <Text style={[styles.activityTitle, isDarkMode ? null : styles.lightActivityTitle]}>{title}</Text>
+      <Text style={[styles.activitySubtitle, isDarkMode ? null : styles.lightActivitySubtitle]}>{subtitle}</Text>
+      <Text style={[styles.activityTime, isDarkMode ? null : styles.lightActivityTime]}>
         {new Date(time).toLocaleDateString()}
       </Text>
     </View>
@@ -290,14 +292,14 @@ const DashboardScreen = () => {
       {/* Lead Status Distribution */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Lead Status Distribution</Text>
-        <View style={styles.statusGrid}>
+        <View style={[styles.statusGrid, isDarkMode ? null : styles.lightStatusGrid]}>
           {Object.entries(stats.overall.leadsByStatus).map(
             ([status, count]) => (
-              <View key={status} style={styles.statusItem}>
-                <Text style={styles.statusLabel}>
+              <View key={status} style={[styles.statusItem, isDarkMode ? null : styles.lightStatusItem]}>
+                <Text style={[styles.statusLabel, isDarkMode ? null : styles.lightStatusLabel]}>
                   {status.replace('_', ' ').toLowerCase()}
                 </Text>
-                <Text style={styles.statusValue}>{count}</Text>
+                <Text style={[styles.statusValue, isDarkMode ? null : styles.lightStatusValue]}>{count}</Text>
               </View>
             ),
           )}
@@ -314,6 +316,7 @@ const DashboardScreen = () => {
             title={`${lead.name || 'Unknown'} - ${lead.status}`}
             subtitle={`Phone: ${lead.phoneNumber || 'N/A'}`}
             time={lead.createdAt}
+            isDarkMode={isDarkMode}
           />
         ))}
         {stats.recentActivity.chats.slice(0, 2).map(chat => (
@@ -327,6 +330,7 @@ const DashboardScreen = () => {
                 : chat.message
             }
             time={chat.timestamp}
+            isDarkMode={isDarkMode}
           />
         ))}
       </View>
@@ -550,6 +554,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  lightStatusGrid: {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
   statusItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -558,17 +565,26 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
+  lightStatusItem: {
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
   statusLabel: {
     fontSize: 14,
     color: '#A0C4E4',
     textTransform: 'capitalize',
     fontFamily: 'System',
   },
+  lightStatusLabel: {
+    color: '#666666',
+  },
   statusValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#281497ff',
+    color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  lightStatusValue: {
+    color: '#1A1F71',
   },
   activityItem: {
     flexDirection: 'row',
@@ -582,6 +598,10 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  lightActivityItem: {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+  },
   activityIcon: {
     width: 44,
     height: 44,
@@ -594,6 +614,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#FFFFFF',
   },
+  lightActivityIconText: {
+    color: '#1A1F71',
+  },
   activityContent: {
     flex: 1,
   },
@@ -604,16 +627,25 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     fontFamily: 'System',
   },
+  lightActivityTitle: {
+    color: '#1A1F71',
+  },
   activitySubtitle: {
     fontSize: 13,
     color: '#A0C4E4',
     marginBottom: 6,
     fontFamily: 'System',
   },
+  lightActivitySubtitle: {
+    color: '#666666',
+  },
   activityTime: {
     fontSize: 12,
     color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  lightActivityTime: {
+    color: '#666666',
   },
   actionsGrid: {
     flexDirection: 'row',

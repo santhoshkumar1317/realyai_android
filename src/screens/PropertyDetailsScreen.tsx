@@ -275,8 +275,8 @@ const PropertyDetailsScreen = () => {
               style={[
                 styles.totalPrice,
                 isDarkMode
-                  ? styles.lightTextSecondary
-                  : styles.darkTextSecondary,
+                  ? styles.darkTextSecondary
+                  : styles.lightTextSecondary,
               ]}
             >
               Total: ₹{property.totalPrice.toLocaleString()}
@@ -302,8 +302,8 @@ const PropertyDetailsScreen = () => {
                 style={[
                   styles.detailText,
                   isDarkMode
-                    ? styles.lightTextSecondary
-                    : styles.darkTextSecondary,
+                    ? styles.darkTextSecondary
+                    : styles.lightTextSecondary,
                 ]}
               >
                 {property.area} sqft
@@ -326,8 +326,8 @@ const PropertyDetailsScreen = () => {
                 style={[
                   styles.detailText,
                   isDarkMode
-                    ? styles.lightTextSecondary
-                    : styles.darkTextSecondary,
+                    ? styles.darkTextSecondary
+                    : styles.lightTextSecondary,
                 ]}
               >
                 {property.bedrooms} bed
@@ -350,8 +350,8 @@ const PropertyDetailsScreen = () => {
                 style={[
                   styles.detailText,
                   isDarkMode
-                    ? styles.lightTextSecondary
-                    : styles.darkTextSecondary,
+                    ? styles.darkTextSecondary
+                    : styles.lightTextSecondary,
                 ]}
               >
                 {property.bathrooms} bath
@@ -373,8 +373,8 @@ const PropertyDetailsScreen = () => {
               style={[
                 styles.detailText,
                 isDarkMode
-                  ? styles.lightTextSecondary
-                  : styles.darkTextSecondary,
+                  ? styles.darkTextSecondary
+                  : styles.lightTextSecondary,
               ]}
             >
               {property.viewCount || 0} views
@@ -420,8 +420,8 @@ const PropertyDetailsScreen = () => {
                     style={[
                       styles.featureText,
                       isDarkMode
-                        ? styles.lightTextSecondary
-                        : styles.darkTextSecondary,
+                        ? styles.darkTextSecondary
+                        : styles.lightTextSecondary,
                     ]}
                   >
                     ✓ {feature}
@@ -505,8 +505,8 @@ const PropertyDetailsScreen = () => {
               style={[
                 styles.agentUsername,
                 isDarkMode
-                  ? styles.lightTextSecondary
-                  : styles.darkTextSecondary,
+                  ? styles.darkTextSecondary
+                  : styles.lightTextSecondary,
               ]}
             >
               @{property.user.username}
