@@ -64,13 +64,24 @@ const getFollowUpStatusColor = (status?: string) => {
   }
 };
 
-const LeadCard = ({ lead, navigation, isDarkMode = true }: { lead: Lead; navigation: any; isDarkMode?: boolean }) => {
+const LeadCard = ({
+  lead,
+  navigation,
+  isDarkMode = true,
+}: {
+  lead: Lead;
+  navigation: any;
+  isDarkMode?: boolean;
+}) => {
   const isTelegram = !!lead.telegramUserId;
   const isWhatsApp = !!lead.whatsappUserId;
 
   return (
     <TouchableOpacity
-      style={[styles.leadCard, isDarkMode ? null : styles.lightLeadCard]}
+      style={[
+        styles.leadCard,
+        isDarkMode ? styles.darkLeadCard : styles.lightLeadCard,
+      ]}
       onPress={() =>
         navigation.navigate('LeadDetails', {
           leadId: lead.id,
@@ -84,8 +95,20 @@ const LeadCard = ({ lead, navigation, isDarkMode = true }: { lead: Lead; navigat
     >
       <View style={styles.leadHeader}>
         <View style={styles.leadInfo}>
-          <Text style={[styles.leadName, isDarkMode ? null : styles.lightLeadName]}>{lead.name || 'Unknown Lead'}</Text>
-          <Text style={[styles.telegramId, isDarkMode ? null : styles.lightTelegramId]}>
+          <Text
+            style={[
+              styles.leadName,
+              isDarkMode ? styles.darkLeadName : styles.lightLeadName,
+            ]}
+          >
+            {lead.name || 'Unknown Lead'}
+          </Text>
+          <Text
+            style={[
+              styles.telegramId,
+              isDarkMode ? styles.darkTelegramId : styles.lightTelegramId,
+            ]}
+          >
             @{lead.telegramUserId || lead.whatsappUserId}
           </Text>
         </View>
@@ -116,9 +139,21 @@ const LeadCard = ({ lead, navigation, isDarkMode = true }: { lead: Lead; navigat
       <View style={styles.leadDetails}>
         <View style={styles.leadDetailsRow}>
           {lead.phoneNumber && (
-            <Text style={[styles.detailText, isDarkMode ? null : styles.lightDetailText]}>📞 {lead.phoneNumber}</Text>
+            <Text
+              style={[
+                styles.detailText,
+                isDarkMode ? styles.darkDetailText : styles.lightDetailText,
+              ]}
+            >
+              📞 {lead.phoneNumber}
+            </Text>
           )}
-          <Text style={[styles.mediumText, isDarkMode ? null : styles.lightMediumText]}>
+          <Text
+            style={[
+              styles.mediumText,
+              isDarkMode ? styles.darkMediumText : styles.lightMediumText,
+            ]}
+          >
             {isTelegram
               ? '📱 Telegram'
               : isWhatsApp
@@ -127,22 +162,52 @@ const LeadCard = ({ lead, navigation, isDarkMode = true }: { lead: Lead; navigat
           </Text>
         </View>
         {lead.budget && (
-          <Text style={[styles.detailText, isDarkMode ? null : styles.lightDetailText]}>
+          <Text
+            style={[
+              styles.detailText,
+              isDarkMode ? styles.darkDetailText : styles.lightDetailText,
+            ]}
+          >
             💰 ₹{lead.budget.toLocaleString()}
           </Text>
         )}
         {lead.expectations && (
-          <Text style={[styles.expectationsText, isDarkMode ? null : styles.lightExpectationsText]} numberOfLines={2}>
+          <Text
+            style={[
+              styles.expectationsText,
+              isDarkMode
+                ? styles.darkExpectationsText
+                : styles.lightExpectationsText,
+            ]}
+            numberOfLines={2}
+          >
             {lead.expectations}
           </Text>
         )}
       </View>
 
-      <View style={[styles.leadFooter, isDarkMode ? null : styles.lightLeadFooter]}>
-        <Text style={[styles.dateText, isDarkMode ? null : styles.lightDateText]}>
+      <View
+        style={[
+          styles.leadFooter,
+          isDarkMode ? styles.darkLeadFooter : styles.lightLeadFooter,
+        ]}
+      >
+        <Text
+          style={[
+            styles.dateText,
+            isDarkMode ? styles.darkDateText : styles.lightDateText,
+          ]}
+        >
           {new Date(lead.createdAt).toLocaleDateString()}
         </Text>
-        <Text style={[styles.interactionText, isDarkMode ? null : styles.lightInteractionText]}>
+        <Text
+          style={[
+            styles.interactionText,
+            isDarkMode
+              ? styles.darkInteractionText
+              : styles.lightInteractionText,
+          ]}
+        >
           Last: {formatTimeAgo(lead.lastInteraction || null)}
         </Text>
       </View>
@@ -162,8 +227,20 @@ const StatusFilter = ({
   const statuses = ['ALL', 'HIGH', 'MEDIUM', 'NOT_QUALIFIED'];
 
   return (
-    <View style={[styles.filterContainer, isDarkMode ? styles.darkFilterContainer : styles.lightFilterContainer]}>
-      <Text style={[styles.filterTitle, isDarkMode ? styles.darkFilterTitle : styles.lightFilterTitle]}>Filter by Status:</Text>
+    <View
+      style={[
+        styles.filterContainer,
+        isDarkMode ? styles.darkFilterContainer : styles.lightFilterContainer,
+      ]}
+    >
+      <Text
+        style={[
+          styles.filterTitle,
+          isDarkMode ? styles.darkFilterTitle : styles.lightFilterTitle,
+        ]}
+      >
+        Filter by Status:
+      </Text>
       <View style={styles.filterButtons}>
         {statuses.map(status => (
           <TouchableOpacity
@@ -172,6 +249,7 @@ const StatusFilter = ({
               styles.filterButton,
               statusFilter === (status === 'ALL' ? '' : status) &&
                 styles.filterButtonActive,
+              isDarkMode ? styles.darkFilterButton : styles.lightFilterButton,
             ]}
             onPress={() => setStatusFilter(status === 'ALL' ? '' : status)}
           >
@@ -180,6 +258,9 @@ const StatusFilter = ({
                 styles.filterButtonText,
                 statusFilter === (status === 'ALL' ? '' : status) &&
                   styles.filterButtonTextActive,
+                isDarkMode
+                  ? styles.darkFilterButtonText
+                  : styles.lightFilterButtonText,
               ]}
             >
               {status.replace('_', ' ')}
@@ -204,10 +285,39 @@ const StatCard = ({
   color?: string;
   isDarkMode?: boolean;
 }) => (
-  <View style={[styles.statCard, { borderLeftColor: color }]}>
-    <Text style={[styles.statValue, isDarkMode ? null : styles.lightStatValue]}>{value}</Text>
-    <Text style={[styles.statTitle, isDarkMode ? null : styles.lightStatTitle]}>{title}</Text>
-    {subtitle && <Text style={styles.statSubtitle}>{subtitle}</Text>}
+  <View
+    style={[
+      styles.statCard,
+      { borderLeftColor: color },
+      isDarkMode ? styles.darkStatCard : styles.lightStatCard,
+    ]}
+  >
+    <Text
+      style={[
+        styles.statValue,
+        isDarkMode ? styles.darkStatValue : styles.lightStatValue,
+      ]}
+    >
+      {value}
+    </Text>
+    <Text
+      style={[
+        styles.statTitle,
+        isDarkMode ? styles.darkStatTitle : styles.lightStatTitle,
+      ]}
+    >
+      {title}
+    </Text>
+    {subtitle && (
+      <Text
+        style={[
+          styles.statSubtitle,
+          isDarkMode ? styles.darkStatSubtitle : styles.lightStatSubtitle,
+        ]}
+      >
+        {subtitle}
+      </Text>
+    )}
   </View>
 );
 
@@ -315,10 +425,27 @@ const LeadsScreen = () => {
   };
 
   return (
-    <View style={[styles.container, isDarkMode ? styles.darkContainer : styles.lightContainer]}>
+    <View
+      style={[
+        styles.container,
+        isDarkMode ? styles.darkContainer : styles.lightContainer,
+      ]}
+    >
       {/* Stats Header */}
-      <View style={[styles.statsHeader, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
-        <Text style={[styles.statsHeaderTitle, isDarkMode ? styles.darkText : styles.lightText]}>Leads Overview</Text>
+      <View
+        style={[
+          styles.statsHeader,
+          isDarkMode ? styles.darkHeader : styles.lightHeader,
+        ]}
+      >
+        <Text
+          style={[
+            styles.statsHeaderTitle,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}
+        >
+          Leads Overview
+        </Text>
         <View style={styles.statsGrid}>
           <StatCard
             title="Total Leads"
@@ -342,34 +469,72 @@ const LeadsScreen = () => {
             isDarkMode={isDarkMode}
           />
         </View>
-
       </View>
 
       {/* Channel Navigation */}
-      <View style={[styles.channelNavigation, isDarkMode ? styles.darkChannelNavigation : styles.lightChannelNavigation]}>
+      <View
+        style={[
+          styles.channelNavigation,
+          isDarkMode
+            ? styles.darkChannelNavigation
+            : styles.lightChannelNavigation,
+        ]}
+      >
         <TouchableOpacity
-          style={[styles.channelButton, isDarkMode ? styles.darkChannelButton : styles.lightChannelButton]}
+          style={[
+            styles.channelButton,
+            isDarkMode ? styles.darkChannelButton : styles.lightChannelButton,
+          ]}
           onPress={() => navigation.navigate('TelegramLeads')}
         >
-          <Text style={[styles.channelButtonText, isDarkMode ? styles.darkChannelButtonText : styles.lightChannelButtonText]}>📱 Telegram</Text>
+          <Text
+            style={[
+              styles.channelButtonText,
+              isDarkMode
+                ? styles.darkChannelButtonText
+                : styles.lightChannelButtonText,
+            ]}
+          >
+            📱 Telegram
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.channelButton, isDarkMode ? styles.darkChannelButton : styles.lightChannelButton]}
+          style={[
+            styles.channelButton,
+            isDarkMode ? styles.darkChannelButton : styles.lightChannelButton,
+          ]}
           onPress={() => navigation.navigate('WhatsAppLeads')}
         >
-          <Text style={[styles.channelButtonText, isDarkMode ? styles.darkChannelButtonText : styles.lightChannelButtonText]}>💬 WhatsApp</Text>
+          <Text
+            style={[
+              styles.channelButtonText,
+              isDarkMode
+                ? styles.darkChannelButtonText
+                : styles.lightChannelButtonText,
+            ]}
+          >
+            💬 WhatsApp
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Search */}
-      <View style={[styles.searchContainer, isDarkMode ? styles.darkSearchContainer : styles.lightSearchContainer]}>
+      <View
+        style={[
+          styles.searchContainer,
+          isDarkMode ? styles.darkSearchContainer : styles.lightSearchContainer,
+        ]}
+      >
         <TextInput
-          style={[styles.searchInput, isDarkMode ? styles.darkSearchInput : styles.lightSearchInput]}
+          style={[
+            styles.searchInput,
+            isDarkMode ? styles.darkSearchInput : styles.lightSearchInput,
+          ]}
           placeholder="Search leads by name or phone..."
-          placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
+          placeholderTextColor={isDarkMode ? '#A0C4E4' : '#6B7280'}
           value={searchQuery}
           onChangeText={handleSearch}
-          selectionColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
+          selectionColor={isDarkMode ? '#FFFFFF' : '#1A1F71'}
         />
       </View>
 
@@ -384,7 +549,11 @@ const LeadsScreen = () => {
       <FlatList
         data={leads}
         renderItem={({ item }) => (
-          <LeadCard lead={item} navigation={navigation} />
+          <LeadCard
+            lead={item}
+            navigation={navigation}
+            isDarkMode={isDarkMode}
+          />
         )}
         keyExtractor={item => item.id}
         onEndReached={loadMore}
@@ -393,13 +562,18 @@ const LeadsScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
-            colors={[isDarkMode ? "#FFFFFF" : "#1A1F71"]}
+            tintColor={isDarkMode ? '#FFFFFF' : '#1A1F71'}
+            colors={[isDarkMode ? '#FFFFFF' : '#1A1F71']}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
+            <Text
+              style={[
+                styles.emptyText,
+                isDarkMode ? styles.darkEmptyText : styles.lightEmptyText,
+              ]}
+            >
               {loading ? 'Loading leads...' : 'No leads found'}
             </Text>
           </View>
@@ -407,7 +581,16 @@ const LeadsScreen = () => {
         ListFooterComponent={
           pagination.page < pagination.pages ? (
             <View style={styles.loadingMore}>
-              <Text style={styles.loadingMoreText}>Loading more...</Text>
+              <Text
+                style={[
+                  styles.loadingMoreText,
+                  isDarkMode
+                    ? styles.darkLoadingMoreText
+                    : styles.lightLoadingMoreText,
+                ]}
+              >
+                Loading more...
+              </Text>
             </View>
           ) : null
         }
@@ -415,8 +598,20 @@ const LeadsScreen = () => {
       />
 
       {/* Results count */}
-      <View style={styles.footer}>
-        <Text style={styles.resultsText}>{pagination.total} leads found</Text>
+      <View
+        style={[
+          styles.footer,
+          isDarkMode ? styles.darkFooter : styles.lightFooter,
+        ]}
+      >
+        <Text
+          style={[
+            styles.resultsText,
+            isDarkMode ? styles.darkResultsText : styles.lightResultsText,
+          ]}
+        >
+          {pagination.total} leads found
+        </Text>
       </View>
     </View>
   );
@@ -425,17 +620,15 @@ const LeadsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1F71', // Primary background
-    paddingTop: 20, // Add padding to prevent content from hiding behind status bar
+    paddingTop: 20,
   },
   darkContainer: {
     backgroundColor: '#1A1F71',
   },
   lightContainer: {
-    backgroundColor: '#E0F7FA', // Glazier shiny white background
+    backgroundColor: '#E0F7FA',
   },
   statsHeader: {
-    backgroundColor: '#1A1F71',
     padding: 20,
     paddingTop: 40,
     paddingBottom: 24,
@@ -449,7 +642,6 @@ const styles = StyleSheet.create({
   statsHeaderTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
     marginBottom: 16,
     fontFamily: 'System',
   },
@@ -465,50 +657,66 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   statCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     width: '31.3%',
     borderLeftWidth: 4,
+    elevation: 3,
+  },
+  darkStatCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 3,
+  },
+  lightStatCard: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   statValue: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FFFFFF',
     marginBottom: 5,
     fontFamily: 'System',
+  },
+  darkStatValue: {
+    color: '#FFFFFF',
   },
   lightStatValue: {
     color: '#1A1F71',
   },
   statTitle: {
     fontSize: 11,
-    color: '#A0C4E4',
     textTransform: 'uppercase',
     fontWeight: '700',
     letterSpacing: 0.5,
     fontFamily: 'System',
   },
+  darkStatTitle: {
+    color: '#A0C4E4',
+  },
   lightStatTitle: {
-    color: '#666666',
+    color: '#6B7280',
   },
   statSubtitle: {
     fontSize: 10,
-    color: '#FF69B4',
     marginTop: 3,
     fontFamily: 'System',
   },
+  darkStatSubtitle: {
+    color: '#FF69B4',
+  },
+  lightStatSubtitle: {
+    color: '#DB2777',
+  },
   searchContainer: {
     padding: 15,
-    backgroundColor: 'rgba(0,0,0,0.2)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   darkSearchContainer: {
     backgroundColor: 'rgba(0,0,0,0.2)',
@@ -521,11 +729,8 @@ const styles = StyleSheet.create({
   searchInput: {
     height: 42,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
     borderRadius: 22,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    color: '#FFFFFF',
     fontFamily: 'System',
   },
   darkSearchInput: {
@@ -539,10 +744,8 @@ const styles = StyleSheet.create({
     color: '#1A1F71',
   },
   filterContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   darkFilterContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.12)',
@@ -555,7 +758,6 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 12,
     fontFamily: 'System',
   },
@@ -570,37 +772,55 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   filterButton: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 16,
     marginRight: 10,
     marginBottom: 10,
   },
+  darkFilterButton: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+  },
+  lightFilterButton: {
+    backgroundColor: '#F3F4F6',
+  },
   filterButtonActive: {
     backgroundColor: '#5D3FD3',
   },
   filterButtonText: {
     fontSize: 12,
-    color: '#A0C4E4',
     fontWeight: '600',
     fontFamily: 'System',
   },
+  darkFilterButtonText: {
+    color: '#A0C4E4',
+  },
+  lightFilterButtonText: {
+    color: '#6B7280',
+  },
   filterButtonTextActive: {
     color: '#FFFFFF',
-    fontFamily: 'System',
   },
   leadCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     margin: 12,
     marginBottom: 8,
     borderRadius: 12,
     padding: 16,
+    elevation: 3,
+  },
+  darkLeadCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 3,
+  },
+  lightLeadCard: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   leadHeader: {
     flexDirection: 'row',
@@ -614,14 +834,24 @@ const styles = StyleSheet.create({
   leadName: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 4,
     fontFamily: 'System',
   },
+  darkLeadName: {
+    color: '#FFFFFF',
+  },
+  lightLeadName: {
+    color: '#000000',
+  },
   telegramId: {
     fontSize: 14,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkTelegramId: {
+    color: '#A0C4E4',
+  },
+  lightTelegramId: {
+    color: '#6B7280',
   },
   statusContainer: {
     alignItems: 'flex-end',
@@ -658,21 +888,36 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkDetailText: {
+    color: '#A0C4E4',
+  },
+  lightDetailText: {
+    color: '#6B7280',
   },
   mediumText: {
     fontSize: 13,
-    color: '#FF69B4',
     fontWeight: '600',
     fontFamily: 'System',
   },
+  darkMediumText: {
+    color: '#FF69B4',
+  },
+  lightMediumText: {
+    color: '#DB2777',
+  },
   expectationsText: {
     fontSize: 14,
-    color: '#FFFFFF',
     marginTop: 6,
     lineHeight: 20,
     fontFamily: 'System',
+  },
+  darkExpectationsText: {
+    color: '#FFFFFF',
+  },
+  lightExpectationsText: {
+    color: '#1A1F71',
   },
   leadFooter: {
     flexDirection: 'row',
@@ -680,17 +925,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
+  },
+  darkLeadFooter: {
     borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  lightLeadFooter: {
+    borderTopColor: 'rgba(0,0,0,0.1)',
   },
   dateText: {
     fontSize: 12,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkDateText: {
+    color: '#A0C4E4',
+  },
+  lightDateText: {
+    color: '#6B7280',
   },
   interactionText: {
     fontSize: 12,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkInteractionText: {
+    color: '#A0C4E4',
+  },
+  lightInteractionText: {
+    color: '#6B7280',
   },
   emptyContainer: {
     flex: 1,
@@ -700,47 +960,63 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#A0C4E4',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkEmptyText: {
+    color: '#A0C4E4',
+  },
+  lightEmptyText: {
+    color: '#6B7280',
   },
   loadingMore: {
     padding: 20,
     alignItems: 'center',
   },
   loadingMoreText: {
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkLoadingMoreText: {
+    color: '#A0C4E4',
+  },
+  lightLoadingMoreText: {
+    color: '#6B7280',
   },
   footer: {
     padding: 12,
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
   },
+  darkFooter: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  lightFooter: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderTopColor: 'rgba(0,0,0,0.1)',
+  },
   resultsText: {
     fontSize: 13,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkResultsText: {
+    color: '#A0C4E4',
+  },
+  lightResultsText: {
+    color: '#6B7280',
   },
   channelNavigation: {
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  darkChannelNavigation: {
-    // No additional styles needed for dark mode
-  },
-  lightChannelNavigation: {
-    // No additional styles needed for light mode
-  },
+  darkChannelNavigation: {},
+  lightChannelNavigation: {},
   channelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderRadius: 12,
@@ -757,7 +1033,6 @@ const styles = StyleSheet.create({
   },
   channelButtonText: {
     fontSize: 12,
-    color: '#FFFFFF',
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: 'System',
@@ -767,34 +1042,6 @@ const styles = StyleSheet.create({
   },
   lightChannelButtonText: {
     color: '#1A1F71',
-  },
-  lightLeadCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  lightLeadName: {
-    color: '#1A1F71',
-  },
-  lightTelegramId: {
-    color: '#666666',
-  },
-  lightDetailText: {
-    color: '#666666',
-  },
-  lightMediumText: {
-    color: '#FF69B4',
-  },
-  lightExpectationsText: {
-    color: '#1A1F71',
-  },
-  lightLeadFooter: {
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  lightDateText: {
-    color: '#666666',
-  },
-  lightInteractionText: {
-    color: '#666666',
   },
 });
 

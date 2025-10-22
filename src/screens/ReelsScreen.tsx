@@ -145,6 +145,8 @@ const VideoReelCard = ({
   videoReel: VideoReel;
   onPlayVideo: (reel: VideoReel) => void;
 }) => {
+  const { isDarkMode } = useTheme();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'COMPLETED': return '#10b981';
@@ -166,9 +168,9 @@ const VideoReelCard = ({
   };
 
   return (
-    <View style={styles.reelCard}>
+    <View style={[styles.reelCard, isDarkMode ? styles.darkReelCard : styles.lightReelCard]}>
       <View style={styles.reelHeader}>
-        <Text style={styles.reelPrompt} numberOfLines={2}>
+        <Text style={[styles.reelPrompt, isDarkMode ? styles.darkText : styles.lightText]} numberOfLines={2}>
           {videoReel.prompt}
         </Text>
         <Text
@@ -184,7 +186,9 @@ const VideoReelCard = ({
       <View style={styles.reelContent}>
         {videoReel.status === 'COMPLETED' && videoReel.videoData ? (
           <View style={styles.videoContainer}>
-            <Text style={styles.videoPlaceholder}>🎬 Video Available</Text>
+            <Text style={[styles.videoPlaceholder, isDarkMode ? styles.darkPlaceholder : styles.lightPlaceholder]}>
+              🎬 Video Available
+            </Text>
             <TouchableOpacity
               style={styles.playButton}
               onPress={() => onPlayVideo(videoReel)}
@@ -197,7 +201,7 @@ const VideoReelCard = ({
           </View>
         ) : (
           <View style={styles.processingContainer}>
-            <Text style={styles.processingText}>
+            <Text style={[styles.processingText, isDarkMode ? styles.darkProcessingText : styles.lightProcessingText]}>
               {videoReel.status === 'PROCESSING'
                 ? '🎬 Generating video...'
                 : videoReel.status === 'PENDING'
@@ -214,11 +218,11 @@ const VideoReelCard = ({
       </View>
 
       <View style={styles.reelFooter}>
-        <Text style={styles.reelDate}>
+        <Text style={[styles.reelDate, isDarkMode ? styles.darkFooterText : styles.lightFooterText]}>
           {new Date(videoReel.createdAt).toLocaleDateString()}
         </Text>
         {videoReel.videoDuration && (
-          <Text style={styles.reelDuration}>
+          <Text style={[styles.reelDuration, isDarkMode ? styles.darkDuration : styles.lightDuration]}>
             {Math.round(videoReel.videoDuration)}s
           </Text>
         )}
@@ -246,6 +250,8 @@ const UploadForm = ({
   uploading: boolean;
   handleUpload: () => void;
 }) => {
+  const { isDarkMode } = useTheme();
+
   const handleImageSelect = (step: number) => {
     const options = {
       mediaType: 'photo' as const,
@@ -286,34 +292,35 @@ const UploadForm = ({
         contentContainerStyle={styles.uploadScrollContent}
         showsVerticalScrollIndicator={true}
       >
-        <Text style={styles.uploadTitle}>Create Video Reel</Text>
+        <Text style={[styles.uploadTitle, isDarkMode ? styles.darkText : styles.lightText]}>Create Video Reel</Text>
 
         <View style={styles.promptInput}>
-          <Text style={styles.inputLabel}>Video Prompt *</Text>
+          <Text style={[styles.inputLabel, isDarkMode ? styles.darkText : styles.lightText]}>Video Prompt *</Text>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, isDarkMode ? styles.darkTextInput : styles.lightTextInput]}
             value={uploadPrompt}
             onChangeText={setUploadPrompt}
             placeholder="Describe the video you want to create..."
-            placeholderTextColor="#A0C4E4"
+            placeholderTextColor={isDarkMode ? "#A0C4E4" : "#6B7280"}
             multiline
             numberOfLines={3}
-            selectionColor="#FFFFFF"
+            selectionColor="#5D3FD3"
           />
         </View>
 
         <View style={styles.imageUploadSection}>
-          <Text style={styles.sectionTitle}>Select Images (2-3 required)</Text>
+          <Text style={[styles.sectionTitle, isDarkMode ? styles.darkText : styles.lightText]}>Select Images (2-3 required)</Text>
 
           {[1, 2, 3].map(step => (
             <View key={step} style={styles.imageStep}>
-              <Text style={styles.stepLabel}>
+              <Text style={[styles.stepLabel, isDarkMode ? styles.darkStepLabel : styles.lightStepLabel]}>
                 Image {step} {step <= 2 ? '*' : '(optional)'}
               </Text>
               <TouchableOpacity
                 style={[
                   styles.imageSelectButton,
                   selectedImages[step - 1] && styles.imageSelected,
+                  isDarkMode ? styles.darkImageSelect : styles.lightImageSelect,
                 ]}
                 onPress={() => handleImageSelect(step)}
               >
@@ -324,7 +331,9 @@ const UploadForm = ({
                     style={styles.selectedImage}
                   />
                 ) : (
-                  <Text style={styles.selectImageText}>🏠 Select Image</Text>
+                  <Text style={[styles.selectImageText, isDarkMode ? styles.darkSelectText : styles.lightSelectText]}>
+                    🏠 Select Image
+                  </Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -453,7 +462,9 @@ const ReelsScreen = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#5D3FD3" />
-        <Text style={styles.loadingText}>Loading video reels...</Text>
+        <Text style={[styles.loadingText, isDarkMode ? styles.darkText : styles.lightText]}>
+          Loading video reels...
+        </Text>
       </View>
     );
   }
@@ -492,8 +503,10 @@ const ReelsScreen = () => {
             contentContainerStyle={styles.reelsList}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No video reels yet</Text>
-                <Text style={styles.emptySubtext}>
+                <Text style={[styles.emptyText, isDarkMode ? styles.darkText : styles.lightText]}>
+                  No video reels yet
+                </Text>
+                <Text style={[styles.emptySubtext, isDarkMode ? styles.darkSubtext : styles.lightSubtext]}>
                   Create your first video reel to get started
                 </Text>
               </View>
@@ -514,34 +527,28 @@ const ReelsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1A1F71',
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#FFFFFF',
     fontFamily: 'System',
   },
   header: {
-    marginTop: 40, 
+    marginTop: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1A1F71',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
     fontFamily: 'System',
   },
   createButton: {
@@ -549,7 +556,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowColor: 'rgba(0,0,0,0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -564,17 +571,22 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   reelCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
+  },
+  darkReelCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderColor: 'rgba(255,255,255,0.1)',
+  },
+  lightReelCard: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0,0,0,0.1)',
   },
   reelHeader: {
     flexDirection: 'row',
@@ -585,7 +597,6 @@ const styles = StyleSheet.create({
   reelPrompt: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
     flex: 1,
     marginRight: 10,
     fontFamily: 'System',
@@ -606,14 +617,13 @@ const styles = StyleSheet.create({
   videoContainer: {
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'rgba(255,255,255,0.08)',
     borderRadius: 12,
   },
-  videoPlaceholder: {
-    fontSize: 18,
-    marginBottom: 15,
+  darkPlaceholder: {
     color: '#A0C4E4',
-    fontFamily: 'System',
+  },
+  lightPlaceholder: {
+    color: '#4B5563',
   },
   playButton: {
     backgroundColor: '#5D3FD3',
@@ -621,7 +631,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     marginBottom: 12,
-    shadowColor: 'rgba(255,255,255,0.3)',
+    shadowColor: 'rgba(0,0,0,0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -648,16 +658,14 @@ const styles = StyleSheet.create({
   processingContainer: {
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
   },
-  processingText: {
-    fontSize: 16,
+  darkProcessingText: {
     color: '#f59e0b',
-    marginBottom: 10,
-    fontFamily: 'System',
+  },
+  lightProcessingText: {
+    color: '#d97706',
   },
   reelFooter: {
     flexDirection: 'row',
@@ -665,18 +673,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
   },
-  reelDate: {
-    fontSize: 12,
+  darkFooterText: {
     color: '#A0C4E4',
-    fontFamily: 'System',
   },
-  reelDuration: {
-    fontSize: 12,
+  lightFooterText: {
+    color: '#6B7280',
+  },
+  darkDuration: {
     color: '#FF69B4',
-    fontWeight: '700',
-    fontFamily: 'System',
+  },
+  lightDuration: {
+    color: '#DB2777',
   },
   emptyContainer: {
     flex: 1,
@@ -687,15 +695,19 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 10,
     fontFamily: 'System',
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#A0C4E4',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkSubtext: {
+    color: '#A0C4E4',
+  },
+  lightSubtext: {
+    color: '#6B7280',
   },
   uploadForm: {
     flex: 1,
@@ -710,7 +722,6 @@ const styles = StyleSheet.create({
   uploadTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
     marginBottom: 20,
     textAlign: 'center',
     fontFamily: 'System',
@@ -721,20 +732,26 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 10,
     fontFamily: 'System',
   },
   textInput: {
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    color: '#FFFFFF',
     textAlignVertical: 'top',
     fontFamily: 'System',
+  },
+  darkTextInput: {
+    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    color: '#FFFFFF',
+  },
+  lightTextInput: {
+    borderColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: '#F9FAFB',
+    color: '#1F2937',
   },
   imageUploadSection: {
     marginBottom: 20,
@@ -742,7 +759,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 15,
     fontFamily: 'System',
   },
@@ -751,27 +767,42 @@ const styles = StyleSheet.create({
   },
   stepLabel: {
     fontSize: 14,
-    color: '#A0C4E4',
     marginBottom: 8,
     fontFamily: 'System',
   },
+  darkStepLabel: {
+    color: '#A0C4E4',
+  },
+  lightStepLabel: {
+    color: '#6B7280',
+  },
   imageSelectButton: {
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
     borderStyle: 'dashed',
     borderRadius: 12,
     padding: 20,
     alignItems: 'center',
+  },
+  darkImageSelect: {
+    borderColor: 'rgba(255,255,255,0.3)',
     backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  lightImageSelect: {
+    borderColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: '#F3F4F6',
   },
   imageSelected: {
     borderColor: '#5D3FD3',
-    backgroundColor: 'rgba(93, 63, 211, 0.15)',
   },
   selectImageText: {
     fontSize: 16,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkSelectText: {
+    color: '#A0C4E4',
+  },
+  lightSelectText: {
+    color: '#6B7280',
   },
   selectedImage: {
     width: 80,
@@ -782,9 +813,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20,
-    backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  darkContainer: {
+    backgroundColor: '#1A1F71',
+  },
+  lightContainer: {
+    backgroundColor: '#E0F7FA',
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
   },
   cancelButton: {
     backgroundColor: '#ef4444',
@@ -828,7 +877,6 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     maxWidth: 400,
-    backgroundColor: '#1A1F71',
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
@@ -839,17 +887,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'rgba(0,0,0,0.2)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   modalTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
     flex: 1,
     marginRight: 10,
     fontFamily: 'System',
+    color: '#FFFFFF',
   },
   modalCloseButton: {
     padding: 5,
@@ -910,26 +957,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     fontFamily: 'System',
-  },
-  darkContainer: {
-    backgroundColor: '#1A1F71',
-  },
-  lightContainer: {
-    backgroundColor: '#E0F7FA',
-  },
-  darkHeader: {
-    backgroundColor: '#1A1F71',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
-  },
-  lightHeader: {
-    backgroundColor: '#E0F7FA',
-    borderBottomColor: 'rgba(0,0,0,0.1)',
-  },
-  darkText: {
-    color: '#FFFFFF',
-  },
-  lightText: {
-    color: '#1A1F71',
   },
 });
 

@@ -51,7 +51,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const ScheduleCard = ({ schedule }: { schedule: Schedule }) => {
+const ScheduleCard = ({ schedule, isDarkMode }: { schedule: Schedule; isDarkMode: boolean }) => {
   const getEntityInfo = () => {
     if (schedule.lead) {
       return {
@@ -80,9 +80,11 @@ const ScheduleCard = ({ schedule }: { schedule: Schedule }) => {
   const entityInfo = getEntityInfo();
 
   return (
-    <View style={styles.scheduleCard}>
+    <View style={[styles.scheduleCard, isDarkMode ? styles.darkScheduleCard : styles.lightScheduleCard]}>
       <View style={styles.scheduleHeader}>
-        <Text style={styles.entityType}>{entityInfo.type}</Text>
+        <Text style={[styles.entityType, isDarkMode ? styles.darkEntityType : styles.lightEntityType]}>
+          {entityInfo.type}
+        </Text>
         <Text
           style={[
             styles.statusBadge,
@@ -94,21 +96,21 @@ const ScheduleCard = ({ schedule }: { schedule: Schedule }) => {
       </View>
 
       <View style={styles.scheduleContent}>
-        <Text style={styles.entityName} numberOfLines={2}>
+        <Text style={[styles.entityName, isDarkMode ? styles.darkEntityName : styles.lightEntityName]} numberOfLines={2}>
           {entityInfo.name}
         </Text>
-        <Text style={styles.entityContact} numberOfLines={1}>
+        <Text style={[styles.entityContact, isDarkMode ? styles.darkEntityContact : styles.lightEntityContact]} numberOfLines={1}>
           {entityInfo.contact}
         </Text>
         {schedule.notes && (
-          <Text style={styles.notes} numberOfLines={2}>
+          <Text style={[styles.notes, isDarkMode ? styles.darkNotes : styles.lightNotes]} numberOfLines={2}>
             {schedule.notes}
           </Text>
         )}
       </View>
 
-      <View style={styles.scheduleFooter}>
-        <Text style={styles.scheduleDate}>
+      <View style={[styles.scheduleFooter, isDarkMode ? styles.darkScheduleFooter : styles.lightScheduleFooter]}>
+        <Text style={[styles.scheduleDate, isDarkMode ? styles.darkScheduleDate : styles.lightScheduleDate]}>
           {new Date(schedule.scheduledAt).toLocaleDateString()} at{' '}
           {new Date(schedule.scheduledAt).toLocaleTimeString([], {
             hour: '2-digit',
@@ -152,9 +154,11 @@ const SchedulesScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={[styles.loadingContainer, isDarkMode ? styles.darkLoadingContainer : styles.lightLoadingContainer]}>
         <ActivityIndicator size="large" color="#5D3FD3" />
-        <Text style={styles.loadingText}>Loading schedules...</Text>
+        <Text style={[styles.loadingText, isDarkMode ? styles.darkLoadingText : styles.lightLoadingText]}>
+          Loading schedules...
+        </Text>
       </View>
     );
   }
@@ -167,21 +171,23 @@ const SchedulesScreen = () => {
 
       <FlatList
         data={schedules}
-        renderItem={({ item }) => <ScheduleCard schedule={item} />}
+        renderItem={({ item }) => <ScheduleCard schedule={item} isDarkMode={isDarkMode} />}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.schedulesList}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFFFFF"
-            colors={['#FFFFFF']}
+            tintColor={isDarkMode ? "#FFFFFF" : "#1A1F71"}
+            colors={[isDarkMode ? "#FFFFFF" : "#1A1F71"]}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No schedules yet</Text>
-            <Text style={styles.emptySubtext}>
+            <Text style={[styles.emptyText, isDarkMode ? styles.darkEmptyText : styles.lightEmptyText]}>
+              No schedules yet
+            </Text>
+            <Text style={[styles.emptySubtext, isDarkMode ? styles.darkEmptySubtext : styles.lightEmptySubtext]}>
               Your scheduled appointments will appear here
             </Text>
           </View>
@@ -194,19 +200,28 @@ const SchedulesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1F71',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  darkLoadingContainer: {
     backgroundColor: '#1A1F71',
+  },
+  lightLoadingContainer: {
+    backgroundColor: '#E0F7FA',
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  darkLoadingText: {
+    color: '#FFFFFF',
+  },
+  lightLoadingText: {
+    color: '#1A1F71',
   },
   header: {
     marginTop: 40,
@@ -214,31 +229,52 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1A1F71',
     borderBottomWidth: 1,
+  },
+  darkHeader: {
+    backgroundColor: '#1A1F71',
     borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightHeader: {
+    backgroundColor: '#E0F7FA',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
     fontFamily: 'System',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#1A1F71',
   },
   schedulesList: {
     padding: 16,
   },
   scheduleCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  darkScheduleCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    elevation: 4,
-    borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
+  },
+  lightScheduleCard: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    borderColor: 'rgba(0,0,0,0.1)',
   },
   scheduleHeader: {
     flexDirection: 'row',
@@ -249,8 +285,13 @@ const styles = StyleSheet.create({
   entityType: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#5D3FD3',
     fontFamily: 'System',
+  },
+  darkEntityType: {
+    color: '#5D3FD3',
+  },
+  lightEntityType: {
+    color: '#4F46E5',
   },
   statusBadge: {
     paddingHorizontal: 10,
@@ -268,31 +309,56 @@ const styles = StyleSheet.create({
   entityName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 6,
     fontFamily: 'System',
+  },
+  darkEntityName: {
+    color: '#FFFFFF',
+  },
+  lightEntityName: {
+    color: '#000000',
   },
   entityContact: {
     fontSize: 14,
-    color: '#A0C4E4',
     marginBottom: 6,
     fontFamily: 'System',
   },
+  darkEntityContact: {
+    color: '#A0C4E4',
+  },
+  lightEntityContact: {
+    color: '#6B7280',
+  },
   notes: {
     fontSize: 14,
-    color: '#A0C4E4',
     fontStyle: 'italic',
     fontFamily: 'System',
+  },
+  darkNotes: {
+    color: '#A0C4E4',
+  },
+  lightNotes: {
+    color: '#6B7280',
   },
   scheduleFooter: {
     paddingTop: 12,
     borderTopWidth: 1,
+  },
+  darkScheduleFooter: {
     borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  lightScheduleFooter: {
+    borderTopColor: 'rgba(0,0,0,0.1)',
   },
   scheduleDate: {
     fontSize: 12,
-    color: '#A0C4E4',
     fontFamily: 'System',
+  },
+  darkScheduleDate: {
+    color: '#A0C4E4',
+  },
+  lightScheduleDate: {
+    color: '#6B7280',
   },
   emptyContainer: {
     flex: 1,
@@ -303,35 +369,31 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
     marginBottom: 10,
     fontFamily: 'System',
   },
+  darkEmptyText: {
+    color: '#FFFFFF',
+  },
+  lightEmptyText: {
+    color: '#1A1F71',
+  },
   emptySubtext: {
     fontSize: 14,
-    color: '#A0C4E4',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  darkEmptySubtext: {
+    color: '#A0C4E4',
+  },
+  lightEmptySubtext: {
+    color: '#6B7280',
   },
   darkContainer: {
     backgroundColor: '#1A1F71',
   },
   lightContainer: {
     backgroundColor: '#E0F7FA',
-  },
-  darkHeader: {
-    backgroundColor: '#1A1F71',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
-  },
-  lightHeader: {
-    backgroundColor: '#E0F7FA',
-    borderBottomColor: 'rgba(0,0,0,0.1)',
-  },
-  darkText: {
-    color: '#FFFFFF',
-  },
-  lightText: {
-    color: '#1A1F71',
   },
 });
 
