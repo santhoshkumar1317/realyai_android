@@ -68,6 +68,35 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     darkBackground: {
       backgroundColor: '#1A1F71',
     },
+    lightStepIndicator: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+      borderBottomColor: 'rgba(0,0,0,0.1)',
+    },
+    lightStepContainer: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+    },
+    lightAreaDetails: {
+      backgroundColor: '#FFFFFF',
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      borderColor: 'rgba(0,0,0,0.1)',
+    },
+    lightLocationSummary: {
+      backgroundColor: '#FFFFFF',
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      borderColor: 'rgba(0,0,0,0.1)',
+    },
+    lightAreaOption: {
+      backgroundColor: '#FFFFFF',
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      borderColor: 'rgba(0,0,0,0.1)',
+    },
+    lightMapContainer: {
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+    },
+    lightStepActions: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+      borderTopColor: 'rgba(0,0,0,0.1)',
+    },
     stepIndicator: {
       flexDirection: 'row',
       justifyContent: 'center',
@@ -678,7 +707,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   return (
     <View style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
       {/* Step Indicator */}
-      <View style={styles.stepIndicator}>
+      <View style={[styles.stepIndicator, isDarkMode ? null : styles.lightStepIndicator]}>
         <Text style={[styles.stepText, currentStep === 'pincode' && styles.activeStep]}>PINCode</Text>
         <Text style={styles.stepArrow}>→</Text>
         <Text
@@ -733,7 +762,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             showsVerticalScrollIndicator={true}
             initialNumToRender={2}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.areaOption} onPress={() => handleAreaSelect(item)}>
+              <TouchableOpacity style={[styles.areaOption, isDarkMode ? null : styles.lightAreaOption]} onPress={() => handleAreaSelect(item)}>
                 <View style={styles.areaOptionContent}>
                   <Text style={styles.areaOptionTitle}>{item.area}</Text>
                   <Text style={styles.areaOptionSubtitle}>{item.city}, {item.state}</Text>
@@ -744,7 +773,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             )}
           />
 
-          <View style={styles.stepActions}>
+          <View style={[styles.stepActions, isDarkMode ? null : styles.lightStepActions]}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
@@ -755,14 +784,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       {currentStep === 'confirm_area' && pincodeData && (
         <View style={styles.stepContainer}>
           <Text style={styles.stepTitle}>Confirm Area Details</Text>
-          <View style={styles.areaDetails}>
+          <View style={[styles.areaDetails, isDarkMode ? null : styles.lightAreaDetails]}>
             <Text style={styles.areaText}>📍 Area: {pincodeData.area}</Text>
             <Text style={styles.areaText}>🏙️ City: {pincodeData.city}</Text>
             <Text style={styles.areaText}>🏛️ State: {pincodeData.state}</Text>
             <Text style={styles.areaText}>🇮🇳 Country: {pincodeData.country}</Text>
             <Text style={styles.areaText}>📮 PIN: {pincode}</Text>
           </View>
-          <View style={styles.stepActions}>
+          <View style={[styles.stepActions, isDarkMode ? null : styles.lightStepActions]}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
@@ -777,7 +806,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         <View style={styles.mapStepContainer}>
           <Text style={styles.stepDescription}>Tap on the map to mark your exact location</Text>
 
-          <View style={styles.mapContainer}>
+          <View style={[styles.mapContainer, isDarkMode ? null : styles.lightMapContainer]}>
             {renderMap()}
             {loading && (
               <View style={styles.loadingOverlay}>
@@ -787,7 +816,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             )}
           </View>
 
-          <View style={styles.stepActions}>
+          <View style={[styles.stepActions, isDarkMode ? null : styles.lightStepActions]}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>
@@ -809,7 +838,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
           <Text style={styles.stepTitle}>Enter Street Name</Text>
           <Text style={styles.stepDescription}>Enter the exact street name or address for precise location</Text>
 
-          <View style={styles.locationSummary}>
+          <View style={[styles.locationSummary, isDarkMode ? null : styles.lightLocationSummary]}>
             <Text style={styles.summaryText}>📍 Coordinates: {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}</Text>
             <Text style={styles.summaryText}>🏙️ Area: {selectedLocation.area}, {selectedLocation.city}</Text>
             <Text style={styles.summaryText}>📮 PIN: {pincode}</Text>
@@ -824,7 +853,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             selectionColor="#FFFFFF"
           />
 
-          <View style={styles.stepActions}>
+          <View style={[styles.stepActions, isDarkMode ? null : styles.lightStepActions]}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity>

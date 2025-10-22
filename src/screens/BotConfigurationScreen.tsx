@@ -42,10 +42,12 @@ const BotConfigCard = ({
   config,
   onUpdate,
   onTest,
+  isDarkMode,
 }: {
   config: BotConfig;
   onUpdate: (id: string, updates: any) => void;
   onTest: (id: string) => void;
+  isDarkMode: boolean;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [formData, setFormData] = useState(config);
@@ -73,30 +75,30 @@ const BotConfigCard = ({
   };
 
   return (
-    <View style={styles.configCard}>
+    <View style={[styles.configCard, isDarkMode ? null : styles.lightConfigCard]}>
       <TouchableOpacity
-        style={styles.configHeader}
+        style={[styles.configHeader, isDarkMode ? null : styles.lightConfigHeader]}
         onPress={() => setIsExpanded(!isExpanded)}
       >
         <View style={styles.configHeaderLeft}>
-          <Text style={styles.botIcon}>{getBotTypeIcon(config.botType)}</Text>
+          <Text style={[styles.botIcon, isDarkMode ? null : styles.lightBotIcon]}>{getBotTypeIcon(config.botType)}</Text>
           <View>
-            <Text style={styles.botType}>{config.botType}</Text>
-            <Text style={styles.botStatus}>
+            <Text style={[styles.botType, isDarkMode ? null : styles.lightBotType]}>{config.botType}</Text>
+            <Text style={[styles.botStatus, isDarkMode ? null : styles.lightBotStatus]}>
               {config.isActive ? 'Active' : 'Inactive'}
             </Text>
           </View>
         </View>
         <View style={styles.configHeaderRight}>
           <View style={[styles.statusIndicator, { backgroundColor: getBotTypeColor(config.botType) }]} />
-          <Text style={styles.expandIcon}>{isExpanded ? '▼' : '▶'}</Text>
+          <Text style={[styles.expandIcon, isDarkMode ? null : styles.lightExpandIcon]}>{isExpanded ? '▼' : '▶'}</Text>
         </View>
       </TouchableOpacity>
 
       {isExpanded && (
         <View style={styles.configContent}>
           <View style={styles.switchContainer}>
-            <Text style={styles.switchLabel}>Active</Text>
+            <Text style={[styles.switchLabel, isDarkMode ? null : styles.lightSwitchLabel]}>Active</Text>
             <Switch
               value={formData.isActive}
               onValueChange={(value) => setFormData({ ...formData, isActive: value })}
@@ -107,26 +109,26 @@ const BotConfigCard = ({
 
           {config.botType === 'TELEGRAM' && (
             <View style={styles.formSection}>
-              <Text style={styles.sectionTitle}>Telegram Configuration</Text>
+              <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Telegram Configuration</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Bot Token"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.telegramBotToken || ''}
                 onChangeText={(value) => setFormData({ ...formData, telegramBotToken: value })}
                 secureTextEntry
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Bot Username"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.telegramBotUsername || ''}
                 onChangeText={(value) => setFormData({ ...formData, telegramBotUsername: value })}
               />
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[styles.input, styles.textArea, isDarkMode ? null : styles.lightInput]}
                 placeholder="Bot Instructions"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.telegramBotInstructions || ''}
                 onChangeText={(value) => setFormData({ ...formData, telegramBotInstructions: value })}
                 multiline
@@ -137,41 +139,41 @@ const BotConfigCard = ({
 
           {config.botType === 'WHATSAPP' && (
             <View style={styles.formSection}>
-              <Text style={styles.sectionTitle}>WhatsApp Configuration</Text>
+              <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>WhatsApp Configuration</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Access Token"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.whatsappAccessToken || ''}
                 onChangeText={(value) => setFormData({ ...formData, whatsappAccessToken: value })}
                 secureTextEntry
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Phone Number ID"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.whatsappPhoneNumberId || ''}
                 onChangeText={(value) => setFormData({ ...formData, whatsappPhoneNumberId: value })}
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Verify Token"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.whatsappVerifyToken || ''}
                 onChangeText={(value) => setFormData({ ...formData, whatsappVerifyToken: value })}
                 secureTextEntry
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Business Account ID"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.whatsappBusinessAccountId || ''}
                 onChangeText={(value) => setFormData({ ...formData, whatsappBusinessAccountId: value })}
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="App Secret"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.whatsappAppSecret || ''}
                 onChangeText={(value) => setFormData({ ...formData, whatsappAppSecret: value })}
                 secureTextEntry
@@ -181,43 +183,43 @@ const BotConfigCard = ({
 
           {config.botType === 'EMAIL' && (
             <View style={styles.formSection}>
-              <Text style={styles.sectionTitle}>Email Configuration</Text>
+              <Text style={[styles.sectionTitle, isDarkMode ? null : styles.lightSectionTitle]}>Email Configuration</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Provider (Gmail, Outlook, etc.)"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.emailProvider || ''}
                 onChangeText={(value) => setFormData({ ...formData, emailProvider: value })}
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Email Address"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.emailAddress || ''}
                 onChangeText={(value) => setFormData({ ...formData, emailAddress: value })}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
               <TextInput
-                style={styles.input}
+                style={[styles.input, isDarkMode ? null : styles.lightInput]}
                 placeholder="Password/App Password"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.emailPassword || ''}
                 onChangeText={(value) => setFormData({ ...formData, emailPassword: value })}
                 secureTextEntry
               />
               <View style={styles.rowInputs}>
                 <TextInput
-                  style={[styles.input, styles.halfInput]}
+                  style={[styles.input, styles.halfInput, isDarkMode ? null : styles.lightInput]}
                   placeholder="IMAP Host"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   value={formData.emailImapHost || ''}
                   onChangeText={(value) => setFormData({ ...formData, emailImapHost: value })}
                 />
                 <TextInput
-                  style={[styles.input, styles.halfInput]}
+                  style={[styles.input, styles.halfInput, isDarkMode ? null : styles.lightInput]}
                   placeholder="IMAP Port"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   value={formData.emailImapPort?.toString() || ''}
                   onChangeText={(value) => setFormData({ ...formData, emailImapPort: parseInt(value) || undefined })}
                   keyboardType="numeric"
@@ -225,25 +227,25 @@ const BotConfigCard = ({
               </View>
               <View style={styles.rowInputs}>
                 <TextInput
-                  style={[styles.input, styles.halfInput]}
+                  style={[styles.input, styles.halfInput, isDarkMode ? null : styles.lightInput]}
                   placeholder="SMTP Host"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   value={formData.emailSmtpHost || ''}
                   onChangeText={(value) => setFormData({ ...formData, emailSmtpHost: value })}
                 />
                 <TextInput
-                  style={[styles.input, styles.halfInput]}
+                  style={[styles.input, styles.halfInput, isDarkMode ? null : styles.lightInput]}
                   placeholder="SMTP Port"
-                  placeholderTextColor="#A0C4E4"
+                  placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                   value={formData.emailSmtpPort?.toString() || ''}
                   onChangeText={(value) => setFormData({ ...formData, emailSmtpPort: parseInt(value) || undefined })}
                   keyboardType="numeric"
                 />
               </View>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[styles.input, styles.textArea, isDarkMode ? null : styles.lightInput]}
                 placeholder="Email Instructions"
-                placeholderTextColor="#A0C4E4"
+                placeholderTextColor={isDarkMode ? "#A0C4E4" : "#666666"}
                 value={formData.emailInstructions || ''}
                 onChangeText={(value) => setFormData({ ...formData, emailInstructions: value })}
                 multiline
@@ -253,21 +255,21 @@ const BotConfigCard = ({
           )}
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.testButton} onPress={() => onTest(config.id)}>
-              <Text style={styles.testButtonText}>Test</Text>
+            <TouchableOpacity style={[styles.testButton, isDarkMode ? null : styles.lightTestButton]} onPress={() => onTest(config.id)}>
+              <Text style={[styles.testButtonText, isDarkMode ? null : styles.lightTestButtonText]}>Test</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveButtonText}>Save</Text>
+            <TouchableOpacity style={[styles.saveButton, isDarkMode ? null : styles.lightSaveButton]} onPress={handleSave}>
+              <Text style={[styles.saveButtonText, isDarkMode ? null : styles.lightSaveButtonText]}>Save</Text>
             </TouchableOpacity>
           </View>
 
           {config.lastTested && (
-            <View style={styles.testInfo}>
-              <Text style={styles.testInfoText}>
+            <View style={[styles.testInfo, isDarkMode ? null : styles.lightTestInfo]}>
+              <Text style={[styles.testInfoText, isDarkMode ? null : styles.lightTestInfoText]}>
                 Last tested: {new Date(config.lastTested).toLocaleString()}
               </Text>
               {config.lastError && (
-                <Text style={styles.errorText}>{config.lastError}</Text>
+                <Text style={[styles.errorText, isDarkMode ? null : styles.lightErrorText]}>{config.lastError}</Text>
               )}
             </View>
           )}
@@ -348,8 +350,8 @@ const BotConfigurationScreen = () => {
 
       {configs.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No bot configurations found</Text>
-          <Text style={styles.emptySubtext}>Create your first bot configuration below</Text>
+          <Text style={[styles.emptyText, isDarkMode ? null : styles.lightEmptyText]}>No bot configurations found</Text>
+          <Text style={[styles.emptySubtext, isDarkMode ? null : styles.lightEmptySubtext]}>Create your first bot configuration below</Text>
         </View>
       ) : (
         <View style={styles.configsContainer}>
@@ -359,31 +361,32 @@ const BotConfigurationScreen = () => {
               config={config}
               onUpdate={handleUpdateConfig}
               onTest={handleTestConfig}
+              isDarkMode={isDarkMode}
             />
           ))}
         </View>
       )}
 
-      <View style={styles.createContainer}>
-        <Text style={styles.createTitle}>Create New Bot Configuration</Text>
+      <View style={[styles.createContainer, isDarkMode ? null : styles.lightCreateContainer]}>
+        <Text style={[styles.createTitle, isDarkMode ? null : styles.lightCreateTitle]}>Create New Bot Configuration</Text>
         <View style={styles.createButtons}>
           <TouchableOpacity
             style={[styles.createButton, { backgroundColor: '#0088cc' }]}
             onPress={() => handleCreateConfig('TELEGRAM')}
           >
-            <Text style={styles.createButtonText}>+ Telegram Bot</Text>
+            <Text style={[styles.createButtonText, isDarkMode ? null : styles.lightCreateButtonText]}>Telegram</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.createButton, { backgroundColor: '#25D366' }]}
             onPress={() => handleCreateConfig('WHATSAPP')}
           >
-            <Text style={styles.createButtonText}>+ WhatsApp Bot</Text>
+            <Text style={[styles.createButtonText, isDarkMode ? null : styles.lightCreateButtonText]}>WhatsApp </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.createButton, { backgroundColor: '#ea4335' }]}
             onPress={() => handleCreateConfig('EMAIL')}
           >
-            <Text style={styles.createButtonText}>+ Email Bot</Text>
+            <Text style={[styles.createButtonText, isDarkMode ? null : styles.lightCreateButtonText]}>Email</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -541,8 +544,7 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     marginTop: 16,
   },
   testButton: {
@@ -550,8 +552,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
-    flex: 1,
-    marginRight: 8,
+    marginBottom: 8,
   },
   testButtonText: {
     color: '#FFFFFF',
@@ -565,8 +566,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
-    flex: 1,
-    marginLeft: 8,
   },
   saveButtonText: {
     color: '#FFFFFF',
@@ -647,6 +646,72 @@ const styles = StyleSheet.create({
   },
   lightSubtitle: {
     color: '#666666',
+  },
+  lightConfigCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  lightConfigHeader: {
+    backgroundColor: '#FFFFFF',
+  },
+  lightBotIcon: {
+    color: '#1A1F71',
+  },
+  lightBotType: {
+    color: '#1A1F71',
+  },
+  lightBotStatus: {
+    color: '#666666',
+  },
+  lightExpandIcon: {
+    color: '#666666',
+  },
+  lightSwitchLabel: {
+    color: '#1A1F71',
+  },
+  lightSectionTitle: {
+    color: '#1A1F71',
+  },
+  lightInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(0, 0, 0, 0.2)',
+    color: '#1A1F71',
+  },
+  lightTestButton: {
+    backgroundColor: '#f59e0b',
+  },
+  lightTestButtonText: {
+    color: '#FFFFFF',
+  },
+  lightSaveButton: {
+    backgroundColor: '#10b981',
+  },
+  lightSaveButtonText: {
+    color: '#FFFFFF',
+  },
+  lightTestInfo: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  lightTestInfoText: {
+    color: '#666666',
+  },
+  lightErrorText: {
+    color: '#ef4444',
+  },
+  lightEmptyText: {
+    color: '#1A1F71',
+  },
+  lightEmptySubtext: {
+    color: '#666666',
+  },
+  lightCreateContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  lightCreateTitle: {
+    color: '#1A1F71',
+  },
+  lightCreateButtonText: {
+    color: '#FFFFFF',
   },
 });
 

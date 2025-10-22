@@ -111,19 +111,26 @@ const PropertyDetailsScreen = () => {
     }
   };
 
-  const renderImageItem = ({ item }: { item: string }) =>
-    item ? (
-      <Image
-        key={item}
-        source={{ uri: item }}
-        style={styles.carouselImage}
-        resizeMode="cover"
-      />
-    ) : (
+  const renderImageItem = ({ item }: { item: string }) => {
+    if (item && typeof item === 'string' && item.trim() !== '') {
+      return (
+        <Image
+          key={item}
+          source={{ uri: item }}
+          style={styles.carouselImage}
+          resizeMode="cover"
+          onError={() => {
+            // Handle image load error by showing placeholder
+          }}
+        />
+      );
+    }
+    return (
       <View style={styles.carouselImage}>
         <Text style={styles.imagePlaceholder}>🏠</Text>
       </View>
     );
+  };
 
   const onScrollEnd = (event: any) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;

@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   lightStatusGrid: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: '#F5F5F5',
   },
   statusItem: {
     flexDirection: 'row',
@@ -567,6 +567,11 @@ const styles = StyleSheet.create({
   },
   lightStatusItem: {
     borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: -16,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 4,
   },
   statusLabel: {
     fontSize: 14,
@@ -575,7 +580,7 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
   },
   lightStatusLabel: {
-    color: '#666666',
+    color: '#1A1F71',
   },
   statusValue: {
     fontSize: 16,
@@ -585,6 +590,7 @@ const styles = StyleSheet.create({
   },
   lightStatusValue: {
     color: '#1A1F71',
+    fontWeight: '800',
   },
   activityItem: {
     flexDirection: 'row',

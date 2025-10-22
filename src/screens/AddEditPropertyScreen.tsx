@@ -213,7 +213,7 @@ const AddEditPropertyScreen = () => {
   };
 
   const renderStepIndicator = () => (
-    <View style={styles.stepIndicator}>
+    <View style={[styles.stepIndicator, isDarkMode ? null : styles.lightStepIndicator]}>
       {[1, 2, 3, 4].map(step => (
         <View key={step} style={styles.stepContainer}>
           <View
@@ -329,7 +329,7 @@ const AddEditPropertyScreen = () => {
 
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Area (sqft) *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Area (sqft) *</Text>
                 <TextInput
                   style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.area}
@@ -342,7 +342,7 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Price per sqft *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Price per sqft *</Text>
                 <TextInput
                   style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.pricePerSqft}
@@ -357,7 +357,7 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Total Price</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Total Price</Text>
                 <View style={[styles.input, styles.totalPriceDisplay, isDarkMode ? styles.darkTotalPriceDisplay : styles.lightTotalPriceDisplay]}>
                   <Text style={[styles.totalPriceText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                     {calculateTotalPrice()
@@ -368,7 +368,7 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Contact Info *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Contact Info *</Text>
                 <TextInput
                   style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.contactInfo}
@@ -388,7 +388,7 @@ const AddEditPropertyScreen = () => {
                 <>
                   <View style={styles.row}>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
-                      <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Bedrooms</Text>
+                      <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Bedrooms</Text>
                       <TextInput
                         style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                         value={formData.bedrooms}
@@ -402,7 +402,7 @@ const AddEditPropertyScreen = () => {
                       />
                     </View>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
-                      <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Bathrooms</Text>
+                      <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Bathrooms</Text>
                       <TextInput
                         style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                         value={formData.bathrooms}
@@ -418,7 +418,7 @@ const AddEditPropertyScreen = () => {
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Features (comma separated)</Text>
+                    <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Features (comma separated)</Text>
                     <TextInput
                       style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                       value={formData.features}
@@ -432,7 +432,7 @@ const AddEditPropertyScreen = () => {
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>
+                    <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>
                       Amenities (comma separated)
                     </Text>
                     <TextInput
@@ -450,7 +450,7 @@ const AddEditPropertyScreen = () => {
               )}
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.lightText : styles.darkText]}>Description</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Description</Text>
                 <TextInput
                   style={[styles.input, styles.textArea, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.description}
@@ -555,7 +555,7 @@ const AddEditPropertyScreen = () => {
   };
 
   const renderNavigation = () => (
-    <View style={styles.navigation}>
+    <View style={[styles.navigation, isDarkMode ? null : styles.lightNavigation]}>
       {currentStep > 1 && (
         <TouchableOpacity style={styles.navButton} onPress={prevStep}>
           <Text style={styles.navButtonText}>Previous</Text>
@@ -595,13 +595,13 @@ const AddEditPropertyScreen = () => {
   return (
     <View style={[styles.container, isDarkMode ? styles.darkBackground : styles.lightBackground]}>
       <View style={[styles.header, isDarkMode ? styles.darkHeader : styles.lightHeader]}>
-        <Text style={[styles.headerTitle, isDarkMode ? styles.lightText : styles.darkText]}>Add New Property</Text>
+        <Text style={[styles.headerTitle, isDarkMode ? styles.darkText : styles.lightHeaderTitle]}>Add New Property</Text>
         <Text style={[styles.headerSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>Step {currentStep} of 4</Text>
       </View>
 
       {renderStepIndicator()}
 
-      <View style={styles.content}>{renderStepContent()}</View>
+      <View style={[styles.content, isDarkMode ? null : styles.lightContent]}>{renderStepContent()}</View>
 
       {renderNavigation()}
     </View>
@@ -611,27 +611,25 @@ const AddEditPropertyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1F71',
+    backgroundColor: '#1A1F71', // Primary background
   },
   lightBackground: {
-    backgroundColor: '#E0F7FA',
+    backgroundColor: '#E0F7FA', // Glazier shiny white background
   },
   darkBackground: {
     backgroundColor: '#1A1F71',
   },
   header: {
     backgroundColor: '#1A1F71',
-    padding: 25,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    padding: 20,
+    paddingTop: 40,
+    paddingBottom: 24,
   },
   lightHeader: {
-    backgroundColor: '#FFFFFF',
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: '#E0F7FA',
   },
   darkHeader: {
     backgroundColor: '#1A1F71',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 28,
@@ -640,10 +638,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: 'System',
   },
+  lightHeaderTitle: {
+    color: '#1A1F71',
+  },
   headerSubtitle: {
-    fontSize: 18,
-    color: '#A0C4E4',
+    fontSize: 15,
+    color: '#A0C4E4', // Light desaturated blue
     fontFamily: 'System',
+  },
+  darkSubtitle: {
+    color: '#A0C4E4',
+  },
+  lightSubtitle: {
+    color: '#1A1F71',
   },
   lightText: {
     color: '#1A1F71',
@@ -666,6 +673,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  lightStepIndicator: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   stepContainer: {
     alignItems: 'center',
@@ -707,6 +718,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.1)',
   },
+  lightContent: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+  },
   stepContent: {
     flex: 1,
     padding: 24,
@@ -730,23 +744,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   propertyTypeCard: {
-    width: '48%',
-    padding: 24,
-    marginBottom: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    shadowColor: 'rgba(255,255,255,0.3)',
-    shadowOffset: { width: 0, height: 4 },
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent white
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    width: '31.3%',
+    borderLeftWidth: 4,
+    shadowColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowRadius: 6,
+    elevation: 2,
   },
   lightPropertyTypeCard: {
-    backgroundColor: '#FFFFFF',
-    borderColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: '#F5F5F5',
     shadowColor: 'rgba(0, 0, 0, 0.1)',
   },
   darkPropertyTypeCard: {
@@ -888,6 +899,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.1)',
   },
+  lightNavigation: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderTopColor: 'rgba(0,0,0,0.1)',
+  },
   navButton: {
     paddingHorizontal: 24,
     paddingVertical: 14,
@@ -984,6 +999,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 10,
     fontFamily: 'System',
+  },
+  lightLabel: {
+    color: '#1A1F71',
   },
   input: {
     borderWidth: 1,

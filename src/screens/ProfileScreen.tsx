@@ -242,6 +242,13 @@ const ProfileScreen = () => {
         </TouchableOpacity>
         <Text style={[styles.username, isDarkMode ? styles.darkText : styles.lightText]}>{user?.username}</Text>
         <Text style={[styles.company, isDarkMode ? styles.darkCompany : styles.lightCompany]}>{user?.companyName}</Text>
+
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => (navigation as any).navigate('EditProfile')}
+        >
+          <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
       </View>
 
       <Modal
@@ -361,13 +368,6 @@ const ProfileScreen = () => {
         </View>
 
         <View style={styles.actions}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => (navigation as any).navigate('EditProfile')}
-          >
-            <Text style={styles.actionButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity
             style={[styles.actionButton, styles.logoutButton]}
             onPress={handleLogout}
@@ -658,6 +658,25 @@ const styles = StyleSheet.create({
   },
   lightTapHint: {
     color: '#999999',
+  },
+  editButton: {
+    backgroundColor: '#5D3FD3',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 10,
+    alignSelf: 'center',
+    shadowColor: 'rgba(0,0,0,0.2)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  editButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'System',
   },
 });
 

@@ -116,7 +116,7 @@ const AddEditLocationScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.form}>
+      <View style={[styles.form, isDarkMode ? null : styles.lightForm]}>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Address *</Text>
           <TextInput
@@ -181,7 +181,7 @@ const AddEditLocationScreen = () => {
           </View>
         </View>
 
-        <View style={styles.coordinatesDisplay}>
+        <View style={[styles.coordinatesDisplay, isDarkMode ? null : styles.lightCoordinatesDisplay]}>
           <Text style={styles.coordinatesLabel}>
             GPS Coordinates (Auto-filled from map selection)
           </Text>
@@ -289,6 +289,9 @@ const styles = StyleSheet.create({
   form: {
     padding: 20,
   },
+  lightForm: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+  },
   inputGroup: {
     marginBottom: 22,
   },
@@ -358,6 +361,10 @@ const styles = StyleSheet.create({
     marginBottom: 22,
     borderWidth: 1,
     borderColor: '#5D3FD3',
+  },
+  lightCoordinatesDisplay: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderColor: 'rgba(0,0,0,0.2)',
   },
   coordinatesLabel: {
     fontSize: 14,
