@@ -118,7 +118,7 @@ const AddEditLocationScreen = () => {
 
       <View style={[styles.form, isDarkMode ? null : styles.lightForm]}>
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Address *</Text>
+          <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Address *</Text>
           <TextInput
             style={[styles.input, styles.textArea, isDarkMode ? styles.darkInput : styles.lightInput]}
             value={formData.address}
@@ -133,7 +133,7 @@ const AddEditLocationScreen = () => {
 
         <View style={styles.row}>
           <View style={[styles.inputGroup, styles.halfWidth]}>
-            <Text style={styles.label}>City *</Text>
+            <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>City *</Text>
             <TextInput
               style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.city}
@@ -144,7 +144,7 @@ const AddEditLocationScreen = () => {
             />
           </View>
           <View style={[styles.inputGroup, styles.halfWidth]}>
-            <Text style={styles.label}>State *</Text>
+            <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>State *</Text>
             <TextInput
               style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.state}
@@ -158,7 +158,7 @@ const AddEditLocationScreen = () => {
 
         <View style={styles.row}>
           <View style={[styles.inputGroup, styles.halfWidth]}>
-            <Text style={styles.label}>Country *</Text>
+            <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Country *</Text>
             <TextInput
               style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.country}
@@ -169,7 +169,7 @@ const AddEditLocationScreen = () => {
             />
           </View>
           <View style={[styles.inputGroup, styles.halfWidth]}>
-            <Text style={styles.label}>Postal Code</Text>
+            <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Postal Code</Text>
             <TextInput
               style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
               value={formData.postalCode}
@@ -187,7 +187,7 @@ const AddEditLocationScreen = () => {
           </Text>
           <View style={styles.row}>
             <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>Latitude *</Text>
+              <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Latitude *</Text>
               <TextInput
                 style={[styles.input, styles.readOnly, isDarkMode ? styles.darkReadOnly : styles.lightReadOnly]}
                 value={formData.latitude}
@@ -197,7 +197,7 @@ const AddEditLocationScreen = () => {
               />
             </View>
             <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>Longitude *</Text>
+              <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Longitude *</Text>
               <TextInput
                 style={[styles.input, styles.readOnly, isDarkMode ? styles.darkReadOnly : styles.lightReadOnly]}
                 value={formData.longitude}
@@ -301,6 +301,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 10,
     fontFamily: 'System',
+  },
+  darkLabel: {
+    color: '#FFFFFF',
+  },
+  lightLabel: {
+    color: '#1A1F71',
   },
   input: {
     borderWidth: 1,

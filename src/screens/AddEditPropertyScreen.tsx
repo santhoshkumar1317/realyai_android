@@ -255,7 +255,7 @@ const AddEditPropertyScreen = () => {
       case 1:
         return (
           <View style={styles.stepContent}>
-            <Text style={[styles.stepTitle, isDarkMode ? styles.lightText : styles.darkText]}>Select Property Type</Text>
+            <Text style={[styles.stepTitle, isDarkMode ? styles.darkStepTitle : null]}>Select Property Type</Text>
             <Text style={[styles.stepSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               Choose the type of property you want to list
             </Text>
@@ -266,8 +266,10 @@ const AddEditPropertyScreen = () => {
                   style={[
                     styles.propertyTypeCard,
                     isDarkMode ? styles.darkPropertyTypeCard : styles.lightPropertyTypeCard,
-                    formData.propertyType === type.value &&
+                    formData.propertyType === type.value && [
                       styles.propertyTypeSelected,
+                      isDarkMode ? null : styles.lightPropertyTypeSelected,
+                    ],
                   ]}
                   onPress={() =>
                     setFormData(prev => ({ ...prev, propertyType: type.value }))
@@ -276,9 +278,11 @@ const AddEditPropertyScreen = () => {
                   <Text
                     style={[
                       styles.propertyTypeText,
-                      isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary,
-                      formData.propertyType === type.value &&
+                      isDarkMode ? styles.lightTextSecondary : styles.lightPropertyTypeText,
+                      formData.propertyType === type.value && [
                         styles.propertyTypeTextSelected,
+                        isDarkMode ? null : styles.lightPropertyTypeTextSelected,
+                      ],
                     ]}
                   >
                     {type.label}
@@ -322,14 +326,14 @@ const AddEditPropertyScreen = () => {
       case 3:
         return (
           <View style={styles.stepContent}>
-            <Text style={[styles.stepTitle, isDarkMode ? styles.lightText : styles.darkText]}>Property Details</Text>
+            <Text style={[styles.stepTitle, isDarkMode ? styles.darkStepTitle : null]}>Property Details</Text>
             <Text style={[styles.stepSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
               Enter pricing and property information
             </Text>
 
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Area (sqft) *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Area (sqft) *</Text>
                 <TextInput
                   style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.area}
@@ -342,7 +346,7 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Price per sqft *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Price per sqft *</Text>
                 <TextInput
                   style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.pricePerSqft}
@@ -357,7 +361,7 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Total Price</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Total Price</Text>
                 <View style={[styles.input, styles.totalPriceDisplay, isDarkMode ? styles.darkTotalPriceDisplay : styles.lightTotalPriceDisplay]}>
                   <Text style={[styles.totalPriceText, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                     {calculateTotalPrice()
@@ -368,7 +372,7 @@ const AddEditPropertyScreen = () => {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Contact Info *</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Contact Info *</Text>
                 <TextInput
                   style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.contactInfo}
@@ -388,7 +392,7 @@ const AddEditPropertyScreen = () => {
                 <>
                   <View style={styles.row}>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
-                      <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Bedrooms</Text>
+                      <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Bedrooms</Text>
                       <TextInput
                         style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                         value={formData.bedrooms}
@@ -402,7 +406,7 @@ const AddEditPropertyScreen = () => {
                       />
                     </View>
                     <View style={[styles.inputGroup, styles.halfWidth]}>
-                      <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Bathrooms</Text>
+                      <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Bathrooms</Text>
                       <TextInput
                         style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                         value={formData.bathrooms}
@@ -418,7 +422,7 @@ const AddEditPropertyScreen = () => {
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Features (comma separated)</Text>
+                    <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Features (comma separated)</Text>
                     <TextInput
                       style={[styles.input, isDarkMode ? styles.darkInput : styles.lightInput]}
                       value={formData.features}
@@ -432,7 +436,7 @@ const AddEditPropertyScreen = () => {
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>
+                    <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>
                       Amenities (comma separated)
                     </Text>
                     <TextInput
@@ -450,7 +454,7 @@ const AddEditPropertyScreen = () => {
               )}
 
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, isDarkMode ? styles.darkText : styles.lightLabel]}>Description</Text>
+                <Text style={[styles.label, isDarkMode ? styles.darkLabel : styles.lightLabel]}>Description</Text>
                 <TextInput
                   style={[styles.input, styles.textArea, isDarkMode ? styles.darkInput : styles.lightInput]}
                   value={formData.description}
@@ -471,12 +475,8 @@ const AddEditPropertyScreen = () => {
       case 4:
         return (
           <View style={styles.stepContent}>
-            <Text style={[styles.stepTitle, isDarkMode ? styles.lightText : styles.darkText]}>Property Photos</Text>
-            <Text style={[styles.stepSubtitle, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
-              Upload photos of your{' '}
-              {formData.propertyType.toLowerCase().replace('_', ' ')}
-            </Text>
-
+            <Text style={[styles.stepTitle, isDarkMode ? styles.darkStepTitle : null]}>Property Photos</Text>
+            
             <View style={[styles.photoUploadArea, isDarkMode ? styles.darkPhotoUploadArea : styles.lightPhotoUploadArea]}>
               <Text style={[styles.photoInstruction, isDarkMode ? styles.lightTextSecondary : styles.darkTextSecondary]}>
                 📸{' '}
@@ -557,8 +557,8 @@ const AddEditPropertyScreen = () => {
   const renderNavigation = () => (
     <View style={[styles.navigation, isDarkMode ? null : styles.lightNavigation]}>
       {currentStep > 1 && (
-        <TouchableOpacity style={styles.navButton} onPress={prevStep}>
-          <Text style={styles.navButtonText}>Previous</Text>
+        <TouchableOpacity style={[styles.navButton, isDarkMode ? null : styles.lightNavButton]} onPress={prevStep}>
+          <Text style={[styles.navButtonText, isDarkMode ? null : styles.lightNavButtonText]}>Previous</Text>
         </TouchableOpacity>
       )}
 
@@ -569,7 +569,11 @@ const AddEditPropertyScreen = () => {
           style={[
             styles.navButton,
             styles.nextButton,
-            !validateStep(currentStep) && styles.navButtonDisabled,
+            isDarkMode ? null : styles.lightNextButton,
+            !validateStep(currentStep) && [
+              styles.navButtonDisabled,
+              isDarkMode ? null : styles.lightNavButtonDisabled,
+            ],
           ]}
           onPress={nextStep}
           disabled={!validateStep(currentStep)}
@@ -580,7 +584,11 @@ const AddEditPropertyScreen = () => {
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          style={[styles.navButton, styles.nextButton]}
+          style={[
+            styles.navButton,
+            styles.nextButton,
+            isDarkMode ? null : styles.lightNextButton,
+          ]}
           onPress={handleSubmit}
           disabled={loading}
         >
@@ -728,9 +736,12 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#1A1F71',
     marginBottom: 12,
     fontFamily: 'System',
+  },
+  darkStepTitle: {
+    color: '#FFFFFF',
   },
   stepSubtitle: {
     fontSize: 18,
@@ -742,14 +753,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingHorizontal: 8,
   },
   propertyTypeCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent white
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent white for dark
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
-    width: '31.3%',
+    marginBottom: 16,
+    width: '48%',
     borderLeftWidth: 4,
+    borderLeftColor: 'rgba(255, 255, 255, 0.3)',
     shadowColor: 'rgba(255, 255, 255, 0.3)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -757,26 +770,41 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   lightPropertyTypeCard: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
+    borderLeftColor: 'rgba(26, 31, 113, 0.3)',
     shadowColor: 'rgba(0, 0, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   darkPropertyTypeCard: {
     backgroundColor: 'rgba(255,255,255,0.1)',
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderLeftColor: 'rgba(255,255,255,0.3)',
     shadowColor: 'rgba(255,255,255,0.3)',
   },
   propertyTypeSelected: {
-    borderColor: '#5D3FD3',
+    borderLeftColor: '#5D3FD3',
     backgroundColor: 'rgba(93, 63, 211, 0.2)',
   },
+  lightPropertyTypeSelected: {
+    backgroundColor: 'rgba(26, 31, 113, 0.1)',
+    borderLeftColor: '#1A1F71',
+  },
   propertyTypeText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#A0C4E4',
     fontFamily: 'System',
+    textAlign: 'center',
+  },
+  lightPropertyTypeText: {
+    color: '#1A1F71',
   },
   propertyTypeTextSelected: {
     color: '#FFFFFF',
+  },
+  lightPropertyTypeTextSelected: {
+    color: '#1A1F71',
+    fontWeight: '700',
   },
   locationSummary: {
     backgroundColor: 'rgba(255,255,255,0.12)',
@@ -912,9 +940,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
+  lightNavButton: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'rgba(0,0,0,0.2)',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
   navButtonDisabled: {
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderColor: 'rgba(255,255,255,0.1)',
+  },
+  lightNavButtonDisabled: {
+    backgroundColor: '#F5F5F5',
+    borderColor: 'rgba(0,0,0,0.1)',
   },
   navButtonText: {
     fontSize: 16,
@@ -922,6 +963,9 @@ const styles = StyleSheet.create({
     color: '#A0C4E4',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  lightNavButtonText: {
+    color: '#1A1F71',
   },
   nextButton: {
     backgroundColor: '#5D3FD3',
@@ -931,6 +975,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+  },
+  lightNextButton: {
+    backgroundColor: '#1A1F71',
+    borderColor: '#1A1F71',
+    shadowColor: 'rgba(0, 0, 0, 0.2)',
   },
   nextButtonText: {
     color: '#FFFFFF',
@@ -1000,6 +1049,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'System',
   },
+  darkLabel: {
+    color: '#FFFFFF',
+  },
   lightLabel: {
     color: '#1A1F71',
   },
@@ -1017,11 +1069,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderColor: 'rgba(0,0,0,0.2)',
     color: '#1A1F71',
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   darkInput: {
     backgroundColor: 'rgba(255,255,255,0.1)',
     borderColor: 'rgba(255,255,255,0.3)',
     color: '#FFFFFF',
+    shadowColor: 'rgba(255, 255, 255, 0.1)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   textArea: {
     height: 100,
@@ -1039,14 +1101,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12,
   },
   lightTotalPriceDisplay: {
-    backgroundColor: '#F0F0F0',
-    borderColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: '#F8F9FA',
+    borderColor: 'rgba(0,0,0,0.1)',
+    shadowColor: 'rgba(0, 0, 0, 0.05)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
   },
   darkTotalPriceDisplay: {
     backgroundColor: 'rgba(255,255,255,0.08)',
     borderColor: 'rgba(255,255,255,0.2)',
+    shadowColor: 'rgba(255, 255, 255, 0.05)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
   },
   totalPriceText: {
     fontSize: 16,

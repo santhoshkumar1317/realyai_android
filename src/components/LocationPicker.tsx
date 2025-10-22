@@ -130,7 +130,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     stepTitle: {
       fontSize: 28,
       fontWeight: '800',
-      color: isDark ? '#FFFFFF' : '#000000',
+      color: isDark ? '#FFFFFF' : '#1A1F71',
       textAlign: 'center',
       marginBottom: 12,
       fontFamily: 'System',
@@ -171,7 +171,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     },
     areaText: {
       fontSize: 18,
-      color: isDark ? '#FFFFFF' : '#000000',
+      color: isDark ? '#FFFFFF' : '#1A1F71',
       marginBottom: 12,
       fontWeight: '500',
       fontFamily: 'System',
@@ -318,7 +318,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     areaOptionTitle: {
       fontSize: 18,
       fontWeight: '600',
-      color: isDark ? '#FFFFFF' : '#000000',
+      color: isDark ? '#FFFFFF' : '#1A1F71',
       marginBottom: 6,
       fontFamily: 'System',
     },
