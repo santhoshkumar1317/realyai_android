@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -66,7 +66,7 @@ const getFollowUpStatusColor = (status?: string) => {
 
 const LeadCard = ({
   lead,
-  navigation,
+  // navigation,
   isDarkMode = true,
 }: {
   lead: Lead;
@@ -82,16 +82,16 @@ const LeadCard = ({
         styles.leadCard,
         isDarkMode ? styles.darkLeadCard : styles.lightLeadCard,
       ]}
-      onPress={() =>
-        navigation.navigate('LeadDetails', {
-          leadId: lead.id,
-          channel: isTelegram
-            ? 'telegram'
-            : isWhatsApp
-            ? 'whatsapp'
-            : undefined,
-        })
-      }
+      // onPress={() =>
+      //   navigation.navigate('LeadDetails', {
+      //     leadId: lead.id,
+      //     channel: isTelegram
+      //       ? 'telegram'
+      //       : isWhatsApp
+      //       ? 'whatsapp'
+      //       : undefined,
+      //   })
+      // }
     >
       <View style={styles.leadHeader}>
         <View style={styles.leadInfo}>
@@ -329,6 +329,7 @@ const LeadsScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [channelFilter, setChannelFilter] = useState(''); // '' for all, 'telegram', 'whatsapp'
   const [stats, setStats] = useState({
     totalLeads: 0,
     qualifiedLeads: 0,
@@ -349,6 +350,7 @@ const LeadsScreen = () => {
           limit: pagination.limit,
           search: searchQuery || undefined,
           status: statusFilter || undefined,
+          channel: channelFilter || undefined,
         };
 
         const response = await apiService.getLeads(params);
@@ -400,7 +402,7 @@ const LeadsScreen = () => {
         setRefreshing(false);
       }
     },
-    [pagination.limit, searchQuery, statusFilter],
+    [pagination.limit, searchQuery, statusFilter, channelFilter],
   );
 
   useFocusEffect(
@@ -408,6 +410,11 @@ const LeadsScreen = () => {
       loadLeads(1, false);
     }, [loadLeads]),
   );
+
+  // Reload leads when channel filter changes
+  useEffect(() => {
+    loadLeads(1, false);
+  }, [channelFilter, loadLeads]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -444,7 +451,11 @@ const LeadsScreen = () => {
             isDarkMode ? styles.darkText : styles.lightText,
           ]}
         >
-          Leads Overview
+          {channelFilter === 'telegram'
+            ? '📱 Telegram Leads'
+            : channelFilter === 'whatsapp'
+            ? '💬 WhatsApp Leads'
+            : 'Leads Overview'}
         </Text>
         <View style={styles.statsGrid}>
           <StatCard
@@ -471,7 +482,7 @@ const LeadsScreen = () => {
         </View>
       </View>
 
-      {/* Channel Navigation */}
+      {/* Channel Filter */}
       <View
         style={[
           styles.channelNavigation,
@@ -483,13 +494,35 @@ const LeadsScreen = () => {
         <TouchableOpacity
           style={[
             styles.channelButton,
+            channelFilter === '' && styles.channelButtonActive,
             isDarkMode ? styles.darkChannelButton : styles.lightChannelButton,
           ]}
-          onPress={() => navigation.navigate('TelegramLeads')}
+          onPress={() => setChannelFilter('')}
         >
           <Text
             style={[
               styles.channelButtonText,
+              channelFilter === '' && styles.channelButtonTextActive,
+              isDarkMode
+                ? styles.darkChannelButtonText
+                : styles.lightChannelButtonText,
+            ]}
+          >
+            📊 All
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.channelButton,
+            channelFilter === 'telegram' && styles.channelButtonActive,
+            isDarkMode ? styles.darkChannelButton : styles.lightChannelButton,
+          ]}
+          onPress={() => setChannelFilter('telegram')}
+        >
+          <Text
+            style={[
+              styles.channelButtonText,
+              channelFilter === 'telegram' && styles.channelButtonTextActive,
               isDarkMode
                 ? styles.darkChannelButtonText
                 : styles.lightChannelButtonText,
@@ -501,13 +534,15 @@ const LeadsScreen = () => {
         <TouchableOpacity
           style={[
             styles.channelButton,
+            channelFilter === 'whatsapp' && styles.channelButtonActive,
             isDarkMode ? styles.darkChannelButton : styles.lightChannelButton,
           ]}
-          onPress={() => navigation.navigate('WhatsAppLeads')}
+          onPress={() => setChannelFilter('whatsapp')}
         >
           <Text
             style={[
               styles.channelButtonText,
+              channelFilter === 'whatsapp' && styles.channelButtonTextActive,
               isDarkMode
                 ? styles.darkChannelButtonText
                 : styles.lightChannelButtonText,
@@ -574,7 +609,13 @@ const LeadsScreen = () => {
                 isDarkMode ? styles.darkEmptyText : styles.lightEmptyText,
               ]}
             >
-              {loading ? 'Loading leads...' : 'No leads found'}
+              {loading
+                ? 'Loading leads...'
+                : channelFilter === 'telegram'
+                ? 'No Telegram leads found'
+                : channelFilter === 'whatsapp'
+                ? 'No WhatsApp leads found'
+                : 'No leads found'}
             </Text>
           </View>
         }
@@ -1025,6 +1066,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     alignItems: 'center',
   },
+  channelButtonActive: {
+    backgroundColor: '#5D3FD3',
+  },
   darkChannelButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
@@ -1036,6 +1080,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: 'System',
+  },
+  channelButtonTextActive: {
+    color: '#FFFFFF',
   },
   darkChannelButtonText: {
     color: '#FFFFFF',

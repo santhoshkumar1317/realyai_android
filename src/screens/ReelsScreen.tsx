@@ -625,6 +625,10 @@ const styles = StyleSheet.create({
   lightPlaceholder: {
     color: '#4B5563',
   },
+  videoPlaceholder: {
+    fontSize: 16,
+    fontFamily: 'System',
+  },
   playButton: {
     backgroundColor: '#5D3FD3',
     paddingHorizontal: 22,
@@ -661,6 +665,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
   },
+  processingText: {
+    fontSize: 16,
+    fontFamily: 'System',
+  },
   darkProcessingText: {
     color: '#f59e0b',
   },
@@ -673,6 +681,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
+  },
+  reelDate: {
+    fontSize: 14,
+    fontFamily: 'System',
+  },
+  reelDuration: {
+    fontSize: 14,
+    fontFamily: 'System',
   },
   darkFooterText: {
     color: '#A0C4E4',

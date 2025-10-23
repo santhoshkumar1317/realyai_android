@@ -38,8 +38,6 @@ import EditProfileScreen from './src/screens/EditProfileScreen';
 import ReelsScreen from './src/screens/ReelsScreen';
 import SchedulesScreen from './src/screens/SchedulesScreen';
 import SubscriptionDetailsScreen from './src/screens/SubscriptionDetailsScreen';
-import TelegramLeadsScreen from './src/screens/TelegramLeadsScreen';
-import WhatsAppLeadsScreen from './src/screens/WhatsAppLeadsScreen';
 import BotConfigurationScreen from './src/screens/BotConfigurationScreen';
 
 const Stack = createStackNavigator();
@@ -64,7 +62,12 @@ const TabBarIcon = ({
     reels: require('./src/assets/bottomIconImages/video.png'),
     schedule: require('./src/assets/bottomIconImages/schedule.png'),
   };
-  return <Image source={iconMap[name]} style={{ width: size, height: size, tintColor: color }} />;
+  return (
+    <Image
+      source={iconMap[name]}
+      style={{ width: size, height: size, tintColor: color }}
+    />
+  );
 };
 
 // Icon components
@@ -203,9 +206,10 @@ const AppNavigator = () => {
         component={SubscriptionDetailsScreen}
       />
       <Stack.Screen name="SubscriptionPlans" component={SchedulesScreen} />
-      <Stack.Screen name="TelegramLeads" component={TelegramLeadsScreen} />
-      <Stack.Screen name="WhatsAppLeads" component={WhatsAppLeadsScreen} />
-      <Stack.Screen name="BotConfiguration" component={BotConfigurationScreen} />
+      <Stack.Screen
+        name="BotConfiguration"
+        component={BotConfigurationScreen}
+      />
     </Stack.Navigator>
   );
 };
