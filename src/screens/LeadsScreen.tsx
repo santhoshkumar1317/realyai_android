@@ -8,6 +8,7 @@ import {
   TextInput,
   RefreshControl,
   Alert,
+  Image,
 } from 'react-native';
 import {
   useNavigation,
@@ -519,17 +520,23 @@ const LeadsScreen = () => {
           ]}
           onPress={() => setChannelFilter('telegram')}
         >
-          <Text
-            style={[
-              styles.channelButtonText,
-              channelFilter === 'telegram' && styles.channelButtonTextActive,
-              isDarkMode
-                ? styles.darkChannelButtonText
-                : styles.lightChannelButtonText,
-            ]}
-          >
-            📱 Telegram
-          </Text>
+          <View style={styles.channelButtonContent}>
+            <Image
+              source={require('../assets/telegram.jpg')}
+              style={styles.channelIcon}
+            />
+            <Text
+              style={[
+                styles.channelButtonText,
+                channelFilter === 'telegram' && styles.channelButtonTextActive,
+                isDarkMode
+                  ? styles.darkChannelButtonText
+                  : styles.lightChannelButtonText,
+              ]}
+            >
+              Telegram
+            </Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -539,17 +546,23 @@ const LeadsScreen = () => {
           ]}
           onPress={() => setChannelFilter('whatsapp')}
         >
-          <Text
-            style={[
-              styles.channelButtonText,
-              channelFilter === 'whatsapp' && styles.channelButtonTextActive,
-              isDarkMode
-                ? styles.darkChannelButtonText
-                : styles.lightChannelButtonText,
-            ]}
-          >
-            💬 WhatsApp
-          </Text>
+          <View style={styles.channelButtonContent}>
+            <Image
+              source={require('../assets/whatsapp.jpg')}
+              style={styles.channelIcon}
+            />
+            <Text
+              style={[
+                styles.channelButtonText,
+                channelFilter === 'whatsapp' && styles.channelButtonTextActive,
+                isDarkMode
+                  ? styles.darkChannelButtonText
+                  : styles.lightChannelButtonText,
+              ]}
+            >
+              WhatsApp
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -1089,6 +1102,16 @@ const styles = StyleSheet.create({
   },
   lightChannelButtonText: {
     color: '#1A1F71',
+  },
+  channelButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  channelIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
   },
 });
 

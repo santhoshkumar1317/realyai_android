@@ -234,6 +234,9 @@ const ProfileScreen = () => {
               </Text>
             </View>
           )}
+          <View style={styles.plusIconContainer}>
+            <Text style={styles.plusIconText}>+</Text>
+          </View>
           {uploadingImage && (
             <View style={styles.uploadingOverlay}>
               <Text style={styles.uploadingText}>Uploading...</Text>
@@ -677,6 +680,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'System',
+  },
+  plusIconText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
