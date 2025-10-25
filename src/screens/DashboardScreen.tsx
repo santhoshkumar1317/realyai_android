@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../auth/AuthContext';
@@ -343,28 +344,28 @@ const DashboardScreen = () => {
             style={styles.actionButton}
             onPress={() => navigation.navigate('Properties' as never)}
           >
-            <Text style={styles.actionIcon}>🏠</Text>
+            <Image source={require('../assets/bottomIconImages/properties.png')} style={styles.actionIconImage} />
             <Text style={styles.actionText}>View Properties</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate('Leads' as never)}
           >
-            <Text style={styles.actionIcon}>👥</Text>
+            <Image source={require('../assets/bottomIconImages/leads.png')} style={styles.actionIconImage} />
             <Text style={styles.actionText}>Manage Leads</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate('BotConfiguration' as never)}
           >
-            <Text style={styles.actionIcon}>🤖</Text>
+            <Image source={require('../assets/bottomIconImages/bot.jpg')} style={styles.actionIconImage} />
             <Text style={styles.actionText}>Bot Config</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate('Statistics' as never)}
           >
-            <Text style={styles.actionIcon}>📊</Text>
+            <Image source={require('../assets/bottomIconImages/statistics.jpg')} style={styles.actionIconImage} />
             <Text style={styles.actionText}>View Statistics</Text>
           </TouchableOpacity>
         </View>
@@ -676,6 +677,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginBottom: 8,
     color: '#FFFFFF',
+  },
+  actionIconImage: {
+    width: 32,
+    height: 32,
+    marginBottom: 8,
   },
   actionText: {
     fontSize: 13,

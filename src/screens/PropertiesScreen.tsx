@@ -242,7 +242,7 @@ const PropertiesScreen = () => {
           location: filters.location || undefined,
         };
 
-        const response = await apiService.getProperties(params);
+        const response = await apiService.getUserProperties(params);
 
         if (append) {
           setProperties(prev => [...prev, ...response.properties]);
