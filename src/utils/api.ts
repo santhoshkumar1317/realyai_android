@@ -6,7 +6,7 @@ import auth from '@react-native-firebase/auth';
 // const API_BASE_URL =
 //   'https://realyai-backend-649493914329.europe-west1.run.app/api'; // Change this to your actual backend URL
 
-const API_BASE_URL = 'https://api-agent.realyai.io/api';
+const API_BASE_URL = 'https://b27433b13ee7.ngrok-free.app/api';
 
 // Types for API responses
 export interface User {
