@@ -19,6 +19,8 @@ import { apiService, VideoReel } from '../utils/api';
 import { launchImageLibrary } from 'react-native-image-picker';
 import auth from '@react-native-firebase/auth';
 import Video from 'react-native-video';
+import RNFS from 'react-native-fs';
+import RNShare from 'react-native-share';
 
 const prepareVideoSource = (videoReel: VideoReel) => {
   if (videoReel.videoUrl) {
@@ -159,17 +161,47 @@ const VideoReelCard = ({
 
   const handleShare = async () => {
     try {
+      let localFilePath = '';
+
       if (videoReel.videoUrl) {
-        // Share the video URL with proper message
-        await Share.share({
-          message: `Check out this video reel: ${videoReel.prompt}\n\n${videoReel.videoUrl}`,
-        });
+        // Download the video to a temporary file and share it
+        const fileName = `video_reel_${Date.now()}.mp4`;
+        localFilePath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+
+        await RNFS.downloadFile({
+          fromUrl: videoReel.videoUrl,
+          toFile: localFilePath,
+        }).promise;
+      } else if (videoReel.videoData) {
+        // For base64 data, save to file and share
+        const fileName = `video_reel_${Date.now()}.mp4`;
+        localFilePath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+
+        const base64Data = videoReel.videoData.replace('data:video/mp4;base64,', '');
+        await RNFS.writeFile(localFilePath, base64Data, 'base64');
       } else {
-        // Fallback to text sharing if no URL
+        // Fallback to text sharing if no video data
         await Share.share({
           message: `Check out this video reel: ${videoReel.prompt}`,
         });
+        return;
       }
+
+      // Share the local file using react-native-share
+      const shareOptions = {
+        title: 'Share Video',
+        message: `Check out this video reel: ${videoReel.prompt}`,
+        url: `file://${localFilePath}`,
+        type: 'video/mp4',
+        failOnCancel: false,
+      };
+
+      await RNShare.open(shareOptions);
+
+      // Clean up the temporary file after sharing
+      setTimeout(() => {
+        RNFS.unlink(localFilePath).catch(() => {});
+      }, 5000);
     } catch (error) {
       console.error('Error sharing:', error);
       Alert.alert('Share Error', 'Unable to share the video. Please try again.');
