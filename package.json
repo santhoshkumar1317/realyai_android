@@ -31,6 +31,7 @@
     "react-native-maps": "^1.26.14",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.16.0",
+    "react-native-share": "^12.2.0",
     "react-native-vector-icons": "^10.3.0",
     "react-native-video": "^6.17.0",
     "sharp": "^0.34.4"

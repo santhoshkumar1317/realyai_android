@@ -204,6 +204,10 @@ const OnboardingScreen = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
+      GoogleSignin.configure({
+        webClientId: '649493914329-vjl6s02g7iu60b6rlje9lajko2m4m0va.apps.googleusercontent.com',
+      });
+      await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       const idToken = userInfo.data?.idToken;
       if (!idToken) {
@@ -224,8 +228,10 @@ const OnboardingScreen = () => {
 
       setCurrentSlide(2);
     } catch (error) {
-      Alert.alert('Error', 'Google Sign-In failed. Please try again.');
       console.error('Google Sign-In Error:', error);
+      setTimeout(() => {
+        Alert.alert('Error', 'Google Sign-In failed. Please try again.');
+      }, 100);
     } finally {
       setIsLoading(false);
     }

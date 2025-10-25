@@ -6,12 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '../types/navigation';
 
-// Configure Google Sign-In
-GoogleSignin.configure({
-  webClientId:
-    '649493914329-vjl6s02g7iu60b6rlje9lajko2m4m0va.apps.googleusercontent.com', // Web client ID from Firebase console
-});
-
 interface AuthState {
   isLoggedIn: boolean;
   user: any;

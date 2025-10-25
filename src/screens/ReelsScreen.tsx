@@ -102,7 +102,7 @@ const VideoModal = ({
             </TouchableOpacity>
           </View>
 
-          {videoReel.videoData ? (
+          {(videoReel.videoData || videoReel.videoUrl) ? (
             <View style={styles.videoWrapper}>
               <Video
                 ref={videoRef}
@@ -159,11 +159,20 @@ const VideoReelCard = ({
 
   const handleShare = async () => {
     try {
-      await Share.share({
-        message: `Check out this video reel: ${videoReel.prompt}`,
-      });
+      if (videoReel.videoUrl) {
+        // Share the video URL with proper message
+        await Share.share({
+          message: `Check out this video reel: ${videoReel.prompt}\n\n${videoReel.videoUrl}`,
+        });
+      } else {
+        // Fallback to text sharing if no URL
+        await Share.share({
+          message: `Check out this video reel: ${videoReel.prompt}`,
+        });
+      }
     } catch (error) {
       console.error('Error sharing:', error);
+      Alert.alert('Share Error', 'Unable to share the video. Please try again.');
     }
   };
 
@@ -184,7 +193,7 @@ const VideoReelCard = ({
       </View>
 
       <View style={styles.reelContent}>
-        {videoReel.status === 'COMPLETED' && videoReel.videoData ? (
+        {videoReel.status === 'COMPLETED' && (videoReel.videoData || videoReel.videoUrl) ? (
           <View style={styles.videoContainer}>
             <Text style={[styles.videoPlaceholder, isDarkMode ? styles.darkPlaceholder : styles.lightPlaceholder]}>
               🎬 Video Available
